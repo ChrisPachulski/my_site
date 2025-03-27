@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Chris Pachulski&#39;s Data Portfolio</title>
+    <link>//localhost:1313/</link>
+    <description>Recent content on Chris Pachulski&#39;s Data Portfolio</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 10 Feb 2025 12:00:00 +0400</lastBuildDate>
+    <atom:link href="//localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Python Utility Functions</title>
+      <link>//localhost:1313/portfolio/project-01/</link>
+      <pubDate>Mon, 10 Feb 2025 12:00:00 +0400</pubDate>
+      <guid>//localhost:1313/portfolio/project-01/</guid>
+      <description>&lt;h2 id=&#34;project-requirements&#34;&gt;Project Requirements&lt;/h2&gt;&#xA;&lt;p&gt;✅ Google Cloud Platform&lt;/p&gt;&#xA;&lt;p&gt;✅ SalesForce API Endpoint&lt;/p&gt;&#xA;&lt;p&gt;✅ Genesys API Endpoints&lt;/p&gt;&#xA;&lt;p&gt;✅  Sharepoint  File  Retrieval&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Jira Airflow Automation</title>
+      <link>//localhost:1313/portfolio/project-02/</link>
+      <pubDate>Tue, 13 Jun 2023 12:49:27 +0600</pubDate>
+      <guid>//localhost:1313/portfolio/project-02/</guid>
+      <description>&lt;h2 id=&#34;project-requirements&#34;&gt;Project Requirements&lt;/h2&gt;&#xA;&lt;p&gt;✅ Jira API Integration&lt;/p&gt;&#xA;&lt;p&gt;✅ Apache Airflow Orchestration&lt;/p&gt;&#xA;&lt;p&gt;✅ Automated Data Extraction&lt;/p&gt;&#xA;&lt;p&gt;✅ Real-time Issue Tracking&lt;/p&gt;&#xA;&lt;p&gt;✅ Reporting &amp;amp; Dashboarding&lt;/p&gt;&#xA;&lt;p&gt;✅ Clickhouse SQL Syntax&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Markdown Formatting Demo</title>
+      <link>//localhost:1313/blog/markdown-formatting-demo/</link>
+      <pubDate>Sun, 13 Sep 2020 12:49:27 +0600</pubDate>
+      <guid>//localhost:1313/blog/markdown-formatting-demo/</guid>
+      <description>&lt;p&gt;This example Markdown file compliments of &lt;a href=&#34;https://markdown-it.github.io/&#34;&gt;markdown-it.github.io&lt;/a&gt;&lt;/p&gt;&#xA;&lt;hr&gt;&#xA;&lt;h1 id=&#34;h1-heading-8-&#34;&gt;h1 Heading 8-)&lt;/h1&gt;&#xA;&lt;h2 id=&#34;h2-heading&#34;&gt;h2 Heading&lt;/h2&gt;&#xA;&lt;h3 id=&#34;h3-heading&#34;&gt;h3 Heading&lt;/h3&gt;&#xA;&lt;h4 id=&#34;h4-heading&#34;&gt;h4 Heading&lt;/h4&gt;&#xA;&lt;h5 id=&#34;h5-heading&#34;&gt;h5 Heading&lt;/h5&gt;&#xA;&lt;h6 id=&#34;h6-heading&#34;&gt;h6 Heading&lt;/h6&gt;&#xA;&lt;h2 id=&#34;horizontal-rules&#34;&gt;Horizontal Rules&lt;/h2&gt;&#xA;&lt;hr&gt;&#xA;&lt;hr&gt;&#xA;&lt;hr&gt;&#xA;&lt;h2 id=&#34;typographic-replacements&#34;&gt;Typographic replacements&lt;/h2&gt;&#xA;&lt;p&gt;Enable typographer option to see result.&lt;/p&gt;&#xA;&lt;p&gt;(c) (C) (r) (R) (tm) (TM) (p) (P) +-&lt;/p&gt;&#xA;&lt;p&gt;test.. test&amp;hellip; test&amp;hellip;.. test?&amp;hellip;.. test!&amp;hellip;.&lt;/p&gt;&#xA;&lt;p&gt;!!!!!! ???? ,,  &amp;ndash; &amp;mdash;&lt;/p&gt;&#xA;&lt;p&gt;&amp;ldquo;Smartypants, double quotes&amp;rdquo; and &amp;lsquo;single quotes&amp;rsquo;&lt;/p&gt;&#xA;&lt;h2 id=&#34;emphasis&#34;&gt;Emphasis&lt;/h2&gt;&#xA;&lt;p&gt;&lt;strong&gt;This is bold text&lt;/strong&gt;&lt;/p&gt;&#xA;&lt;p&gt;&lt;strong&gt;This is bold text&lt;/strong&gt;&lt;/p&gt;&#xA;&lt;p&gt;&lt;em&gt;This is italic text&lt;/em&gt;&lt;/p&gt;&#xA;&lt;p&gt;&lt;em&gt;This is italic text&lt;/em&gt;&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Hello, World!</title>
+      <link>//localhost:1313/posts/hello-world/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>//localhost:1313/posts/hello-world/</guid>
+      <description>&lt;h2 id=&#34;hello-world&#34;&gt;Hello World!&lt;/h2&gt;&#xA;&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut non lorem diam. Quisque vulputate nibh sodales eros pretium tincidunt. Aenean porttitor efficitur convallis. Nulla sagittis finibus convallis. Phasellus in fermentum quam, eu egestas tortor. Maecenas ac mollis leo. Integer maximus eu nisl vel sagittis.&lt;/p&gt;&#xA;&lt;p&gt;Suspendisse facilisis, mi ac scelerisque interdum, ligula ex imperdiet felis, a posuere eros justo nec sem. Nullam laoreet accumsan metus, sit amet tincidunt orci egestas nec. Pellentesque ut aliquet ante, at tristique nunc. Donec non massa nibh. Ut posuere lacus non aliquam laoreet. Fusce pharetra ligula a felis porttitor, at mollis ipsum maximus. Donec quam tortor, vehicula a magna sit amet, tincidunt dictum enim. In hac habitasse platea dictumst. Mauris sit amet ornare ligula, blandit consequat risus. Duis malesuada pellentesque lectus, non feugiat turpis eleifend a. Nullam tempus ante et diam pretium, ac faucibus ligula interdum.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

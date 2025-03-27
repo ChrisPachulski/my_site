@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Portfolios on Chris Pachulski&#39;s Data Portfolio</title>
+    <link>//localhost:1313/portfolio/</link>
+    <description>Recent content in Portfolios on Chris Pachulski&#39;s Data Portfolio</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 10 Feb 2025 12:00:00 +0400</lastBuildDate>
+    <atom:link href="//localhost:1313/portfolio/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Python Utility Functions</title>
+      <link>//localhost:1313/portfolio/project-01/</link>
+      <pubDate>Mon, 10 Feb 2025 12:00:00 +0400</pubDate>
+      <guid>//localhost:1313/portfolio/project-01/</guid>
+      <description>&lt;h2 id=&#34;project-requirements&#34;&gt;Project Requirements&lt;/h2&gt;&#xA;&lt;p&gt;✅ Google Cloud Platform&lt;/p&gt;&#xA;&lt;p&gt;✅ SalesForce API Endpoint&lt;/p&gt;&#xA;&lt;p&gt;✅ Genesys API Endpoints&lt;/p&gt;&#xA;&lt;p&gt;✅  Sharepoint  File  Retrieval&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Jira Airflow Automation</title>
+      <link>//localhost:1313/portfolio/project-02/</link>
+      <pubDate>Tue, 13 Jun 2023 12:49:27 +0600</pubDate>
+      <guid>//localhost:1313/portfolio/project-02/</guid>
+      <description>&lt;h2 id=&#34;project-requirements&#34;&gt;Project Requirements&lt;/h2&gt;&#xA;&lt;p&gt;✅ Jira API Integration&lt;/p&gt;&#xA;&lt;p&gt;✅ Apache Airflow Orchestration&lt;/p&gt;&#xA;&lt;p&gt;✅ Automated Data Extraction&lt;/p&gt;&#xA;&lt;p&gt;✅ Real-time Issue Tracking&lt;/p&gt;&#xA;&lt;p&gt;✅ Reporting &amp;amp; Dashboarding&lt;/p&gt;&#xA;&lt;p&gt;✅ Clickhouse SQL Syntax&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

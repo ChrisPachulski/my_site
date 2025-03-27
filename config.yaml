@@ -1,6 +1,7 @@
 baseURL: /
 languageCode: en-us
-paginate: 6
+pagination:
+  pagerSize: 6
 theme: portio-hugo-data-science
 title: Chris Pachulski's Data Portfolio
 menu:
