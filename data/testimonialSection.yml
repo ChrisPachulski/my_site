@@ -1,0 +1,32 @@
+---
+enable: true
+topTitle: Testimonials
+title: >
+  ## What Do Others Think of My Work?
+
+testimonial:
+  - name: Favio Ortelli
+    title: Director of Business Intelligence at Ad.net 
+    image: "/images/testimonial/favio.jpeg"
+    comment: "Chris is great to work with—he always finds smart ways to automate our workflows and improve how we use data. He really makes things easier for our team and helps us move faster."
+    star: 5
+  - name: Vittorio Giovara
+    title: Director of Video Encoding and Streaming, MTG BAN Co-founder
+    image: "/images/testimonial/vittorio.jpeg"
+    comment: "Chris has been awesome to partner with—he's always finding smart solutions to automate processes and make our systems more efficient. Working together on MTG Ban has been easy because he gets things done quickly and reliably."
+    star: 5
+  - name: Jack Glick
+    title: Data Analyst, Consumer Edge
+    image: "/images/testimonial/jack.jpeg"
+    comment: "Chris was fantastic to work alongside—he always came up with clever ways to simplify processes and made our data workflows much smoother. His ideas saved us a lot of time and really improved the team's overall output."
+    star: 5
+  - name: Todd Christiansen
+    title: Director of Data Analytics & Consumer Insights, Arizona Beverage
+    image: "/images/testimonial/todd.jpeg"
+    comment: "Having Chris on the team as a junior analyst was impressive—he picked things up quickly and consistently found ways to streamline our processes. His ability to simplify complex data really stood out, making him an asset to our entire team."
+    star: 5
+  - name: Paul Kluitenberg
+    title: Data Engineer, Spins LLC
+    image: "/images/testimonial/paul.jpeg"
+    comment: "Working with Chris was a pleasure—he always asked great questions and quickly learned the ins and outs of our engineering workflows. His ability to bridge analytics and engineering made a big difference for our team."
+    star: 5

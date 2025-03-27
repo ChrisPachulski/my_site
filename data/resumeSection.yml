@@ -1,0 +1,115 @@
+---
+enable: true
+topTitle: My Resume
+title: >
+  ## My Experience & Education
+
+  Over 7+ years of experience working with companies from all over the world.
+
+buttonName: "Download Resume PDF"
+buttonTarget: "/cv/Chris_Pachulski_Resume.pdf"
+
+tab1Name: Experience
+tab2Name: Education
+tab1Target: experience
+tab2Target: education
+
+
+experience:
+  - content: >
+  
+      ### Co-Founder
+      
+      #### [MTG Ban](https://mtgban.com//) 
+      
+      - __500+ paying customers__ utilizing aggregated pricing information.
+      
+      - Driving over __$1.2 million annual revenue__ for Magic: the Gathering products 
+      
+      - Designed and Implemented __BigQuery__ Database from ground up.
+      
+      - Utilize Digital Ocean Droplets (VMs) & R (Tidyverse) ecosystem for all scripts.
+      
+      - Advanced Time Series Machine Learning Forecasting for price movements
+    time: 2017-Present
+  - content: >
+      ### Senior Business Intelligence Analyst
+      
+      #### Ad.Net
+
+      - Create __Looker dashboards__ for stakeholders to monitor campaign and ad group performance
+      
+      - Develope and maintain a centralized __Python__ library for data reporting, querying, and exploration.
+      
+      - Designed __Jira__ templates and scripts for automated report generation using Jira API.
+      
+      - Integrate __Salesforce__ & __SimilarWeb__ metrics to uncover opportunities.
+      
+      - Leverage technologies like __Git, Docker, Anaconda, ClickHouse, PostgreSQL, and R/H2O__ for forecasting.
+    time: December 2021-Present
+  - content: >
+      ### Senior Business Reporting Specialist (Consultant)
+
+      #### Mozilla Firefox
+
+      - Developed __Looker dashboards__ providing real-time insights into digital ad performance
+      
+      - Conducted __funnel analysis__ on ad campaigns, optimizing conversion rates.
+      
+      - Automated reporting processes, reducing manual efforts significantly.
+      
+      - Led detailed ad hoc analyses to guide strategic decisions on audience behavior and ad spend.
+    time: April 2024 - August 2024
+  - content: >
+      ### Data Engineer
+
+      #### Spins LLC
+
+      - Developed automated testing scripts ensuring data accuracy across platforms.
+      
+      - Optimized data operations, sourcing, and software performance.
+      
+      - Automated reporting processes, reducing manual efforts significantly.
+      
+      - Enhanced quality assurance processes through automated test frameworks.
+    time: March 2021 - December 2021
+  - content: >
+      ### Data Analyst
+
+      #### Consumer Edge Research
+
+      - Monitored credit card transaction data, automating brand entry processes from __15 to 300__ per week.
+      
+      - Managed daily calls with financial institutions for onboarding and reviews.
+      
+      - Created custom Looker dashboards for external client presentations.
+      
+      - Improved NLP brand tagging algorithm, __increasing model accuracy by 20%__.
+    time: September 2019 - March 2021
+
+
+education:
+  - content: >
+      #### Master of Business Administration (MBA)
+
+      Hofstra University
+      
+    time: 2019
+  - content: >
+      #### Bachelor of Classical Languages & Biology
+
+      Creighton University
+    time: 2017
+  - content: >
+      #### Google Advanced Data Analytics Certification
+
+      Google
+    
+    time: 2025
+  - content: >
+      #### Full R Track Certifications
+
+      Business Science University
+    
+    time: 2022
+  

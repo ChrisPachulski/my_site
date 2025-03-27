@@ -1,0 +1,45 @@
+baseURL: /
+languageCode: en-us
+paginate: 6
+theme: portio-hugo-data-science
+title: Chris Pachulski's Data Portfolio
+menu:
+  main:
+    - name: Home
+      url: '#home'
+      weight: 1
+    - name: About
+      url: '#about'
+      weight: 2
+    - name: Portfolio
+      url: '#portfolio'
+      weight: 4
+    - name: Resume
+      url: '#resume'
+      weight: 5
+    - name: Blog
+      url: blog
+      weight: 6
+  sitemap:
+    - name: Home
+      url: /
+      weight: 1
+    - name: Blog
+      url: blog
+      weight: 2
+params:
+  blogPageURL: blog
+  contactButtonLabel: Contact Chris 
+  contactLink: '#contact'
+  copyright: All right reserved copyright © Chris Pachulski 2025
+  footerLogo: images/site-navigation/logo-chris.png
+  formspreeURL: YOUR FORMSPREE URL
+  googleAnalytics: YOUR GOOGLE ANALYTICS CODE
+  logo: images/site-navigation/logo-chris.png
+  social:
+    - icon: fa-linkedin-square
+      url: https://www.linkedin.com/in/chris-pachulski/
+      weight: 1
+    - icon: fa-brands fa-github
+      url: https://github.com/ChrisPachulski
+      weight: 2

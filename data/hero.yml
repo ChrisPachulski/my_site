@@ -1,0 +1,16 @@
+---
+enable: true
+topTitle: Data Analyst, Engineer & Mentor
+content: >
+  # Hi I'm Chris
+
+  Chris Pachulski is a seasoned data analyst and engineer specializing in analytics, automation, and insightful storytelling to drive measurable results.
+  
+  Chris is also a Co-founder of [MTGBan](https://www.mtgban.com/), 
+  an online global arbitrage site for trading card collectibles.
+buttonName: Contact Chris
+buttonIcon: 'fa fa-envelope'
+buttonURL: "#contact"
+image: images/hero/user-picture-2.jpg
+videoThumb: images/hero/newspaper.png
+videoURL: https://www.youtube.com/watch?v=_GAKaotESiI

@@ -1,0 +1,23 @@
+---
+enable: true
+topTitle: My Skills
+content: >
+  ## Here's where I can help
+
+  I have a strong background in data analytics, automation, and business problem-solving. I mainly use and mentor SQL, R, and Python. 
+
+image: images/hero/user-picture-2.jpg
+
+skill:
+  - title: R
+    percent: 90
+  - title: Python
+    percent: 90
+  - title: SQL
+    percent: 90
+  - title: Looker & Power BI
+    percent: 75
+  - title: GCP
+    percent: 75
+  - title: Docker & Git
+    percent: 75

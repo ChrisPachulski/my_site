@@ -1,0 +1,22 @@
+---
+enable: true
+topTitle: About
+title: >
+  ## Who is Chris?
+
+  Chris Pachulski is a data-driven professional with extensive experience in analytics, data engineering, and business intelligence, specialized in transforming complex datasets into actionable insights.
+content: >
+  ### I create impactful data solutions that drive smart business decisions.
+
+  I thrive at the intersection of analytics, automation, and storytelling, collaborating closely with stakeholders and engineering teams to build intuitive dashboards, automate workflows, and optimize digital marketing performance.
+
+  My experience spans across financial services, digital marketing, consumer packaged goods, and technology industries, leveraging my skills in SQL, R, Python, and tools like Looker and Docker to enhance decision-making processes. I'm dedicated to continual improvement and delivering actionable insights.
+
+  Outside of crunching numbers and optimizing data pipelines, I enjoy spending quality time with my daughter and our three dachshunds, watching the Toronto Maple Leafs let me down each year, and tinkering with Magic the Gathering collections.
+button1Name: LinkedIn
+button2Name: Download CV
+button1Target: https://www.linkedin.com/in/chris-pachulski/
+button2Target: "/cv/Chris_Pachulski_Resume.pdf"
+image: images/hero/user-picture-3.jpg
+imageMaskPosition: center center
+imageSize: cover
