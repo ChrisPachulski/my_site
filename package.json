@@ -20,6 +20,9 @@
   "homepage": "https://github.com/ChrisPachulski/my_site#readme",
   "description": "",
   "dependencies": {
+    "next": "^15.2.4",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
     "tinacms": "^2.7.3"
   },
   "devDependencies": {
