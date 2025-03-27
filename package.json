@@ -1,0 +1,29 @@
+{
+  "name": "my_site",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "TINA_PUBLIC_IS_LOCAL=true tinacms dev -c \"next dev\"",
+    "build": "tinacms build && next build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ChrisPachulski/my_site.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ChrisPachulski/my_site/issues"
+  },
+  "homepage": "https://github.com/ChrisPachulski/my_site#readme",
+  "description": "",
+  "dependencies": {
+    "tinacms": "^2.7.3"
+  },
+  "devDependencies": {
+    "@tinacms/cli": "^1.9.3",
+    "@types/node": "^22.13.14"
+  }
+}
