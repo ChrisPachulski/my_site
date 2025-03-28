@@ -1,6 +1,6 @@
 ---
 title: 'Bash Fun: Download Folder File Organizer'
-date: 2024-05-04T04:00:00.000Z
+date: 2023-10-11T04:00:00.000Z
 featureImage: /full_colored_light.png
 ---
 
