@@ -28,5 +28,5 @@ testimonial:
   - name: Paul Kluitenberg
     title: Data Engineer, Spins LLC
     image: "/images/testimonial/paul.jpeg"
-    comment: "Working with Chris was a pleasure. He always asked great questions and quickly learned the ins and outs of our engineering workflows. From learning args and kwargs at the start to helping out on larger Terraform projects."
+    comment: "Working with Chris was a pleasure. He always asked insightful questions and quickly grasped our engineering workflows, rapidly progressing from fundamental Python concepts like args and kwargs to effectively contributing on larger infrastructure projects with Terraform"
     star: 5
