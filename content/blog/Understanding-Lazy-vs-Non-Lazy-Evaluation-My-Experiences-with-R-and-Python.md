@@ -1,5 +1,5 @@
 ---
-title: 'Understanding Lazy vs. Non-Lazy Evaluation: My Experiences with R and Python'
+title: Lazy vs. Non-Lazy Evaluation with R and Python
 ---
 
 # What Exactly is Lazy Evaluation?
