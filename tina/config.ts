@@ -41,6 +41,18 @@ export default defineConfig({
             required: true,
           },
           {
+            type: "datetime",
+            name: "date",
+            label: "Date",
+            required: true,
+          },
+          {
+            type: "image",
+            name: "featureImage",
+            label: "Feature Image",
+            required: false,
+          },
+          {
             type: "rich-text",
             name: "body",
             label: "Body",
