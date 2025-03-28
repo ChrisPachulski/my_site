@@ -1,5 +1,5 @@
 ---
-title: Lazy vs. Non-Lazy Evaluation - R vs Python
+title: R vs Python - Lazy vs. Non-Lazy Evaluation
 date: 2023-04-28T04:00:00.000Z
 featureImage: /images/classic-blog/R_Lazy.png
 ---
