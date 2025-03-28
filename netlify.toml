@@ -1,5 +1,5 @@
 [build]
-command = 'hugo'
+command = 'tinacms build && hugo'
 publish = 'public'
 
 [build.environment]
@@ -15,3 +15,5 @@ command = 'hugo -F -b $DEPLOY_PRIME_URL'
 [context.production]
 [context.production.environment]
 HUGO_ENV = 'production'
+NEXT_PUBLIC_TINA_CLIENT_ID = "38ab3a88-6daa-4877-af46-afd566e94e57"
+TINA_TOKEN = "9e5a8d4de1124753b24fbc5cd2616a50459666eb"

@@ -11,27 +11,27 @@ export default defineConfig({
   branch,
 
   // Get this from tina.io
-  clientId: "38ab3a88-6daa-4877-af46-afd566e94e57",
+  clientId: process.env.NEXT_PUBLIC_TINA_CLIENT_ID,
   // Get this from tina.io
-  token: "9e5a8d4de1124753b24fbc5cd2616a50459666eb",
+  token: process.env.TINA_TOKEN,
 
   build: {
     outputFolder: "admin",
-    publicFolder: "public",
+    publicFolder: "static",
   },
   media: {
     tina: {
       mediaRoot: "",
-      publicFolder: "public",
+      publicFolder: "static",
     },
   },
   // See docs on content modeling for more info on how to setup new content models: https://tina.io/docs/schema/
   schema: {
     collections: [
       {
-        name: "post",
-        label: "Posts",
-        path: "content/posts",
+        name: "blog",
+        label: "Blog",
+        path: "content/blog",
         fields: [
           {
             type: "string",
@@ -47,10 +47,6 @@ export default defineConfig({
             isBody: true,
           },
         ],
-        ui: {
-          // This is an DEMO router. You can remove this to fit your site
-          router: ({ document }) => `/demo/blog/${document._sys.filename}`,
-        },
       },
     ],
   },
