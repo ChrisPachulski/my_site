@@ -4,6 +4,8 @@ publish = 'public'
 
 [build.environment]
 HUGO_VERSION = '0.104.1'
+NEXT_PUBLIC_TINA_CLIENT_ID = "38ab3a88-6daa-4877-af46-afd566e94e57"
+TINA_TOKEN = "9e5a8d4de1124753b24fbc5cd2616a50459666eb"
 
 [context]
 [context.branch-deploy]
