@@ -1,6 +1,7 @@
 ---
 title: 'Bash Fun: Download Folder File Organizer'
 date: 2024-05-04T04:00:00.000Z
+featureImage: /full_colored_light.png
 ---
 
 Organizing files manually can be tedious, especially when your Downloads folder quickly fills up with a mixture of files downloaded over different days. Automating this process saves time and keeps your digital space tidy. In this blog, we'll explore a concise yet powerful shell script named download\_clean.sh designed to automate organizing downloaded files.
