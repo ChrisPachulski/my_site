@@ -8,12 +8,12 @@ testimonial:
   - name: Favio Ortelli
     title: Director of Business Intelligence at Ad.net 
     image: "/images/testimonial/favio.jpeg"
-    comment: "Chris is great to work with—he always finds smart ways to automate our workflows and improve how we use data. He really makes things easier for our team and helps us move faster."
+    comment: "Chris consistently automates complex workflows and improves our data utilization. His proactive approach significantly boosts our productivity and simplifies day-to-day operations."
     star: 5
   - name: Vittorio Giovara
     title: Director of Video Encoding and Streaming, MTG BAN Co-founder
     image: "/images/testimonial/vittorio.jpeg"
-    comment: "Chris has been awesome to partner with—he's always finding smart solutions to automate processes and make our systems more efficient. Working together on MTG Ban has been easy because he gets things done quickly and reliably."
+    comment: "He rapidly identifies opportunities to improve and always delivers reliable solutions. His quick thinking & ability to QA makes every project smoother and more effective.."
     star: 5
   - name: Jack Glick
     title: Data Analyst, Consumer Edge
@@ -28,5 +28,5 @@ testimonial:
   - name: Paul Kluitenberg
     title: Data Engineer, Spins LLC
     image: "/images/testimonial/paul.jpeg"
-    comment: "Working with Chris was a pleasure—he always asked great questions and quickly learned the ins and outs of our engineering workflows. His ability to bridge analytics and engineering made a big difference for our team."
+    comment: "Working with Chris was a pleasure. He always asked great questions and quickly learned the ins and outs of our engineering workflows. From learning args and kwargs at the start to helping out on larger Terraform projects."
     star: 5
