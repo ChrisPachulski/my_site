@@ -1,6 +1,7 @@
 ---
 title: R & Twitter - Automation
 date: 2022-02-26T05:00:00.000Z
+featureImage: /1_QVT9gViHRegADGJ8IlUHSQ.png
 ---
 
 # Comprehensive Guide to Building a Robust Twitter Bot in R
