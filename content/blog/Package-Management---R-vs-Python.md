@@ -1,5 +1,5 @@
 ---
-title: Package Management - R vs. Python
+title: R vs Python - Package Management
 date: 2022-12-07T05:00:00.000Z
 featureImage: /R-vs-python.png
 ---
@@ -116,7 +116,7 @@ The choice between R and Python packaging structures depends on your project goa
 * Use R for clearly defined, statistical packages with built-in, structured documentation and standardized distribution.
 * Use Python if your workflow benefits from flexibility, a broader range of applications beyond data analysis, and easily manageable environments.
 
-In my experience - if you're collaborating with another team (usually some form of engineering), python workflows for package creation is by far the preferred method. It mirrors object oriented programming practices enough and is in a syntax that they will find more comforting. I, personally, find the doc string syntax more pleasing on the eye for when `help` needs to be called versus the roxygen2 syntax which I find rather bulky. 
+In my experience - if you're collaborating with another team (usually some form of engineering), python workflows for package creation is by far the preferred method. It mirrors object oriented programming practices enough and is in a syntax that they will find more comforting. I, personally, find the doc string syntax more pleasing on the eye for when `help` needs to be called versus the roxygen2 syntax which I find rather bulky.
 
 As I also come from a scripting coding background - I have largely found the tests required as best practice to be largely a waste of time and an annoyance - however both languages do allow this measure to be skipped.
 
