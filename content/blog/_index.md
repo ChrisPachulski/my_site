@@ -1,3 +1,4 @@
 ---
-title: Recents Article
+title: Recent Articles
 ---
+
