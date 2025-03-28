@@ -2,7 +2,12 @@
 title: Lazy vs. Non-Lazy Evaluation with R and Python
 ---
 
-# What Exactly is Lazy Evaluation?
+***
+
+date: "2023-04-28T10:00:00+00:00"
+title: "What Exactly is Lazy Evaluation?"
+featureImage: "/images/classic-blog/R\_Lazy"
+--------------------------------------------
 
 ##### (Spoilers - I prefer Lazy. Who doesn't prefer to be Lazy?!)
 
