@@ -1,6 +1,7 @@
 ---
 title: In-Depth Product-Level Analysis Using R for Advanced Market Insights
 date: 2023-09-09T04:00:00.000Z
+featureImage: /R_logo_resized.png
 ---
 
 Performing a detailed product-level analysis requires careful data manipulation, precise categorization, and insightful text analytics. In this blog post, we'll explore a structured, privacy-aware approach to analyzing product advertising data using R and essential packages such as `tidyverse`, `lubridate`, and `tidytext`.
