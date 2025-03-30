@@ -4,7 +4,7 @@ date: 2024-02-06T05:00:00.000Z
 featureImage: /full_colored_light.png
 ---
 
-This past Black Friday (the most important time of the year in digital advertising) - I made the genius move to close my laptop down on a Starbucks chew stick. This catastrophic event had the spectacular effect of rendering my screen completely unusable. I therefor had to get my local Desktop set up for the tasks at hand - and in doing so vowed to avoid this struggle at all costs again in the future. The \[shell script I created]\([https://github.com/ChrisPachulski/sync\_and\_setup/blob/main/sync\_and\_setup.sh](https://github.com/ChrisPachulski/sync_and_setup/blob/main/sync_and_setup.sh)) was thus an attempt to ensure that I (or anyone else on my team) would not need to suffer this pain again. Put simply - the script performs the following functions:
+This past Black Friday (the most important time of the year in digital advertising) - I made the genius move to close my laptop down on a Starbucks chew stick. This catastrophic event had the spectacular effect of rendering my screen completely unusable. I therefor had to get my local Desktop set up for the tasks at hand - and in doing so vowed to avoid this struggle at all costs again in the future. The [shell script I created](\[https://github.com/ChrisPachulski/sync_and_setup/blob/main/sync_and_setup.sh]\(https://github.com/ChrisPachulski/sync_and_setup/blob/main/sync_and_setup.sh\)) was thus an attempt to ensure that I (or anyone else on my team) would not need to suffer this pain again. Put simply - the script performs the following functions:
 
 ```shell
 main() {
@@ -88,6 +88,6 @@ Here's a high-level breakdown of the script's functionality and commands:
 
 ## Conclusion
 
-The sync\_and\_setup.sh script is a robust tool that exemplifies the power of automation through shell scripting. It consolidates numerous manual configuration steps into a streamlined, repeatable process. Adopting such automation in your development environment promotes consistency, efficiency, and reliability, allowing teams to focus more on development and less on setup. 
+The sync\_and\_setup.sh script is a robust tool that exemplifies the power of automation through shell scripting. It consolidates numerous manual configuration steps into a streamlined, repeatable process. Adopting such automation in your development environment promotes consistency, efficiency, and reliability, allowing teams to focus more on development and less on setup.
 
 Probably the most fun I've had shell scripting. I have plans to make a personal version of this going forward - wherein instead of a Docker container being the source of dependencies it will be a private repository. That transformation should actually simplify a number of elements here.
