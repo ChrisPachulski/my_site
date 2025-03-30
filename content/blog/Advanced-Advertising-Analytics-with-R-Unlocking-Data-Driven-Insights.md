@@ -1,7 +1,7 @@
 ---
 title: 'Advanced Advertising Analytics with R: Unlocking Data-Driven Insights'
 date: 2023-05-28T04:00:00.000Z
-featureImage: /static/R_logo_resized.png
+featureImage: /R_logo_resized.png
 ---
 
 Leveraging R and robust database integrations, businesses can gain deep analytical insights into advertising performance. In this blog post, we explore sophisticated R scripts designed specifically to analyze advertising data, competitor presence, and market behavior through comprehensive queries and transformations, all crafted with privacy and confidentiality in mind.

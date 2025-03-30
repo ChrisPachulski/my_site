@@ -1,0 +1,10 @@
+{{ define "main" }}
+  <article>
+    <h1>{{ .Title }}</h1>
+    {{ with .Params.featureImage }}
+      <img src="{{ . | absURL }}" alt="{{ $.Title }}">
+    {{ end }}
+    {{ .Content }}
+  </article>
+{{ end }}
+
