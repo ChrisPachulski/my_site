@@ -1,6 +1,6 @@
 ---
 title: Card Kingdoms API Analysis
-date: 2025-03-29T04:00:00.000Z
+date: 2025-01-26T05:00:00.000Z
 featureImage: /card_kingdom_inc_logo_resized.png
 ---
 
