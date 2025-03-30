@@ -8,7 +8,7 @@ In today's data-driven advertising landscape, the ability to accurately track, m
 
 ### Script Overview
 
-The provided Python scripts (`traffic_flow_backfill.py` and `traffic_flow_load.py`) are designed to perform extensive analysis and maintain the integrity of advertising traffic data. These scripts handle critical operations such as data retrieval, conditional logic for filtering and classifying data, robust error handling, and integration with ClickHouse databases for efficient storage and querying.
+In two Python scripts I have recently written (`traffic_flow_backfill.py` and `traffic_flow_load.py`), they are designed to perform extensive analysis and maintain the integrity of advertising traffic data. These scripts handle critical operations such as data retrieval, conditional logic for filtering and classifying data, robust error handling, and integration with ClickHouse databases for efficient storage and querying.
 
 ### Python Environment Setup
 
@@ -21,7 +21,7 @@ from clickhouse_driver import Client
 import addotnet_functions as anf
 ```
 
-These libraries streamline the tasks of data manipulation (`pandas`, `numpy`), database interactions (`clickhouse_driver`), and custom utility functions (`addotnet_functions`).
+These libraries streamline the tasks of data manipulation (`pandas`, `numpy`), database interactions (`clickhouse_driver`), and custom utility functions (`addotnet_functions`) **custom package I have written for internal BI team**.
 
 ### Complex SQL Queries
 
@@ -55,7 +55,7 @@ FROM (
   toDate(e.search_timestamp) AS search_date,
   toHour(e.search_timestamp) AS search_hour,
   -- More detailed column definitions and joins
-FROM ad_event e
+FROM {table name} e
 LEFT JOIN (...)
 WHERE e.event_date = toDate('2023-10-03')
 GROUP BY dt, e.event_date, search_date, search_hour, ...
