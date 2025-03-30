@@ -1,6 +1,6 @@
 ---
 title: Advanced SQL Techniques and Analytics
-date: 2025-03-30T04:00:00.000Z
+date: 2025-03-01T05:00:00.000Z
 featureImage: /Screenshot 2025-03-29 at 10.36.56 PM.png
 ---
 
