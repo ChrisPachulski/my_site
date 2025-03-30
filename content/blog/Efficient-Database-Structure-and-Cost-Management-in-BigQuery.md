@@ -1,6 +1,6 @@
 ---
 title: Efficient DB Structure and Cost Management in BigQuery
-date: 2025-03-30T04:00:00.000Z
+date: 2025-03-29T04:00:00.000Z
 featureImage: /communityIcon_5drbzn3stkj21_resized.png
 ---
 
