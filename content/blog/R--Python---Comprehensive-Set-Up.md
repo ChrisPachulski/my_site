@@ -1,6 +1,6 @@
 ---
 title: R & Python - Comprehensive Set Up
-date: 2025-03-28T04:00:00.000Z
+date: 2025-01-05T05:00:00.000Z
 featureImage: /R-vs-python.png
 ---
 
