@@ -6,7 +6,7 @@ featureImage: /1_QVT9gViHRegADGJ8IlUHSQ.png
 
 # Comprehensive Guide to Building a Robust Twitter Bot in R
 
-In today's post, we'll dive deep into an R script designed to \[automate Twitter interactions comprehensively]\([https://github.com/ChrisPachulski/Twitter-Content-Bot/blob/main/twitter\_bot.R](https://github.com/ChrisPachulski/Twitter-Content-Bot/blob/main/twitter_bot.R)). The script integrates various R packages and demonstrates advanced data handling, automated tweeting, and systematic file management. Let's explore exactly what the script does step-by-step, clearly outlining its technical processes and analytical functionalities.
+In today's post, we'll dive deep into an R script designed to [automate Twitter interactions comprehensively](\[https://github.com/ChrisPachulski/Twitter-Content-Bot/blob/main/twitter_bot.R]\(https://github.com/ChrisPachulski/Twitter-Content-Bot/blob/main/twitter_bot.R\)). The script integrates various R packages and demonstrates advanced data handling, automated tweeting, and systematic file management. Let's explore exactly what the script does step-by-step, clearly outlining its technical processes and analytical functionalities.
 
 ## Overview of the Script
 
