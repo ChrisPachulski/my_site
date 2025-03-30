@@ -6,7 +6,7 @@ featureImage: /images/hero/newspaper.png
 
 # Integrating R with Google Cloud Platform and BigQuery for Advanced Data Automation
 
-The power of automation in data analytics is magnified when combining the flexibility of R, the robustness of Google Cloud Platform (GCP), and the scalability of BigQuery. This article explores a real-world scenario through the detailed implementation of two scripts: `newspaper_updater.R` and `newspaper_updater_functions.R`, emphasizing the required technical knowledge and integrations.
+The power of automation in data analytics is magnified when combining the flexibility of R, the robustness of Google Cloud Platform (GCP), and the scalability of BigQuery. This article explores a real-world scenario through the detailed implementation of two scripts: [`newspaper_updater.R`](https://github.com/ChrisPachulski/MTG-BAN-Newspaper/blob/main/newspaper_updater.R) and [`newspaper_updater_functions.R`](https://github.com/ChrisPachulski/MTG-BAN-Newspaper/blob/main/newspaper_updater_functions.R), emphasizing the required technical knowledge and integrations.
 
 ## Overview of the Workflow
 
