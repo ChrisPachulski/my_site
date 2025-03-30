@@ -48,7 +48,7 @@ Such structured and consistent data handling supports rapid analytics and report
 
 ## Long-term Scalability and Impressive Data Growth
 
-Consistent daily uploads have led to the substantial growth of our analytical data repositories. Annually, BAN LLC handles terabytes of structured data, spanning more than five years of detailed transactional and market data. This extensive historical dataset provides unparalleled insights into market dynamics, pricing trends, and consumer behavior, enabling us and our community of over 350 paying members to stay ahead of industry trends and leverage data-driven investment opportunities.
+Consistent daily uploads have led to the substantial growth of our analytical data repositories. Annually, BAN LLC handles terabytes of structured data, spanning more than five years of detailed transactional and market data. This extensive historical dataset provides unparalleled insights into market dynamics, pricing trends, and consumer behavior, enabling us and our community of over 425 paying members to stay ahead of industry trends and leverage data-driven investment opportunities.
 
 With more than five years of consistent data accumulation, we've built one of the industry's most comprehensive datasets, which continues to grow exponentially each day.
 
