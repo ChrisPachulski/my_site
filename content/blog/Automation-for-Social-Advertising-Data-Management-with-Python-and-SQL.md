@@ -34,10 +34,10 @@ SELECT
     SUM(fb_checkouts) AS add_to_carts,
     CASE WHEN (spend/add_to_carts) = Inf THEN 0 ELSE ROUND(spend/add_to_carts,2) END AS cost_per_atc
 FROM 
-    ad_event_view ae
+    {table_name} ae
 LEFT JOIN (
     SELECT event_date, SUM(mb_website_purchases) AS fb_purchases, SUM(mb_checkouts_initiated) AS fb_checkouts
-    FROM facebook_raw_stats
+    FROM {facebook_table}
     WHERE event_date BETWEEN '2022-11-01' AND '{airflow_date}'
     AND mb_campaign_id LIKE '238XXXXXXXXXXXXXXX'
     GROUP BY event_date
