@@ -26,10 +26,49 @@ Examples include:
 To efficiently manage and monitor database growth, storage costs, and performance metrics, I frequently utilize the BigQuery command-line interface (CLI). Recently, I executed a CLI command to precisely extract and present the size and creation date of tables generated within the last seven days:
 
 ```
-bq show --format=json <project_id>:<dataset>.<table> | jq -r <field extraction and formatting>
+# Ensure you have GCP CLI Installed: - Continually amazed how easy this set up is
+# brew install jq
+# brew install gawk
+# brew install --cask google-cloud-sdk
+# gcloud init
+
+PROJECT_ID="gaeas-cradle"
+ONE_WEEK_AGO=$(date -v -7d '+%s')
+
+bq ls --project_id=$PROJECT_ID --format=json \
+| jq -r '.[].datasetReference.datasetId' \
+| while read DATASET; do
+    bq ls --max_results=10000 --format=json $PROJECT_ID:$DATASET \
+    | jq -r --arg DATASET "$DATASET" '.[] | select(.creationTime != null) | [$DATASET, .tableReference.tableId, .creationTime] | @tsv'
+done \
+| gawk -v one_week_ago="$ONE_WEEK_AGO" '($3/1000) >= one_week_ago' \
+| while read DATASET TABLE CREATION; do
+    json_output=$(bq show --format=json $PROJECT_ID:$DATASET.$TABLE)
+
+    creation_time=$(echo "$json_output" | jq -r '(.creationTime | tonumber / 1000 | strftime("%Y-%m-%d %H:%M:%S"))')
+    size_bytes=$(echo "$json_output" | jq -r '.numActivePhysicalBytes // "0"')
+
+    size_human=$(echo "$size_bytes" | awk '{
+        size_bytes=$1+0
+        if(size_bytes >= 1073741824)
+          size=sprintf("%.2f GB", size_bytes/1073741824)
+        else if(size_bytes >= 1048576)
+          size=sprintf("%.2f MB", size_bytes/1048576)
+        else if(size_bytes >= 1024)
+          size=sprintf("%.2f KB", size_bytes/1024)
+        else
+          size=sprintf("%d B", size_bytes)
+        print size
+    }')
+
+    echo "$DATASET $TABLE $creation_time $size_human"
+done \
+| sort -k3,3r
+
+{{ end }}
 ```
 
-This explicit and reliable method ensures accurate tracking of storage utilization, providing insights critical for cost management and infrastructure planning.
+This explicit and reliable method ensures accurate tracking of storage utilization, providing insights critical for cost management and infrastructure planning. Could I have written a `.py` for this? Yes. I wanted CLI fun on the terminal.
 
 ## A Detailed Snapshot of Recent Data Activity
 
@@ -44,7 +83,7 @@ Here's a comprehensive look at recent datasets and tables managed over the past 
 | vendor\_growth   | 2025\_03\_30\_vendor\_growth  | 2025-03-30 00:51:46 | 1.15 MB   |
 | ck\_velocity     | 2025\_03\_30\_CK\_VELOCITY    | 2025-03-30 02:29:59 | 4.66 MB   |
 
-Such structured and consistent data handling supports rapid analytics and reporting capabilities, integral to strategic decision-making.
+Such structured and consistent data handling supports rapid analytics and reporting capabilities, integral to strategic decision-making. Naming conventions were not my strong suite back in the day when I originally put this together. As a side note as well, \_\_funny money\_\_ references the trade in bonus that sites like Card Kingdom offer, usually a 15-30% "bump" in value, which is an incredible resource for growing asset value & avoiding fees. Never sleep on credit bumps. 
 
 ## Long-term Scalability and Impressive Data Growth
 
