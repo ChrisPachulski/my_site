@@ -8,9 +8,11 @@ As a proud owner of three wonderful dachshunds (Ruby, Moose, & Poppy) and a data
 
 In my never ending endeavor to annoy and inspire eye rolls - I also realized I will be able to track overall adoptions, breed preferences, breeder frequency, and overall volume at this location. Apparently - creating this makes me "extra" - but I've decided to take that as a compliment.
 
+You can find the complete source code and documentation for this project on [GitHub](https://github.com/ChrisPachulski/the-pet-shop-easton).
+
 ### Setting Up the Analytical Environment
 
-My automation workflow begins with a carefully curated set of R packages that provide all the necessary functionality:
+My automation workflow begins with a carefully curated set of R packages that provide all the necessary functionality. The complete package list can be found in the [main.R](https://github.com/ChrisPachulski/the-pet-shop-easton/blob/main/main.R) file:
 
 ```r
 pacman::p_load(tidyverse, rvest, janitor, httr, readxl, bigrquery, googleAuthR, lubridate, cronR, shinyFiles, gmailr, openai)
@@ -20,7 +22,7 @@ This toolkit enables everything from web scraping to cloud database integration,
 
 ### Database Integration
 
-To maintain a historical record of puppy availability (and build my case for that perfect fourth dog), I implement Google BigQuery integration:
+To maintain a historical record of puppy availability (and build my case for that perfect fourth dog), I implement Google BigQuery integration. The authentication process is handled in the [authenticate.R](https://github.com/ChrisPachulski/the-pet-shop-easton/blob/main/R/authenticate.R) script:
 
 ```r
 con = authenticate_bq_and_google()
@@ -30,7 +32,7 @@ This connection allows me to store and analyze data across multiple datasets, tr
 
 ### Web Scraping Implementation
 
-The core of my system involves automated data collection from The Pet Shop Easton's website, specifically looking for those adorable dachshunds and basset hounds:
+The core of my system involves automated data collection from The Pet Shop Easton's website, specifically looking for those adorable dachshunds and basset hounds. The scraping logic is implemented in [scraping.R](https://github.com/ChrisPachulski/the-pet-shop-easton/blob/main/R/scraping.R):
 
 ```r
 url = "https://thepetshopinc.com/available-puppies"
@@ -42,7 +44,7 @@ This automated scraping process captures detailed information about each availab
 
 ### Breeder Vetting and GPT Integration
 
-One of the most important aspects of my system is the breeder vetting process. I've discovered that not all breeders are created equal, and it's crucial to investigate their backgrounds:
+One of the most important aspects of my system is the breeder vetting process. I've discovered that not all breeders are created equal, and it's crucial to investigate their backgrounds. The breeder analysis is implemented in [cleaning.R](https://github.com/ChrisPachulski/the-pet-shop-easton/blob/main/R/cleaning.R):
 
 ```r
 breeder_ids = extract_breeder_ids(parsed_puppy_data)
@@ -60,7 +62,7 @@ This AI-powered analysis helps ensure that any potential new family member comes
 
 ### Data Processing and Analysis
 
-I implement sophisticated data cleaning and analysis pipelines, with a special focus on our breeds of interest:
+I implement sophisticated data cleaning and analysis pipelines, with a special focus on our breeds of interest. The data processing logic can be found in [cleaning.R](https://github.com/ChrisPachulski/the-pet-shop-easton/blob/main/R/cleaning.R):
 
 ```r
 breed_regex = "(dachs|basset)"
@@ -72,7 +74,7 @@ This filtering system helps me stay focused on the breeds that would make the pe
 
 ### Adoption Detection
 
-One of the most valuable features I implement is automated adoption detection:
+One of the most valuable features I implement is automated adoption detection. The adoption detection logic is implemented in [detect_adoptions.R](https://github.com/ChrisPachulski/the-pet-shop-easton/blob/main/R/detect_adoptions.R):
 
 ```r
 detect_adoptions(con, table_header = "puppies")
@@ -82,7 +84,7 @@ This system compares consecutive days' data to identify which puppies have been 
 
 ### Interest Tracking System
 
-I develop a sophisticated tracking system for puppies of interest:
+I develop a sophisticated tracking system for puppies of interest. The tracking logic is implemented in [track_pups_of_interest.R](https://github.com/ChrisPachulski/the-pet-shop-easton/blob/main/R/track_pups_of_interest.R):
 
 ```r
 alert_me_pups = track_and_upload_pups_of_interest(pups_of_interest, con)
@@ -92,7 +94,7 @@ This system maintains a running count of how many consecutive days each puppy ha
 
 ### Automated Notifications
 
-To ensure I never miss a new puppy of interest (and can promptly show my wife), I implement an email notification system:
+To ensure I never miss a new puppy of interest (and can promptly show my wife), I implement an email notification system. The email functionality is implemented in [send_email.R](https://github.com/ChrisPachulski/the-pet-shop-easton/blob/main/R/send_email.R) and [email_content.R](https://github.com/ChrisPachulski/the-pet-shop-easton/blob/main/R/email_content.R):
 
 ```r
 if (nrow(alert_me_pups) > 0) {
@@ -108,7 +110,7 @@ This system automatically sends detailed alerts when new puppies matching our cr
 
 ### Data Storage and Organization
 
-My system maintains three distinct BigQuery datasets:
+My system maintains three distinct BigQuery datasets, with the upload logic implemented in [bigquery_upload.R](https://github.com/ChrisPachulski/the-pet-shop-easton/blob/main/R/bigquery_upload.R):
 - `available_puppies`: Current inventory
 - `pups_of_interest`: Tracked breeds (our future family members)
 - `adopted`: Historical adoption records
@@ -124,8 +126,10 @@ The entire system runs automatically through a cron job:
 0 12 * * * Rscript /path/to/the-pet-shop-easton/main.R
 ```
 
-This ensures daily updates and notifications without manual intervention, keeping me ready for any opportunity to show my wife that perfect puppy from a verified responsible breeder. The store opens at 11 AM EST and this time aligns with allowing staff to update the site in the morning &/or catch the prior days updates
+This ensures daily updates and notifications without manual intervention, keeping me ready for any opportunity to show my wife that perfect puppy from a verified responsible breeder. The store opens at 11 AM EST and this time aligns with allowing staff to update the site in the morning &/or catch the prior days updates.
 
 ### Conclusion
 
-By combining R's data analysis capabilities with modern web technologies, cloud services, and AI-powered breeder vetting, I create a comprehensive system that not only satisfies my technical curiosity but also serves as my not so secret strategy in the ongoing quest to expand our pupper herd. Whether it's a dachshund's playful personality or a basset hound's adorable droopy ears (the wife loves those leg wrinkles), this system ensures I'm always ready with the perfect puppy to show my wife - and the peace of mind that comes from knowing they come from responsible breeders. After all, who could resist those puppy eyes when presented with the perfect data-backed opportunity from a verified source? The system's modular design allows for easy updates and modifications as our requirements evolve, making it a robust and maintainable solution for long-term use - and hopefully, long-term puppy tracking success! 
+By combining R's data analysis capabilities with modern web technologies, cloud services, and AI-powered breeder vetting, I create a comprehensive system that not only satisfies my technical curiosity but also serves as my not so secret strategy in the ongoing quest to expand our pupper herd. Whether it's a dachshund's playful personality or a basset hound's adorable droopy ears (the wife loves those leg wrinkles), this system ensures I'm always ready with the perfect puppy to show my wife - and the peace of mind that comes from knowing they come from responsible breeders. After all, who could resist those puppy eyes when presented with the perfect data-backed opportunity from a verified source? The system's modular design allows for easy updates and modifications as our requirements evolve, making it a robust and maintainable solution for long-term use - and hopefully, long-term puppy tracking success!
+
+Feel free to check out the [GitHub repository](https://github.com/ChrisPachulski/the-pet-shop-easton) for the complete source code, documentation, and to contribute to the project! 
