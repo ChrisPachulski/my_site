@@ -1,7 +1,7 @@
 ---
 title: 'Pet Shop Monitoring with R'
 date: 2025-04-27T04:00:00.000Z
-featureImage: /R_logo_resized.png
+featureImage: /puppy.png
 ---
 
 As a proud owner of three wonderful dachshunds (Ruby, Moose, & Poppy) and a data guy by profession, I find myself in a familiar predicament: I want to add a fourth furry friend to our family, specifically a dachshund or basset hound. My wife, however, needs some convincing. So, I decide to combine my love for pets with my technical skills to create a sophisticated R-based automation system that helps me track available puppies at The Pet Shop Easton. In this blog post, I'll share how I build a comprehensive monitoring solution that not only satisfies my data analysis curiosity but also serves as my not so secret strategy in the ongoing "fourth dog" negotiations with my wife.
