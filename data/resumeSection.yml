@@ -39,8 +39,6 @@ experience:
 
       - Built and maintain end-to-end reporting pipelines for the National Call Center (NCC), automating ingestion, transformation, and delivery of call handling, staffing, and QA metrics across __Genesys__, __Salesforce__, __Sharepoint__, and __SuccessKPI__ data sources.
       
-      - Rebuilt the NCC reporting infrastructure from deprecated and undocumented files into a robust, modular Python-based analytics pipeline—introducing version-controlled data models, reproducible scripts, and automated reporting logic that aligned real-time Genesys and Salesforce data. 
-      
       - Rebuilt the __NCC__ reporting infrastructure from deprecated and undocumented files into a robust, __modular Python-based analytics pipeline__—introducing version-controlled data models, reproducible scripts, and automated reporting logic that aligned real-time Genesys and Salesforce data.
       
       - Develop dynamic staffing models integrating historical occupancy, shrinkage, and contact pacing to recommend shift ratios and staffing by hour, optimized for contractual thresholds.
