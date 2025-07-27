@@ -33,20 +33,33 @@ experience:
       - Advanced Time Series Machine Learning Forecasting for price movements
     time: 2017-Present
   - content: >
-      ### Lead Analytics Architect
+      ### Senior Data Analyst
+      
+      #### The Providencia Group
+
+      - Built and maintain end-to-end reporting pipelines for the National Call Center (NCC), automating ingestion, transformation, and delivery of call handling, staffing, and QA metrics across __Genesys__, __Salesforce__, __Sharepoint__, and __SuccessKPI__ data sources.
+      
+      - Rebuilt the NCC reporting infrastructure from deprecated and undocumented files into a robust, modular Python-based analytics pipeline—introducing version-controlled data models, reproducible scripts, and automated reporting logic that aligned real-time Genesys and Salesforce data. 
+      
+      - Rebuilt the __NCC__ reporting infrastructure from deprecated and undocumented files into a robust, __modular Python-based analytics pipeline__—introducing version-controlled data models, reproducible scripts, and automated reporting logic that aligned real-time Genesys and Salesforce data.
+      
+      - Develop dynamic staffing models integrating historical occupancy, shrinkage, and contact pacing to recommend shift ratios and staffing by hour, optimized for contractual thresholds.
+    time: September 2024-Present
+  - content: >
+      ### Senior Business Intelligence Analyst
       
       #### Ad.Net
 
       - Create __Looker dashboards__ for stakeholders to monitor campaign and ad group performance
       
-      - Develope and maintain a centralized __Python__ library for data reporting, querying, and exploration.
+      - Develop and maintain a centralized __Python__ library for data reporting, querying, and exploration.
       
       - Designed __Jira__ templates and scripts for automated report generation using Jira API.
       
       - Integrate __Salesforce__ & __SimilarWeb__ metrics to uncover opportunities.
       
       - Leverage technologies like __Git, Docker, Anaconda, ClickHouse, PostgreSQL, and R/H2O__ for forecasting.
-    time: December 2021-Present
+    time: December 2021-September 2024
   - content: >
       ### Senior Business Reporting Specialist (Consultant)
 
@@ -107,9 +120,14 @@ education:
     
     time: 2025
   - content: >
+      #### Google Data Analytics
+
+      Google
+    
+    time: March 2025
+  - content: >
       #### Full R Track Certifications
 
       Business Science University
     
     time: 2022
-  
