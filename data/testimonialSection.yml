@@ -18,7 +18,7 @@ testimonial:
   - name: Vittorio Giovara
     title: Director of Video Encoding and Streaming, MTG BAN Co-founder
     image: "/images/testimonial/vittorio.jpeg"
-    comment: "He rapidly identifies opportunities to improve and always delivers reliable solutions. His quick thinking & ability to QA makes every project smoother and more effective.."
+    comment: "He rapidly identifies opportunities to improve and always delivers reliable solutions. His quick thinking & ability to QA makes every project smoother and more effective."
     star: 5
   - name: Jack Glick
     title: Data Analyst, Consumer Edge
@@ -33,5 +33,5 @@ testimonial:
   - name: Paul Kluitenberg
     title: Data Engineer, Spins LLC
     image: "/images/testimonial/paul.jpeg"
-    comment: "Working with Chris was a pleasure. He always asked insightful questions and quickly grasped our engineering workflows, rapidly progressing from fundamental Python concepts like args and kwargs to effectively contributing on larger infrastructure projects with Terraform"
+    comment: "Working with Chris was a pleasure. He always asked insightful questions and quickly grasped our engineering workflows, rapidly progressing from fundamental Python concepts like args and kwargs to effectively contributing on larger infrastructure projects with Terraform."
     star: 5
