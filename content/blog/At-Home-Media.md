@@ -337,7 +337,7 @@ flowchart TD
 - Tailscale: $0 — Personal tier
 - Indexers: $0 — Free (paid options $5-$20/mo total)
 
-## Hardware (typical as of 2025)
+### Hardware (typical as of 2025)
 
 - WD Elements 20 TB: $250-$330 — Street price range
 - iMac 27" 2020, i9, 64 GB (current value): $700-$1,200 — Used-market estimate; exceeds needs
