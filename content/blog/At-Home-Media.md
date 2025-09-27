@@ -26,7 +26,7 @@ featureImage: /plex.png
 
 ---
 
-## 1) Eweka: What It Is, Why I Use It, How To Set It Up
+## 1) Eweka: What, Why,& How To Set It Up
 
 **Lay definition.** Usenet is a global message network where files are posted as many small "articles." An **Usenet access provider** sells you a login to their big server farm that stores those articles. A **news server** is simply that storage and retrieval system. When a downloader requests an NZB, it pulls the listed articles from the provider and reassembles the file.
 
@@ -48,7 +48,7 @@ featureImage: /plex.png
 
 ---
 
-## 2) SABnzbd, Sonarr, and Radarr: Roles + Setup
+## 2) SABnzbd, Sonarr, and Radarr Setup
 
 **What each does**
 
@@ -98,7 +98,7 @@ featureImage: /plex.png
 
 ---
 
-## 3) Indexers: Plain‑English Purpose and Output
+## 3) Indexers: Purpose and Output
 
 **Plain summary.** Indexers are the catalogs. They turn messy Usenet posts into clean entries you can search. Sonarr/Radarr never guess filenames; they ask indexers which exact release matches a show or movie.
 
@@ -122,7 +122,7 @@ featureImage: /plex.png
 
 ---
 
-## 4) Storage and Hardware for the Job
+## 4) Storage and Hardware
 
 **My choices**
 
@@ -176,7 +176,7 @@ featureImage: /plex.png
 
 ---
 
-## 5) TubeArchivist + YouTube Workflow
+## 5) TubeArchivist + YouTube
 
 **Why a YouTube section exists.** I keep a dedicated YouTube lane for long‑form, non‑studio content that does not fit traditional movie/TV pipelines. Treating channels as TV shows yields a cleaner Plex dashboard and predictable episode ordering.
 
@@ -200,7 +200,7 @@ featureImage: /plex.png
 
 ---
 
-## 6) Plex Media Server and Remote Access
+## 6) Plex Server & Remote Access
 
 **Why Plex gets its own callout**
 
@@ -230,7 +230,7 @@ featureImage: /plex.png
 
 ---
 
-## 7) MyBunny.tv + IPTVX: Sports and Live TV
+## 7) Sports and Live TV
 
 **Why this lane exists.** Plex Live TV is sometimes enough. When I want full control and broader sports/live options, I add **MyBunny.tv** with **IPTVX** on Apple TV. This runs on the same iMac and is independent of the Sonarr/Radarr pipeline.
 
@@ -253,7 +253,7 @@ featureImage: /plex.png
 
 ---
 
-## 8) End‑to‑End Reference: How the Pieces Fit
+## 8) How the Pieces Fit
 
 1. Sonarr/Radarr maintain wanted lists and rules
 2. They query indexers and send NZBs to SABnzbd
@@ -277,7 +277,7 @@ flowchart TD
 
 ---
 
-## 9) Minimal, Battle‑Tested Settings Checklist
+## 9) Minimal Settings Checklist
 
 **SABnzbd**
 
@@ -315,7 +315,7 @@ flowchart TD
 
 ---
 
-## 11) Failure Modes and Fast Diagnostics
+## 11) Failure & Fast Diagnostics
 
 * Grabbed but failed in SABnzbd: try an alternate release; check completion; verify connections
 * Imported to wrong place: fix categories or root‑folder mapping
@@ -324,7 +324,7 @@ flowchart TD
 
 ---
 
-## 12) Rolling Costs and Final Summary
+## 12) Rolling Costs & Final Summary
 
 **Subscriptions and software**
 
@@ -390,8 +390,9 @@ flowchart TD
 
 **Control benefit**
 
-* I effectively *own* my library’s availability and access: titles do not vanish due to licensing changes, regional blackouts, or app removals. I retain durable local copies and serve them on my terms while paying ~**7.4× less per year** than my prior stack. Ensure your usage complies with local laws and rights management obligations :) .
+* I effectively *own* my library’s availability and access: titles do not vanish due to licensing changes, regional blackouts, or app removals. I retain durable local copies and serve them on my terms while paying ~**7.4× less per year** than my prior stack. Ensure your usage complies with local laws and rights management obligations :).
 
+I would probably recommend just setting up a mac mini and forgetting about it.
 
 **TubeArchivist Personal Indexer**
 
