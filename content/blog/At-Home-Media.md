@@ -26,7 +26,7 @@ featureImage: /plex.png
 
 ---
 
-## 1) Eweka: What, Why,& How To Set It Up
+## 1) Eweka: What, Why & How
 
 **Lay definition.** Usenet is a global message network where files are posted as many small "articles." An **Usenet access provider** sells you a login to their big server farm that stores those articles. A **news server** is simply that storage and retrieval system. When a downloader requests an NZB, it pulls the listed articles from the provider and reassembles the file.
 
@@ -48,7 +48,7 @@ featureImage: /plex.png
 
 ---
 
-## 2) SABnzbd, Sonarr, and Radarr Setup
+## 2) SABnzbd, Sonarr, & Radarr
 
 **What each does**
 
@@ -98,7 +98,7 @@ featureImage: /plex.png
 
 ---
 
-## 3) Indexers: Purpose and Output
+## 3) Indexers
 
 **Plain summary.** Indexers are the catalogs. They turn messy Usenet posts into clean entries you can search. Sonarr/Radarr never guess filenames; they ask indexers which exact release matches a show or movie.
 
@@ -122,7 +122,7 @@ featureImage: /plex.png
 
 ---
 
-## 4) Storage and Hardware
+## 4) Storage & Hardware
 
 **My choices**
 
@@ -178,7 +178,7 @@ featureImage: /plex.png
 
 ## 5) TubeArchivist + YouTube
 
-**Why a YouTube section exists.** I keep a dedicated YouTube lane for long‑form, non‑studio content that does not fit traditional movie/TV pipelines. Treating channels as TV shows yields a cleaner Plex dashboard and predictable episode ordering.
+**Why a YouTube section exists.** I keep a dedicated YouTube lane for long‑form, non‑studio content that does not fit traditional movie/TV pipelines. Treating channels as TV shows yields a cleaner Plex dashboard and predictable episode ordering. Have to make sure we have Ms Rachel and The Wiggles on hand **at all times** or the little one will lose their mind.
 
 **TubeArchivist setup (minimal).**
 
@@ -324,30 +324,31 @@ flowchart TD
 
 ---
 
-## 12) Rolling Costs & Final Summary
+## 12) Costs & Final Summary
 
-**Subscriptions and software**
+### Subscriptions and software
 
-| Item                        |                            Cost | Notes                                                             |
-| --------------------------- | ------------------------------: | ----------------------------------------------------------------- |
-| Eweka Top Plan (annualized) |      **€6.99/mo** (~**$90/yr**) | Annualized top tier for best value (promo pricing); SSL, 50 conns |
-| MyBunny.tv                  |                 **$20.00 / mo** | Live TV + sports playlist/EPG source                              |
-| IPTVX                       |  **$2.42 / mo** (**$28.99/yr**) | Apple TV client for M3U + XMLTV                                   |
-| SABnzbd                     |                              $0 | Open source                                                       |
-| Sonarr/Radarr               |                              $0 | Open source                                                       |
-| Plex Pass Lifetime          |                  ~$120 one‑time | Assume lifetime license                                           |
-| Tailscale                   |                              $0 | Personal tier                                                     |
-| Indexers                    | $0 (optional $5–$20 / mo total) | Free options OK; paid adds speed/coverage                         |
+| Item | Cost | Notes |
+|---|---:|---|
+| Eweka Top Plan (annualized) | EUR 6.99/mo (~$90/yr) | Annualized top tier for best value (promo pricing); SSL, 50 connections |
+| MyBunny.tv | $20.00/mo | Live TV + sports playlist/EPG source |
+| IPTVX | $2.42/mo ($28.99/yr) | Apple TV client for M3U + XMLTV |
+| SABnzbd | $0 | Open source |
+| Sonarr/Radarr | $0 | Open source |
+| Plex Pass Lifetime | ~$120 one-time | Assume lifetime license |
+| Tailscale | $0 | Personal tier |
+| Indexers | $0 (optional $5-$20/mo total) | Free options OK; paid adds speed/coverage |
 
-**Hardware (typical as of 2025)**
+### Hardware (typical as of 2025)
 
-| Item                                     |        Cost | Notes                               |
-| ---------------------------------------- | ----------: | ----------------------------------- |
-| WD Elements 20 TB                        |   $250–$330 | Street price range                  |
-| iMac 27" 2020, i9, 64 GB (current value) | $700–$1,200 | Used‑market estimate; exceeds needs |
-| Viable server alternative                |   $250–$700 | Used Intel NUC or M1 Mac mini       |
-| ThunderBay enclosure + disks             |     **TBD** | Potential future RAID expansion     |
-| UPS                                      |    $80–$150 | Clean shutdowns                     |
+| Item | Cost | Notes |
+|---|---:|---|
+| WD Elements 20 TB | $250-$330 | Street price range |
+| iMac 27" 2020, i9, 64 GB (current value) | $700-$1,200 | Used-market estimate; exceeds needs |
+| Viable server alternative | $250-$700 | Used Intel NUC or M1 Mac mini |
+| ThunderBay enclosure + disks | TBD | Potential future RAID expansion |
+| UPS | $80-$150 | Clean shutdowns |
+
 
 **My Setup**
 
