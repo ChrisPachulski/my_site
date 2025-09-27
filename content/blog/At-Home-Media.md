@@ -328,26 +328,36 @@ flowchart TD
 
 ### Subscriptions and software
 
-| Item | Cost | Notes |
-|---|---:|---|
-| Eweka Top Plan (annualized) | EUR 6.99/mo (~$90/yr) | SSL, 50 connections |
-| MyBunny.tv | $20.00/mo | TV & Sports |
-| IPTVX | $2.42/mo ($28.99/yr) | Apple TV Cable App |
-| SABnzbd | $0 | Open source |
-| Sonarr/Radarr | $0 | Open source |
-| Plex Pass Lifetime | ~$120 one-time | Lifetime license |
-| Tailscale | $0 | Personal tier |
-| Indexers | $0  | Free |
+<table>
+  <thead>
+    <tr><th>Item</th><th style="text-align:right;">Cost</th><th>Notes</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Eweka Top Plan (annualized)</td><td style="text-align:right;">EUR 6.99/mo (~$90/yr)</td><td>Annualized top tier; SSL; 50 connections</td></tr>
+    <tr><td>MyBunny.tv</td><td style="text-align:right;">$20.00/mo</td><td>Live TV and sports playlist/EPG source</td></tr>
+    <tr><td>IPTVX</td><td style="text-align:right;">$2.42/mo ($28.99/yr)</td><td>Apple TV client for M3U and XMLTV</td></tr>
+    <tr><td>SABnzbd</td><td style="text-align:right;">$0</td><td>Open source</td></tr>
+    <tr><td>Sonarr/Radarr</td><td style="text-align:right;">$0</td><td>Open source</td></tr>
+    <tr><td>Plex Pass Lifetime</td><td style="text-align:right;">~$120 one-time</td><td>Lifetime license</td></tr>
+    <tr><td>Tailscale</td><td style="text-align:right;">$0</td><td>Personal tier</td></tr>
+    <tr><td>Indexers</td><td style="text-align:right;">$0</td><td>Free (paid options $5-$20/mo total)</td></tr>
+  </tbody>
+</table>
 
 ### Hardware (typical as of 2025)
 
-| Item | Cost | Notes |
-|---|---:|---|
-| WD Elements 20 TB | $250-$330 | Amazon |
-| iMac 27" 2020, i9, 64 GB (current value) | $700-$1,200 | Exceeds needs |
-| Viable server alternative | $250-$700 | M1 Mac mini |
-| ThunderBay enclosure + disks | TBD | Potential expansion |
-| UPS | $80-$150 | Clean shutdowns |
+<table>
+  <thead>
+    <tr><th>Item</th><th style="text-align:right;">Cost</th><th>Notes</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>WD Elements 20 TB</td><td style="text-align:right;">$250-$330</td><td>Street price range</td></tr>
+    <tr><td>iMac 27" 2020, i9, 64 GB (current value)</td><td style="text-align:right;">$700-$1,200</td><td>Used-market estimate; exceeds needs</td></tr>
+    <tr><td>Viable server alternative</td><td style="text-align:right;">$250-$700</td><td>Used Intel NUC or M1 Mac mini</td></tr>
+    <tr><td>ThunderBay enclosure + disks</td><td style="text-align:right;">TBD</td><td>Potential future RAID expansion</td></tr>
+    <tr><td>UPS</td><td style="text-align:right;">$80-$150</td><td>Clean shutdowns</td></tr>
+  </tbody>
+</table>
 
 
 **My Setup**
