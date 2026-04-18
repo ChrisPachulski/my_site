@@ -5,9 +5,9 @@ date: 2025-12-16T05:00:00.000Z
 
 # Streamlining Smartsheet with smartsheet_utils
 
-A team in the broader org had spun up their financial and operational tracking on Smartsheet. They sidestepped the heavier lift of standing up a proper database or plugging into a dedicated financial-software platform, because Smartsheet is fast to stand up, pleasant to use as a non-engineer, and unblocks getting answers to leadership this week instead of next quarter. For their purposes, it was a reasonable call.
+A team in the broader org had spun up their financial and operational tracking on Smartsheet. Smartsheet is the right tool for that kind of data — tracking, operational, annotation-heavy rows that are genuinely spreadsheet-shaped, not warehouse-shaped. A proper database or a dedicated financial-software platform would have been the wrong shape for what they needed: you don't want a finance team managing a Postgres schema to track projects in flight. Smartsheet is fast to stand up, pleasant to use as a non-engineer, and unblocks getting answers to leadership this week instead of next quarter. For their purposes, it was a reasonable call.
 
-It worked less well for the data scientists and analysts downstream. Their data lived in Smartsheet. Our reporting lived in pandas, Snowflake, and Looker. The plumbing between the two was a manual export button that nobody had automated, because the Smartsheet Python SDK presents an object model that is wildly hostile to anyone who thinks in DataFrames. The dashboards and ETL pipelines that would have made this an ordinary data source hadn't been built, because building them in the SDK as-is was a slog.
+What didn't work was the connection to the data scientists and analysts downstream. Their data lived in Smartsheet. Our reporting lived in pandas, Snowflake, and Tableau. The plumbing between the two was a manual export button that nobody had automated. The Smartsheet Python SDK itself is a perfectly capable piece of software — it's object-oriented where most of my work is DataFrame-shaped, but that's a thin wrapping job, not a fundamental mismatch. Once the wrapper exists, Smartsheet is, frankly, an insanely friendly data source for DataFrame-centric workflows. The gap wasn't the SDK. The gap was that nobody on the analytics side had built the wrapper.
 
 This post is about the wrapper I built to close that gap, the gnarly parts of the Smartsheet API I learned about in the process, and the specific pattern that lets a bilingual R / Python analytics team plug into a Smartsheet-native data source without either language feeling second-class.
 
@@ -45,7 +45,7 @@ complete = [
 ]
 ```
 
-That is, frankly, a filter statement no human should ever have to write. The whole wrapper is essentially about making sure nobody ever does.
+That is more code than a filter-by-column-name should ever take to write. The whole wrapper is essentially about making sure nobody writes it twice.
 
 ## The round-trip: read_sheet and dataframe_to_rows
 
@@ -345,7 +345,7 @@ If you want to extend the wrapper with your own branding layer, the relevant hoo
 
 ## Connecting the team
 
-The thing the wrapper did that I didn't fully appreciate until it was in place: it made the Smartsheet-native team feel like a first-class data source instead of an awkward outlier.
+The thing the wrapper did that I didn't fully appreciate until it was in place: it made the Smartsheet-native team's work a first-class data source in our reporting stack, rather than an isolated island that required a manual bridge to cross.
 
 Before: analysts who wanted to include Smartsheet data in their reporting had to ask someone to export it to CSV, or they wrote one-off scripts that barely worked. Dashboards that pulled from Smartsheet either didn't exist or were manual refresh-and-paste jobs. ETLs that should have been automated were running in somebody's head once a week. The information asymmetry between the Smartsheet-native team and the pandas-native team cost real coordination time, and the fix kept getting deferred because "we'll build it properly later."
 

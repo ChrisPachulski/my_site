@@ -343,6 +343,9 @@ export function Resume() {
 }
 
 const ARTICLES = [
+  { slug: 'Building-an-Autonomous-Research-Loop',                                              cats: 'Claude Code · Econometrics · AI Tooling', title: 'Building an Autonomous Research Loop: The Stack, The Rationale, and What I Borrowed From Karpathy and Feynman', date: 'Jan 2026', read: '28 min' },
+  { slug: 'Memory-Hygiene-for-Long-Running-AI-Work',                                           cats: 'Claude Code · AI Tooling', title: 'Memory Hygiene for Long-Running AI Work: Anti-Stickiness, Dreams, and Plan Clarity', date: 'Jan 2026', read: '17 min' },
+  { slug: 'Automating-Microsoft-365-in-Python-Without-an-Azure-App-Registration',              cats: 'Python · Microsoft 365', title: 'Automating Microsoft 365 in Python Without an Azure App Registration',      date: 'Dec 2025', read: '15 min' },
   { slug: 'Streamlining-Smartsheet-with-smartsheet_utils',                                     cats: 'Python · Smartsheet', title: 'Streamlining Smartsheet with smartsheet_utils: A pandas-First Python Wrapper', date: 'Dec 2025', read: '17 min' },
   { slug: 'Production-Python-on-Windows-Task-Scheduler',                                       cats: 'Python · Windows',    title: 'Production Python on Windows Task Scheduler: The Dual-Logging Pattern',        date: 'Nov 2025', read: '10 min' },
   { slug: 'The-IDs-Dont-Match-Cross-System-Reconciliation-Genesys-Salesforce',                 cats: 'Python · Salesforce · Genesys', title: "The IDs Don't Match: Cross-System Reconciliation Between Genesys and Salesforce", date: 'Oct 2025', read: '10 min' },
