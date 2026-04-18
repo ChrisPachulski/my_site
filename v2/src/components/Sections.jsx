@@ -343,6 +343,7 @@ export function Resume() {
 }
 
 const ARTICLES = [
+  { slug: 'Adding-a-Brain-to-a-Fork-career-ops-card-ops',                                      cats: 'Claude Code · Personal Tools', title: 'Adding a Brain to a Fork: career-ops, card-ops, and the Compiled-Context Pattern', date: 'Apr 2026', read: '13 min' },
   { slug: 'Four-Terminals-Four-Sounds-session-sounds',                                         cats: 'Claude Code · Codex · Windows', title: 'Four Terminals, Four Sounds: A Tab-Naming and Notification System for Parallel AI Sessions', date: 'Mar 2026', read: '10 min' },
   { slug: 'Building-an-Autonomous-Research-Loop',                                              cats: 'Claude Code · Econometrics · AI Tooling', title: 'Building an Autonomous Research Loop: The Stack, The Rationale, and What I Borrowed From Karpathy and Feynman', date: 'Feb 2026', read: '28 min' },
   { slug: 'Memory-Hygiene-for-Long-Running-AI-Work',                                           cats: 'Claude Code · AI Tooling', title: 'Memory Hygiene for Long-Running AI Work: Anti-Stickiness, Dreams, and Plan Clarity', date: 'Jan 2026', read: '17 min' },
