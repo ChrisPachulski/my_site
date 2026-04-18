@@ -343,7 +343,8 @@ export function Resume() {
 }
 
 const ARTICLES = [
-  { slug: 'Building-an-Autonomous-Research-Loop',                                              cats: 'Claude Code · Econometrics · AI Tooling', title: 'Building an Autonomous Research Loop: The Stack, The Rationale, and What I Borrowed From Karpathy and Feynman', date: 'Jan 2026', read: '28 min' },
+  { slug: 'Four-Terminals-Four-Sounds-session-sounds',                                         cats: 'Claude Code · Codex · Windows', title: 'Four Terminals, Four Sounds: A Tab-Naming and Notification System for Parallel AI Sessions', date: 'Mar 2026', read: '10 min' },
+  { slug: 'Building-an-Autonomous-Research-Loop',                                              cats: 'Claude Code · Econometrics · AI Tooling', title: 'Building an Autonomous Research Loop: The Stack, The Rationale, and What I Borrowed From Karpathy and Feynman', date: 'Feb 2026', read: '28 min' },
   { slug: 'Memory-Hygiene-for-Long-Running-AI-Work',                                           cats: 'Claude Code · AI Tooling', title: 'Memory Hygiene for Long-Running AI Work: Anti-Stickiness, Dreams, and Plan Clarity', date: 'Jan 2026', read: '17 min' },
   { slug: 'Automating-Microsoft-365-in-Python-Without-an-Azure-App-Registration',              cats: 'Python · Microsoft 365', title: 'Automating Microsoft 365 in Python Without an Azure App Registration',      date: 'Dec 2025', read: '15 min' },
   { slug: 'Streamlining-Smartsheet-with-smartsheet_utils',                                     cats: 'Python · Smartsheet', title: 'Streamlining Smartsheet with smartsheet_utils: A pandas-First Python Wrapper', date: 'Dec 2025', read: '17 min' },
