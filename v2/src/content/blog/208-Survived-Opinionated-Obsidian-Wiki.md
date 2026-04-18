@@ -1,6 +1,6 @@
 ---
 title: '208 Survived: An Opinionated Obsidian Wiki and the YouTube Pipeline That Feeds It'
-date: 2026-04-28T04:00:00.000Z
+date: 2026-04-17T04:00:00.000Z
 ---
 
 # 208 Survived
