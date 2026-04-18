@@ -343,6 +343,9 @@ export function Resume() {
 }
 
 const ARTICLES = [
+  { slug: 'Production-Python-on-Windows-Task-Scheduler',                                       cats: 'Python · Windows',    title: 'Production Python on Windows Task Scheduler: The Dual-Logging Pattern',        date: 'Nov 2025', read: '10 min' },
+  { slug: 'The-IDs-Dont-Match-Cross-System-Reconciliation-Genesys-Salesforce',                 cats: 'Python · Salesforce · Genesys', title: "The IDs Don't Match: Cross-System Reconciliation Between Genesys and Salesforce", date: 'Oct 2025', read: '10 min' },
+  { slug: 'Classifying-Call-Center-Agents-with-Genesys-API',                                   cats: 'Python · Genesys',    title: 'Classifying Call-Center Agents with the Genesys API',                          date: 'Oct 2025', read: '13 min' },
   { slug: 'At-Home-Media',                                                                     cats: 'Plex · Usenet',       title: 'At Home Media Server',                                                          date: 'Sep 2025', read: '14 min' },
   { slug: 'Pet-Shop-Monitoring-With-R',                                                        cats: 'R · Web Scraping',    title: 'Pet Shop Monitoring with R',                                                    date: 'Apr 2025', read: '9 min' },
   { slug: 'Efficient-Database-Structure-and-Cost-Management-in-BigQuery',                      cats: 'BigQuery · R',        title: 'Efficient DB Structure and Cost Management in BigQuery',                        date: 'Mar 2025', read: '9 min' },
