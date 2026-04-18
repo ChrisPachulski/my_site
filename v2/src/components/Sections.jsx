@@ -343,6 +343,7 @@ export function Resume() {
 }
 
 const ARTICLES = [
+  { slug: 'Streamlining-Smartsheet-with-smartsheet_utils',                                     cats: 'Python · Smartsheet', title: 'Streamlining Smartsheet with smartsheet_utils: A pandas-First Python Wrapper', date: 'Dec 2025', read: '17 min' },
   { slug: 'Production-Python-on-Windows-Task-Scheduler',                                       cats: 'Python · Windows',    title: 'Production Python on Windows Task Scheduler: The Dual-Logging Pattern',        date: 'Nov 2025', read: '10 min' },
   { slug: 'The-IDs-Dont-Match-Cross-System-Reconciliation-Genesys-Salesforce',                 cats: 'Python · Salesforce · Genesys', title: "The IDs Don't Match: Cross-System Reconciliation Between Genesys and Salesforce", date: 'Oct 2025', read: '10 min' },
   { slug: 'Classifying-Call-Center-Agents-with-Genesys-API',                                   cats: 'Python · Genesys',    title: 'Classifying Call-Center Agents with the Genesys API',                          date: 'Oct 2025', read: '13 min' },
