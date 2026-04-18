@@ -1,4 +1,7 @@
-import { Fragment, useState } from 'react';
+import { Fragment, useState, useEffect } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import { getPost } from '../lib/blog.js';
 
 const PROJECTS = [
   {
@@ -324,39 +327,69 @@ export function Resume() {
 }
 
 const ARTICLES = [
-  { cats: 'Plex · Usenet',      title: 'At Home Media Server',                                                          date: 'Sep 2025', read: '14 min' },
-  { cats: 'R · Web Scraping',   title: 'Pet Shop Monitoring with R',                                                    date: 'Apr 2025', read: '9 min' },
-  { cats: 'BigQuery · R',       title: 'Efficient DB Structure and Cost Management in BigQuery',                        date: 'Mar 2025', read: '9 min' },
-  { cats: 'Python · SharePoint',title: 'Streamlining SharePoint with sharepoint_utility',                               date: 'Mar 2025', read: '8 min' },
-  { cats: 'SQL · BigQuery',     title: 'Advanced SQL Techniques and Analytics',                                         date: 'Mar 2025', read: '7 min' },
-  { cats: 'Python · Salesforce',title: 'Salesforce Data Management with Python and SOQL',                               date: 'Feb 2025', read: '9 min' },
-  { cats: 'R · API',            title: 'Card Kingdom\u2019s API Analysis',                                              date: 'Jan 2025', read: '8 min' },
-  { cats: 'R · Python',         title: 'R & Python — Comprehensive Set Up',                                             date: 'Jan 2025', read: '7 min' },
-  { cats: 'Python · SQL',       title: 'Automation for Social Advertising Data Management with Python and SQL',         date: 'Sep 2024', read: '7 min' },
-  { cats: 'Python · RTB',       title: 'Win Rate Analysis and Optimization for Blind RTB Bidding with Python and SQL',  date: 'Aug 2024', read: '10 min' },
-  { cats: 'R · Python',         title: 'R vs Python — Google Sheets',                                                   date: 'Jun 2024', read: '6 min' },
-  { cats: 'Bash · macOS',       title: 'Bash Fun: Full On Sync & Setup For Mac',                                        date: 'Feb 2024', read: '7 min' },
-  { cats: 'R · Analytics',      title: 'Leveraging R for Advanced Client Revenue Analytics',                            date: 'Nov 2023', read: '8 min' },
-  { cats: 'Google Sheets · R',  title: 'Inventory Acquisition with Google Sheets, Apps Script, SQL, and R',             date: 'Oct 2023', read: '7 min' },
-  { cats: 'Bash',               title: 'Bash Fun: Download Folder File Organizer',                                      date: 'Oct 2023', read: '5 min' },
-  { cats: 'R · Market',         title: 'In-Depth Product-Level Analysis Using R for Advanced Market Insights',          date: 'Sep 2023', read: '8 min' },
-  { cats: 'R · Analytics',      title: 'Advanced Analytics and Revenue Optimization with R',                            date: 'Jul 2023', read: '6 min' },
-  { cats: 'R · Advertising',    title: 'Advanced Advertising Analytics with R: Unlocking Data-Driven Insights',         date: 'May 2023', read: '8 min' },
-  { cats: 'R · SQL',            title: 'Buying Support for Journey\u2019s End Game Store Through R, SQL, and Communication', date: 'May 2023', read: '7 min' },
-  { cats: 'R · Python',         title: 'R vs Python — Lazy vs Non-Lazy Evaluation',                                     date: 'Apr 2023', read: '8 min' },
-  { cats: 'Python · SQL',       title: 'Advanced Traffic Flow Analysis and Data Management with Python and SQL',        date: 'Dec 2022', read: '9 min' },
-  { cats: 'R · Python',         title: 'R vs Python — Package Management',                                              date: 'Dec 2022', read: '6 min' },
-  { cats: 'R · GCP',            title: 'MTGBAN — Newspaper Updater: R, Google Cloud Platform, BigQuery',                date: 'Oct 2022', read: '5 min' },
-  { cats: 'Python · Gmail',     title: 'Google Analytics and Gmail Automation with Python',                             date: 'Jul 2022', read: '9 min' },
-  { cats: 'ClickHouse · Py · R',title: 'ClickHouse: An In-Depth Overview and Integration with Python and R',            date: 'Mar 2022', read: '10 min' },
-  { cats: 'R · Twitter',        title: 'R & Twitter — Automation',                                                      date: 'Feb 2022', read: '7 min' },
-  { cats: 'R · Docker',         title: 'How I Automated Booking a Baby Hospital Tour Using R and Docker',               date: 'Oct 2021', read: '6 min' },
-  { cats: 'R · MTG',            title: 'Arbitrage in Magic: The Gathering — a Primer',                                  date: 'Jun 2021', read: '7 min' },
-  { cats: 'R · Blockchain',     title: 'Racing Ahead: Data-Driven Insights into ZED RUN',                               date: 'Jun 2021', read: '5 min' },
-  { cats: 'R · MTG',            title: 'R — Trading Card Market Analytics and Automated Reporting',                     date: 'Jan 2017', read: '8 min' },
+  { slug: 'At-Home-Media',                                                                     cats: 'Plex · Usenet',       title: 'At Home Media Server',                                                          date: 'Sep 2025', read: '14 min' },
+  { slug: 'Pet-Shop-Monitoring-With-R',                                                        cats: 'R · Web Scraping',    title: 'Pet Shop Monitoring with R',                                                    date: 'Apr 2025', read: '9 min' },
+  { slug: 'Efficient-Database-Structure-and-Cost-Management-in-BigQuery',                      cats: 'BigQuery · R',        title: 'Efficient DB Structure and Cost Management in BigQuery',                        date: 'Mar 2025', read: '9 min' },
+  { slug: 'Python--Sharepoint---File-Explorer-Downloader-Uploader',                            cats: 'Python · SharePoint', title: 'Streamlining SharePoint with sharepoint_utility',                               date: 'Mar 2025', read: '8 min' },
+  { slug: 'Advanced-SQL-Techniques-and-Analytics',                                             cats: 'SQL · BigQuery',      title: 'Advanced SQL Techniques and Analytics',                                         date: 'Mar 2025', read: '7 min' },
+  { slug: 'Salesforce-Data-Management-with-Python-and-SOQL',                                   cats: 'Python · Salesforce', title: 'Salesforce Data Management with Python and SOQL',                               date: 'Feb 2025', read: '9 min' },
+  { slug: 'Card-Kingdoms-API-Analysis',                                                        cats: 'R · API',             title: 'Card Kingdom\u2019s API Analysis',                                              date: 'Jan 2025', read: '8 min' },
+  { slug: 'R--Python---Comprehensive-Set-Up',                                                  cats: 'R · Python',          title: 'R & Python — Comprehensive Set Up',                                             date: 'Jan 2025', read: '7 min' },
+  { slug: 'Automation-for-Social-Advertising-Data-Management-with-Python-and-SQL',             cats: 'Python · SQL',        title: 'Automation for Social Advertising Data Management with Python and SQL',         date: 'Sep 2024', read: '7 min' },
+  { slug: 'Win-Rate-Analysis-and-Optimization-for-Blind-RTB-Bidding-with-Python-and-SQL',      cats: 'Python · RTB',        title: 'Win Rate Analysis and Optimization for Blind RTB Bidding with Python and SQL',  date: 'Aug 2024', read: '10 min' },
+  { slug: 'R-vs-Python---Google-Sheets-',                                                      cats: 'R · Python',          title: 'R vs Python — Google Sheets',                                                   date: 'Jun 2024', read: '6 min' },
+  { slug: 'Bash-Fun-Full-On-Sync--Setup-For-Mac-',                                             cats: 'Bash · macOS',        title: 'Bash Fun: Full On Sync & Setup For Mac',                                        date: 'Feb 2024', read: '7 min' },
+  { slug: 'Leveraging-R-for-Advanced-Client-Revenue-Analytics',                                cats: 'R · Analytics',       title: 'Leveraging R for Advanced Client Revenue Analytics',                            date: 'Nov 2023', read: '8 min' },
+  { slug: 'Inventory-Acquisition-with-Google-Sheets-Apps-Script-SQL-and-R',                    cats: 'Google Sheets · R',   title: 'Inventory Acquisition with Google Sheets, Apps Script, SQL, and R',             date: 'Oct 2023', read: '7 min' },
+  { slug: 'Bash-Fun-Download-Folder-File-Organizer',                                           cats: 'Bash',                title: 'Bash Fun: Download Folder File Organizer',                                      date: 'Oct 2023', read: '5 min' },
+  { slug: 'In-Depth-Product-Level-Analysis-Using-R-for-Advanced-Market-Insights',              cats: 'R · Market',          title: 'In-Depth Product-Level Analysis Using R for Advanced Market Insights',          date: 'Sep 2023', read: '8 min' },
+  { slug: 'Advanced-Analytics-and-Revenue-Optimization-with-R',                                cats: 'R · Analytics',       title: 'Advanced Analytics and Revenue Optimization with R',                            date: 'Jul 2023', read: '6 min' },
+  { slug: 'Advanced-Advertising-Analytics-with-R-Unlocking-Data-Driven-Insights',              cats: 'R · Advertising',     title: 'Advanced Advertising Analytics with R: Unlocking Data-Driven Insights',         date: 'May 2023', read: '8 min' },
+  { slug: 'Buying-Support-for-Journeys-End-Game-Store-Through-R-SQL-and-Effective-Communication', cats: 'R · SQL',           title: 'Buying Support for Journey\u2019s End Game Store Through R, SQL, and Communication', date: 'May 2023', read: '7 min' },
+  { slug: 'Understanding-Lazy-vs-Non-Lazy-Evaluation-My-Experiences-with-R-and-Python',        cats: 'R · Python',          title: 'R vs Python — Lazy vs Non-Lazy Evaluation',                                     date: 'Apr 2023', read: '8 min' },
+  { slug: 'Advanced-Traffic-Flow-Analysis-and-Data-Management-with-Python-and-SQL',            cats: 'Python · SQL',        title: 'Advanced Traffic Flow Analysis and Data Management with Python and SQL',        date: 'Dec 2022', read: '9 min' },
+  { slug: 'Package-Management---R-vs-Python',                                                  cats: 'R · Python',          title: 'R vs Python — Package Management',                                              date: 'Dec 2022', read: '6 min' },
+  { slug: 'MTGBAN---Newspaper-Updater-R-Google-Cloud-Platform-BigQuery',                       cats: 'R · GCP',             title: 'MTGBAN — Newspaper Updater: R, Google Cloud Platform, BigQuery',                date: 'Oct 2022', read: '5 min' },
+  { slug: 'Google-Analytics-and-Gmail-Automation-with-Python',                                 cats: 'Python · Gmail',      title: 'Google Analytics and Gmail Automation with Python',                             date: 'Jul 2022', read: '9 min' },
+  { slug: 'ClickHouse-An-In-Depth-Overview-and-Integration-with-Python-and-R',                 cats: 'ClickHouse · Py · R', title: 'ClickHouse: An In-Depth Overview and Integration with Python and R',            date: 'Mar 2022', read: '10 min' },
+  { slug: 'R--Twitter---Automation',                                                           cats: 'R · Twitter',         title: 'R & Twitter — Automation',                                                      date: 'Feb 2022', read: '7 min' },
+  { slug: 'How-I-Automated-Booking-a-Baby-Hospital-Tour-Using-R-and-Docker',                   cats: 'R · Docker',          title: 'How I Automated Booking a Baby Hospital Tour Using R and Docker',               date: 'Oct 2021', read: '6 min' },
+  { slug: 'Arbitrage-in-Magic-The-Gathering-Primer',                                           cats: 'R · MTG',             title: 'Arbitrage in Magic: The Gathering — a Primer',                                  date: 'Jun 2021', read: '7 min' },
+  { slug: 'Racing-Ahead-Data-Driven-Insights-into-ZED-RUN',                                    cats: 'R · Blockchain',      title: 'Racing Ahead: Data-Driven Insights into ZED RUN',                               date: 'Jun 2021', read: '5 min' },
+  { slug: 'R---Trading-Card-Market-Analytics-and-Automated-Reporting-A-Comprehensive-Breakdown', cats: 'R · MTG',            title: 'R — Trading Card Market Analytics and Automated Reporting',                     date: 'Jan 2017', read: '8 min' },
 ];
 
+function BlogModal({ slug, title, onClose }) {
+  const post = getPost(slug);
+  useEffect(() => {
+    const onKey = (e) => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', onKey);
+    document.body.style.overflow = 'hidden';
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      document.body.style.overflow = '';
+    };
+  }, [onClose]);
+  return (
+    <div className="blog-overlay" onClick={onClose}>
+      <div className="blog-modal" onClick={e => e.stopPropagation()}>
+        <button className="blog-close" onClick={onClose} aria-label="Close">×</button>
+        <article className="blog-content">
+          <h1>{title}</h1>
+          {post ? (
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{post.body}</ReactMarkdown>
+          ) : (
+            <p className="dim">Article not found.</p>
+          )}
+        </article>
+      </div>
+    </div>
+  );
+}
+
 export function Writing() {
+  const [openSlug, setOpenSlug] = useState(null);
+  const openArticle = ARTICLES.find(a => a.slug === openSlug);
   return (
     <section id="writing" className="flow" data-screen-label="05 Writing">
       <div className="wrap">
@@ -371,7 +404,7 @@ export function Writing() {
         </div>
         <div className="writing-grid">
           {ARTICLES.map(a => (
-            <article className="article" key={a.title}>
+            <article className="article" key={a.slug} onClick={() => setOpenSlug(a.slug)}>
               <div className="cats">{a.cats}</div>
               <h4>{a.title}</h4>
               <div className="meta">
@@ -384,6 +417,9 @@ export function Writing() {
           ))}
         </div>
       </div>
+      {openArticle && (
+        <BlogModal slug={openArticle.slug} title={openArticle.title} onClose={() => setOpenSlug(null)} />
+      )}
     </section>
   );
 }
