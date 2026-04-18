@@ -5,35 +5,51 @@ import { getPost } from '../lib/blog.js';
 
 const PROJECTS = [
   {
-    title: 'The Providencia Group — NCC Reporting Rebuild',
-    tag: 'Sr Analyst · 2024–2025',
-    stack: ['Python', 'Genesys', 'Salesforce', 'SharePoint', 'SuccessKPI'],
-    desc: 'Rebuilt a national call-center reporting stack from undocumented files into a reproducible pipeline.',
+    title: 'Wizards of the Coast — MTG Economics & Analytics Platform',
+    tag: 'Sr Economic Analyst · Nov 2025 – present',
+    stack: ['Python', 'Snowflake', 'pyfixest', 'statsmodels', 'DuckDB', 'Smartsheet', 'MCP', 'Claude Code'],
+    desc: 'Econometrics and internal tooling for Magic: The Gathering — pricing, cannibalization, POS weighting, and revenue reconciliation across channels and set cycles.',
     href: null,
     category: 'ic',
-    challenge: 'The National Call Center ran on deprecated scripts and opaque spreadsheets. Staffing decisions were made on stale numbers.',
-    solution: 'Introduced a modular Python-based analytics pipeline: version-controlled data models, automated reporting, and real-time Genesys ↔ Salesforce alignment. Built dynamic staffing models using occupancy, shrinkage, and contact pacing.',
+    challenge: 'MTG spans channels, regions, and set cycles at billion-dollar scale. Decisions about pricing, inventory, mass-market expansion, and product mix need econometric rigor — not dashboards that say "line go up" — and the next analyst needs to reproduce the work.',
+    solution: "Built out an internal Python platform of 10 installable packages — Snowflake with role-based warehouse routing, a Sales Rate Index pipeline (IPF-raked POS weights + velocity/sell-through indices + synthetic control), an MTGJSON wrapper with a DuckDB cache, Smartsheet sync, Microsoft 365 auth, and more — that power the long-running analyses. Shipped a mass-market vs. core-hobby cannibalization study running 28+ identification strategies (TWFE, first-differenced, Bartik IV, distance IV, Oster bounds, synthetic control, causal forest, Bayesian) on a 38-MSA panel and a 200–600 MSA event-tracking panel. Built a price-elasticity model on an international market with clustered standard errors feeding 2026 planning scenarios. Stood up three MCP servers so AI agents can safely query Snowflake, MTGJSON, and project memory. Partners: product strategy, sales, finance, and economists.",
     metrics: [
-      { v: '4',     k: 'Data sources merged' },
-      { v: '∞',     k: 'Legacy cron jobs retired' },
-      { v: 'real', k: 'Time alignment' },
-      { v: '1 hr',  k: 'Shift ratio SLA' },
+      { v: '10',   k: 'Internal Python packages' },
+      { v: '28+',  k: 'Econometric strategies' },
+      { v: '600',  k: 'MSAs in EventLink panel' },
+      { v: '3',    k: 'MCP servers shipped' },
     ],
   },
   {
-    title: 'MTGBAN — Pricing Arbitrage Engine',
-    tag: 'Co-founder · 2017–2025',
-    stack: ['R', 'BigQuery', 'Digital Ocean', 'Prophet ML', 'Go'],
-    desc: 'Time-series ML forecasts price movements across a fragmented collectibles market.',
+    title: 'The Providencia Group — ORR National Call Center Platform',
+    tag: 'Sr Data Analyst · Sep 2024 – Nov 2025',
+    stack: ['Python', 'R', 'Genesys Cloud', 'Salesforce', 'SharePoint', 'Microsoft 365', 'Unanet', 'SuccessKPI', 'PowerShell'],
+    desc: "Data + reporting platform for a federal children's-safety hotline — trafficking, abuse, runaway, and safety case reporting for the Office of Refugee Resettlement.",
+    href: null,
+    category: 'ic',
+    challenge: 'The ORR National Call Center ran on undocumented scripts and brittle spreadsheets. Trafficking, abuse, and runaway reports — and the staffing decisions behind them — were being made on stale numbers, with no reproducibility and no clean handoff path for the next analyst.',
+    solution: 'Designed and shipped two internal Python packages (tpg_functions + tpg_reporting) plus a parallel R mirror, covering Genesys, Salesforce, SharePoint, Outlook/Teams, and Unanet. Wrote 19 production ETL scripts on 20 scheduled jobs spanning daily, weekly, and monthly cadences. Built agent performance bucketing (occupancy + idle/interacting/not-responding components), cross-system ID validation, and missing-data monitoring. A single PowerShell installer bootstraps the full stack — Python, VS Code, 270+ deps, isolated venv — end-to-end for the next analyst.',
+    metrics: [
+      { v: '168',  k: 'Utility functions authored' },
+      { v: '19',   k: 'Production ETL scripts' },
+      { v: '20',   k: 'Scheduled jobs (24/7)' },
+      { v: '6',    k: 'External systems integrated' },
+    ],
+  },
+  {
+    title: 'MTGBAN — Collectibles Pricing & Forecasting Platform',
+    tag: 'Co-founder · 2017 – 2025',
+    stack: ['R', 'tidyverse', 'BigQuery', 'H2O AutoML', 'Prophet', 'RSelenium', 'Docker', 'Digital Ocean', 'Go'],
+    desc: 'Eight years of continuous shipping. 38+ production R scripts (~26K LOC) running a multi-TCG pricing, forecasting, and distribution platform for 500+ paying subscribers.',
     href: 'https://www.mtgban.com/',
     category: 'founded',
-    challenge: 'The trading card market is fragmented across ~20 marketplaces with inconsistent pricing, latency, and data quality. Traders lose spread to information asymmetry.',
-    solution: 'Built an aggregation + forecasting system on top of BigQuery. Scrapers run nightly on Digital Ocean droplets; the R tidyverse handles ETL and Prophet-based forecasting; subscribers see arbitrage opportunities the next morning.',
+    challenge: 'Collectibles markets fragment across 20+ marketplaces, six different trading-card games, and multiple grading authorities (PSA, Beckett). Pricing data is dirty, latent, and sold piecemeal. Serious traders, stores, and speculators lose spread to information asymmetry.',
+    solution: "Built the full stack from scratch. A BigQuery warehouse (gaeas-cradle) anchors the data layer. RSelenium + httr/rvest scrapers pull every major vendor — TCGplayer, Card Kingdom, Cardsphere, CK Buylist, MTGJSON, Scryfall — across MTG, Pokemon, Yu-Gi-Oh, One Piece, Lorcana, and Flesh and Blood, plus PSA and Beckett for graded cards. Forecasting is an H2O AutoML ensemble (GBM + Deep Learning) alongside Prophet for time-series. Community sentiment on Discord is mined with tidytext + NRC. A Twitter bot auto-distributes signals, MTGBAN's own API feeds paying subscribers, and a Go dashboard surfaces it all. Dockerized and running 24/7 on Digital Ocean since 2017.",
     metrics: [
       { v: '$1.2M', k: 'Annual revenue' },
       { v: '500+',  k: 'Paying subscribers' },
-      { v: '20+',   k: 'Marketplaces' },
-      { v: '24/7',  k: 'Uptime' },
+      { v: '8 yrs', k: 'In continuous production' },
+      { v: '6',     k: 'TCGs covered' },
     ],
   },
   {
@@ -101,19 +117,19 @@ const PROJECTS = [
     ],
   },
   {
-    title: 'Consumer Edge — NLP Brand Tagging',
-    tag: 'Data Analyst · 2019–2021',
-    stack: ['Python', 'NLP', 'Looker', 'Credit card txn data'],
-    desc: 'Automated 15→300 brand entries / week and lifted NLP accuracy by 20%.',
+    title: 'Consumer Edge — Brand / NAICS Auto-Tagging Pipeline',
+    tag: 'Data Analyst · Sep 2019 – Mar 2021',
+    stack: ['R', 'tidyverse', 'RSelenium', 'BigQuery', 'Google Sheets API', 'Digital Ocean', 'rvest', 'Looker'],
+    desc: 'Automated my own job. 23 R scripts, ~33K LOC, replacing manual brand classification with a scraping + rule-based NLP pipeline feeding a credit-card transaction panel used by banks.',
     href: null,
     category: 'ic',
-    challenge: 'Brand tagging was manual and low-accuracy, slowing onboarding of financial-institution clients.',
-    solution: 'Automated the brand entry process and improved the NLP brand tagging algorithm, doubling throughput and raising accuracy.',
+    challenge: "Consumer Edge sold credit-card transaction analytics to financial institutions. The bottleneck was humans — every new brand had to be looked up, NAICS-classified, and channel-assigned by hand before it could enter a client dashboard. Onboarding lagged, accuracy varied by analyst, and I was the constraint.",
+    solution: "Built a full R/tidyverse pipeline: RSelenium on a remote Docker chromedriver farm (Digital Ocean) scrapes Google results and company \"About Us\" pages; a large rule-based NLP classifier runs against the scraped text to assign NAICS codes and channels; Selenium form-fills auto-submit the resulting brand entries back into CEI's internal platform. BigQuery and Google Sheets as the data layer, a Friday publishment bot for weekly deliverables, and an ARIMA model for forward-looking brand demand signals. 48 industry verticals covered. Repo is literally named \"Automating_My_Position.\"",
     metrics: [
-      { v: '20x',  k: 'Entries / week' },
-      { v: '+20%', k: 'Model accuracy' },
-      { v: '15+',  k: 'Client dashboards' },
-      { v: 'daily',k: 'Calls w/ banks' },
+      { v: '20×',  k: 'Brand entries / week' },
+      { v: '+20%', k: 'Tagging accuracy' },
+      { v: '33K',  k: 'LOC of R authored' },
+      { v: '48',   k: 'Industry verticals' },
     ],
   },
 ];
@@ -283,7 +299,7 @@ export function Resume() {
               <button className={mode==='experience'?'active':''} onClick={()=>setMode('experience')}>Experience</button>
               <button className={mode==='education'?'active':''} onClick={()=>setMode('education')}>Education</button>
             </div>
-            <a href="#" className="btn mono" onClick={e=>e.preventDefault()}>Download CV (PDF) ↓</a>
+            <a href="/cv/Chris_Pachulski_Resume.pdf" className="btn mono" download>Download CV (PDF) ↓</a>
           </div>
         </div>
         <div className="gitlog serpentine">
