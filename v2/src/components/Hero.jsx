@@ -1,5 +1,3 @@
-import { useState, useEffect } from 'react';
-
 function Hero({ heroVariant }) {
   return (
     <section className="hero" id="home" data-screen-label="00 Hero">
@@ -52,61 +50,53 @@ function Hero({ heroVariant }) {
 function HeroTerminal({ variant }) {
   if (variant === 'psql') return <PsqlTerminal />;
   if (variant === 'shell') return <ShellTerminal />;
-  return <SqlTerminal />;
+  return <MagicCard />;
 }
 
-function SqlTerminal() {
-  const [typed, setTyped] = useState(0);
-  const query = [
-    { t: 'com', v: '-- from hobby to career: the path' },
-    { t: 'kw',  v: 'SELECT', after: ' role, company, years' },
-    { t: 'kw',  v: 'FROM',   after: ' career' },
-    { t: 'kw',  v: 'WHERE',  after: ' involves_magic = ', strAfter: 'TRUE', suffix: ';' },
-  ];
-
-  useEffect(() => {
-    const id = setInterval(() => {
-      setTyped(t => (t < query.length ? t + 1 : t));
-    }, 380);
-    return () => clearInterval(id);
-  }, [query.length]);
-
+function MagicCard() {
   return (
-    <div className="terminal">
-      <div className="terminal-bar">
-        <div className="dots"><span/><span/><span/></div>
-        <div className="title">chris=# career timeline</div>
-      </div>
-      <div className="terminal-body">
-        {query.slice(0, typed).map((line, i) => (
-          <div key={i}>
-            <span className="prompt">{line.t === 'com' ? '' : '# '}</span>
-            {line.t === 'com' && <span className="com">{line.v}</span>}
-            {line.t === 'kw' && (
-              <>
-                <span className="kw">{line.v}</span>
-                <span>{line.after}</span>
-                {line.strAfter && <span className="str">{line.strAfter}</span>}
-                {line.suffix}
-              </>
-            )}
+    <div
+      className="mtg-card"
+      role="img"
+      aria-label="Chris Pachulski, Analyst of Two Worlds — a custom Magic-style card"
+    >
+      <div className="mtg-frame">
+        <div className="mtg-titlebar mtg-stage" style={{ '--d': '0.10s' }}>
+          <div className="mtg-name">Chris Pachulski, Analyst of Two Worlds</div>
+          <div className="mtg-mana">
+            <span className="mtg-pip pip-gen" style={{ '--d': '0.55s' }}>2</span>
+            <span className="mtg-pip pip-u" style={{ '--d': '0.65s' }}>U</span>
+            <span className="mtg-pip pip-r" style={{ '--d': '0.75s' }}>R</span>
           </div>
-        ))}
-        {typed >= query.length && (
-          <>
-            <div style={{ height: 8 }}/>
-            <div className="com">(2 rows)</div>
-            <div style={{ height: 8 }}/>
-            <div className="tbl">
-              <div className="tbl-row"><span style={{color:'var(--ink-mute)'}}>role</span><span style={{color:'var(--ink-mute)'}}>company</span></div>
-              <div className="tbl-row"><span className="result">Co-founder</span><span className="str">MTGBAN (hobby → $1.2M)</span></div>
-              <div className="tbl-row"><span className="result accent">Sr Economic Analyst</span><span className="str accent">Wizards of the Coast</span></div>
-            </div>
-            <div style={{ height: 10 }}/>
-            <div className="com">-- turned the hobby into the career.</div>
-            <div><span className="prompt">#</span> <span className="cursor"/></div>
-          </>
-        )}
+        </div>
+
+        <div className="mtg-art mtg-stage" style={{ '--d': '0.25s' }}>
+          <img src="/hero-portrait.jpg" alt="Chris Pachulski" draggable="false" />
+        </div>
+
+        <div className="mtg-typebar mtg-stage" style={{ '--d': '0.95s' }}>
+          <span className="mtg-type">Legendary Creature — Human Analyst</span>
+          <span className="mtg-setsymbol" aria-hidden="true">◆</span>
+        </div>
+
+        <div className="mtg-textbox">
+          <p className="mtg-rule mtg-stage" style={{ '--d': '1.15s' }}>
+            Python, SQL, R
+          </p>
+          <p className="mtg-rule mtg-stage" style={{ '--d': '1.45s' }}>
+            This creature's power is equal to the number of ETL pipelines you control, and its toughness is equal to that number plus 1.
+          </p>
+          <p className="mtg-flavor mtg-stage" style={{ '--d': '1.75s' }}>
+            "Short of leg. Long of opinion. The toddlers and dachshunds are brothers in arms and rule my life."
+          </p>
+        </div>
+
+        <div className="mtg-pt-row">
+          <span className="mtg-pt mtg-stage" style={{ '--d': '2.05s' }}>*/*+1</span>
+        </div>
+        <div className="mtg-bottom">
+          <span className="mtg-artist mtg-stage" style={{ '--d': '1.95s' }}>Illus. Chris Pachulski</span>
+        </div>
       </div>
     </div>
   );
