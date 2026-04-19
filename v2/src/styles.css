@@ -581,11 +581,13 @@ html[data-vibe="cyberpunk"] .blog-content li::marker { color: var(--accent); }
    MTG-style hero card — custom frame, staggered assembly
    ============================================================ */
 .mtg-card {
+  container-type: inline-size;
+  container-name: mtgcard;
   width: 100%;
   max-width: 400px;
   aspect-ratio: 63 / 88;
   margin: 0 auto;
-  padding: 3.4%;
+  padding: 2.2%;
   border-radius: 18px;
   /* Outer shell — obsidian with faint neon rim */
   background:
@@ -611,7 +613,7 @@ html[data-vibe="cyberpunk"] .blog-content li::marker { color: var(--accent); }
   border-radius: 10px;
   padding: 6px 7px 5px;
   display: grid;
-  grid-template-rows: auto 1.35fr auto 1fr auto;
+  grid-template-rows: auto 1fr auto auto auto;
   gap: 3px;
   /* Cyberpunk: dark metallic base with blue→magenta gradient */
   background:
@@ -741,7 +743,7 @@ html[data-vibe="cyberpunk"] .blog-content li::marker { color: var(--accent); }
 }
 .mtg-name {
   font-family: "Orbitron", "Rajdhani", var(--sans);
-  font-size: clamp(12px, 1.3vw, 15px);
+  font-size: clamp(11px, 3.8cqw, 15px);
   font-weight: 600;
   color: oklch(0.92 0.12 210);
   letter-spacing: 0.04em;
@@ -838,7 +840,7 @@ html[data-vibe="cyberpunk"] .blog-content li::marker { color: var(--accent); }
 }
 .mtg-type {
   font-family: "Orbitron", "Rajdhani", var(--sans);
-  font-size: clamp(10px, 1.05vw, 12px);
+  font-size: clamp(9px, 3cqw, 12px);
   font-weight: 500;
   color: oklch(0.88 0.14 340);
   letter-spacing: 0.06em;
@@ -872,7 +874,7 @@ html[data-vibe="cyberpunk"] .blog-content li::marker { color: var(--accent); }
   gap: 3px;
   color: oklch(0.92 0.12 210);
   font-family: "JetBrains Mono", var(--mono);
-  font-size: clamp(8.5px, 0.82vw, 10.5px);
+  font-size: clamp(8px, 2.7cqw, 11px);
   line-height: 1.35;
   box-shadow:
     inset 0 0 0 1px oklch(0.75 0.22 220 / 0.2),
