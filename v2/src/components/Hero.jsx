@@ -1,87 +1,40 @@
-function Hero({ heroVariant }) {
-  return (
-    <section className="hero" id="home" data-screen-label="00 Hero">
-      <div className="wrap">
-        <div className="hero-grid">
-          <div>
-            <h1 className="hero-headline">
-              <span className="sub">Sr Economic Analyst · Analytics Engineer</span>
-              Turning messy <span className="italic">data</span><br/>
-              into decisions<br/>
-              worth <span className="italic">shipping</span>.
-            </h1>
-            <p className="hero-lede">
-              I'm <strong>Chris Pachulski</strong> — I turned a hobby into a career. Co-founded <strong>MTGBAN</strong>, a Magic: The Gathering arbitrage engine, and spent 7+ years building analytics pipelines for Ad.Net, Mozilla, SPINS, and Providencia along the way. Now I'm a <strong>Senior Economic Analyst at Wizards of the Coast</strong>, working on the game I built a business around.
-            </p>
-            <div className="hero-actions">
-              <a href="#contact" className="btn btn-primary mono">
-                Let's talk <span className="arrow">→</span>
-              </a>
-              <a href="#portfolio" className="btn mono">View case studies</a>
-              <a href="https://github.com/ChrisPachulski" target="_blank" rel="noopener noreferrer" className="btn mono">GitHub ↗</a>
-            </div>
-          </div>
-          <HeroTerminal variant={heroVariant} />
-        </div>
-
-        <div className="stats">
-          <div className="stat">
-            <div className="num">7<span className="unit">+ yrs</span></div>
-            <div className="label">Shipping data systems</div>
-          </div>
-          <div className="stat">
-            <div className="num">WotC<span className="unit">.</span></div>
-            <div className="label">Sr Economic Analyst, MTG</div>
-          </div>
-          <div className="stat">
-            <div className="num">500<span className="unit">+</span></div>
-            <div className="label">Customers served @ MTGBAN</div>
-          </div>
-          <div className="stat">
-            <div className="num">5<span className="unit">x</span></div>
-            <div className="label">Industries shipped into</div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function HeroTerminal({ variant }) {
-  if (variant === 'psql') return <PsqlTerminal />;
-  if (variant === 'shell') return <ShellTerminal />;
-  return <MagicCard />;
-}
-
 function MagicCard() {
   return (
     <div
       className="mtg-card"
       role="img"
-      aria-label="Chris Pachulski, Analyst of Two Worlds — a custom Magic-style card"
+      aria-label="Chris Pachulski — a custom Magic-style card"
     >
       <div className="mtg-frame">
         <div className="mtg-titlebar mtg-stage" style={{ '--d': '0.10s' }}>
-          <div className="mtg-name">Chris Pachulski, Analyst of Two Worlds</div>
+          <div className="mtg-name">Chris Pachulski</div>
           <div className="mtg-mana">
-            <span className="mtg-pip pip-gen" style={{ '--d': '0.55s' }}>2</span>
-            <span className="mtg-pip pip-u" style={{ '--d': '0.65s' }}>U</span>
-            <span className="mtg-pip pip-r" style={{ '--d': '0.75s' }}>R</span>
+            <span className="mtg-pip pip-gen mtg-stage" style={{ '--d': '0.55s' }}>2</span>
+            <span className="mtg-pip pip-u mtg-stage" style={{ '--d': '0.65s' }} aria-label="Blue mana">
+              <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2.5 C 10 2.5, 4.5 8.5, 4.5 12.5 C 4.5 16, 7 18, 10 18 C 13 18, 15.5 16, 15.5 12.5 C 15.5 8.5, 10 2.5, 10 2.5 Z" fill="currentColor"/></svg>
+            </span>
+            <span className="mtg-pip pip-r mtg-stage" style={{ '--d': '0.75s' }} aria-label="Red mana">
+              <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2.5 C 11 5, 13.5 6, 13.5 9 C 13.5 10.5, 12.8 11.5, 12 12 C 13.5 11, 15 10, 15.5 8 C 16.5 11, 16 14.5, 13.5 16.5 C 11.5 18, 8.5 18, 6.5 16.5 C 4 14.5, 3.5 11, 4.5 8 C 5 10, 6.5 11, 8 12 C 7.2 11.5, 6.5 10.5, 6.5 9 C 6.5 6, 9 5, 10 2.5 Z" fill="currentColor"/></svg>
+            </span>
           </div>
         </div>
 
         <div className="mtg-art mtg-stage" style={{ '--d': '0.25s' }}>
-          <img src="/hero-portrait.jpg" alt="Chris Pachulski" draggable="false" />
+          <img src="hero-portrait.jpg" alt="Chris Pachulski" draggable="false"
+            onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.parentElement.style.background = 'linear-gradient(135deg, oklch(0.35 0.08 55), oklch(0.18 0.04 30))'; }} />
         </div>
 
         <div className="mtg-typebar mtg-stage" style={{ '--d': '0.95s' }}>
-          <span className="mtg-type">Legendary Creature — Human Analyst</span>
+          <span className="mtg-type">Legendary Creature — Human Wizard</span>
           <span className="mtg-setsymbol" aria-hidden="true">◆</span>
         </div>
 
         <div className="mtg-textbox">
           <p className="mtg-rule mtg-stage" style={{ '--d': '1.15s' }}>
             Python, SQL, R
+          </p>
+          <p className="mtg-rule mtg-stage" style={{ '--d': '1.30s' }}>
+            Protection from Data
           </p>
           <p className="mtg-rule mtg-stage" style={{ '--d': '1.45s' }}>
             This creature's power is equal to the number of ETL pipelines you control, and its toughness is equal to that number plus 1.
@@ -91,11 +44,8 @@ function MagicCard() {
           </p>
         </div>
 
-        <div className="mtg-pt-row">
-          <span className="mtg-pt mtg-stage" style={{ '--d': '2.05s' }}>*/*+1</span>
-        </div>
         <div className="mtg-bottom">
-          <span className="mtg-artist mtg-stage" style={{ '--d': '1.95s' }}>Illus. Chris Pachulski</span>
+          <span className="mtg-pt mtg-stage" style={{ '--d': '2.05s' }}>*/*+1</span>
         </div>
       </div>
     </div>
@@ -149,6 +99,61 @@ function ShellTerminal() {
         <div><span className="prompt">$</span> <span className="cursor"/></div>
       </div>
     </div>
+  );
+}
+
+function HeroTerminal({ variant }) {
+  if (variant === 'psql') return <PsqlTerminal />;
+  if (variant === 'shell') return <ShellTerminal />;
+  return <MagicCard />;
+}
+
+function Hero({ heroVariant }) {
+  return (
+    <section className="hero" id="home" data-screen-label="00 Hero">
+      <div className="wrap">
+        <div className="hero-grid">
+          <div>
+            <h1 className="hero-headline">
+              <span className="sub">Sr Economic Analyst · Analytics Engineer</span>
+              Turning messy <span className="italic">data</span><br/>
+              into decisions<br/>
+              worth <span className="italic">shipping</span>.
+            </h1>
+            <p className="hero-lede">
+              I'm <strong>Chris Pachulski</strong> — I turned a hobby into a career. Co-founded <strong>MTGBAN</strong>, a Magic: The Gathering arbitrage engine, and spent 7+ years building analytics pipelines for Ad.Net, Mozilla, SPINS, and Providencia along the way. Now I'm a <strong>Senior Economic Analyst at Wizards of the Coast</strong>, working on the game I built a business around.
+            </p>
+            <div className="hero-actions">
+              <a href="#contact" className="btn btn-primary mono">
+                Let's talk <span className="arrow">→</span>
+              </a>
+              <a href="#portfolio" className="btn mono">View case studies</a>
+              <a href="https://github.com/ChrisPachulski" target="_blank" rel="noopener noreferrer" className="btn mono">GitHub ↗</a>
+            </div>
+          </div>
+          <HeroTerminal variant={heroVariant} />
+        </div>
+
+        <div className="stats">
+          <div className="stat">
+            <div className="num">7<span className="unit">+ yrs</span></div>
+            <div className="label">Shipping data systems</div>
+          </div>
+          <div className="stat">
+            <div className="num">WotC<span className="unit">.</span></div>
+            <div className="label">Sr Economic Analyst, MTG</div>
+          </div>
+          <div className="stat">
+            <div className="num">500<span className="unit">+</span></div>
+            <div className="label">Customers served @ MTGBAN</div>
+          </div>
+          <div className="stat">
+            <div className="num">5<span className="unit">x</span></div>
+            <div className="label">Industries shipped into</div>
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }
 
