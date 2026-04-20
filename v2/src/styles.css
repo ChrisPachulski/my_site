@@ -325,8 +325,8 @@ section.flow { justify-content: flex-start; padding: 120px 0 80px; }
 .commit ul { margin: 0; padding: 0; list-style: none; }
 .commit ul li { padding: 2px 0 2px 18px; position: relative; color: var(--ink-dim); font-size: 13px; line-height: 1.5; }
 .git-connector { width: 100%; height: 180px; display: block; fill: none; stroke: var(--line-bright); stroke-width: 1.5; overflow: visible; }
-.git-connector .glow-path { stroke: oklch(0.93 0.24 135); stroke-width: 3; stroke-linecap: round; stroke-dasharray: 6 4000; filter: drop-shadow(0 0 8px oklch(0.93 0.24 135)) drop-shadow(0 0 18px oklch(0.93 0.24 135 / 0.5)); animation: gitFlow 16s linear infinite; animation-delay: calc(var(--i, 0) * -2s); }
-@keyframes gitFlow { 0% { stroke-dashoffset: 300; } 100% { stroke-dashoffset: -3800; } }
+.git-connector .glow-path { stroke: oklch(0.93 0.24 135); stroke-width: 10; stroke-linecap: round; stroke-dasharray: 0.1 9999; vector-effect: non-scaling-stroke; filter: drop-shadow(0 0 8px oklch(0.93 0.24 135)) drop-shadow(0 0 18px oklch(0.93 0.24 135 / 0.5)); animation: gitFlow 28s linear infinite; animation-delay: calc((var(--i, 0) - 1) * 4s); }
+@keyframes gitFlow { 0% { stroke-dashoffset: 240; } 100% { stroke-dashoffset: -1440; } }
 @media (max-width: 780px) {
   .commit { max-width: 100%; }
   .commit.side-right { align-self: flex-start; }
