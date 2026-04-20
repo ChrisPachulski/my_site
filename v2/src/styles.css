@@ -240,7 +240,8 @@ section.flow { justify-content: flex-start; padding: 120px 0 80px; }
 }
 
 /* ═══════ PROJECTS ═══════ */
-.projects-tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); margin-bottom: 40px; font-family: var(--mono); font-size: 12px; overflow-x: auto; min-width: 0; -webkit-overflow-scrolling: touch; }
+.projects-tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); margin-bottom: 40px; font-family: var(--mono); font-size: 12px; overflow-x: auto; overflow-y: hidden; min-width: 0; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+.projects-tabs::-webkit-scrollbar { display: none; }
 .projects-tabs button { padding: 14px 18px; color: var(--ink-mute); border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.2s; white-space: nowrap; }
 .projects-tabs button:hover { color: var(--ink-dim); }
 .projects-tabs button.active { color: var(--ink); border-bottom-color: var(--accent); }
