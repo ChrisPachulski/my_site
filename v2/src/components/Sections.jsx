@@ -125,12 +125,12 @@ export function Projects() {
     <section id="portfolio" data-screen-label="03 Portfolio">
       <div className="wrap">
         <div className="section-label reveal"><span className="num">03</span> / case studies &nbsp; <span className="mute">// where I've delivered value</span></div>
-        <div className="skills-grid">
-          <div className="skills-intro">
+        <div className="about-grid" style={{ marginBottom: 40 }}>
+          <div>
             <h2 className="reveal" style={{ fontFamily:'var(--serif)', fontSize:'clamp(26px,3.2vw,42px)', margin:'0 0 20px', fontWeight:400, letterSpacing:'-0.02em', lineHeight:1.08 }}>
               A curated list of the work I'd show you <em style={{color:'var(--accent)', fontStyle:'italic'}}>over coffee.</em>
             </h2>
-            <p className="dim reveal" data-delay="1" style={{ fontSize: 15, maxWidth: 440, lineHeight: 1.55 }}>
+            <p className="dim reveal" data-delay="1" style={{ fontSize: 15, maxWidth: 520, lineHeight: 1.55 }}>
               Projects where I've built something that outlasted me, or moved a number that mattered. Click any row for the challenge, the shape of the solution, and the numbers.
             </p>
           </div>
@@ -145,50 +145,50 @@ export function Projects() {
                 );
               })}
             </div>
-            <div className="project-list">
-              {filtered.map((p, i) => (
-                <Fragment key={p.title}>
-                  <div
-                    className={`project-row${expanded === i ? ' expanded' : ''}`}
-                    onClick={() => setExpanded(expanded === i ? null : i)}
-                  >
-                    <div className="pidx">{String(i+1).padStart(2, '0')}.</div>
-                    <div>
-                      <div className="ptitle">{p.title}</div>
-                      <div className="pdesc">{p.desc}</div>
-                    </div>
-                    <div className="pmeta">
-                      <span className="tag">{p.tag}</span>
-                      <span className="pchevron">›</span>
+          </div>
+        </div>
+        <div className="project-list reveal" data-delay="2">
+          {filtered.map((p, i) => (
+            <Fragment key={p.title}>
+              <div
+                className={`project-row${expanded === i ? ' expanded' : ''}`}
+                onClick={() => setExpanded(expanded === i ? null : i)}
+              >
+                <div className="pidx">{String(i+1).padStart(2, '0')}.</div>
+                <div>
+                  <div className="ptitle">{p.title}</div>
+                  <div className="pdesc">{p.desc}</div>
+                </div>
+                <div className="pmeta">
+                  <span className="tag">{p.tag}</span>
+                  <span className="pchevron">›</span>
+                </div>
+              </div>
+              {expanded === i && (
+                <div className="project-detail">
+                  <div className="block">
+                    <h4>Challenge</h4><p>{p.challenge}</p>
+                    <h4>Approach</h4><p>{p.solution}</p>
+                    <h4>Stack</h4>
+                    <div className="stack">{p.stack.map(s => <span key={s}>{s}</span>)}</div>
+                    {p.href && (
+                      <div style={{ marginTop: 20 }}>
+                        <a href={p.href} target="_blank" rel="noopener noreferrer" className="btn mono">Visit ↗</a>
+                      </div>
+                    )}
+                  </div>
+                  <div className="block">
+                    <h4>By the numbers</h4>
+                    <div className="metrics">
+                      {p.metrics.map(m => (
+                        <div key={m.k}><div className="v">{m.v}</div><div className="k">{m.k}</div></div>
+                      ))}
                     </div>
                   </div>
-                  {expanded === i && (
-                    <div className="project-detail">
-                      <div className="block">
-                        <h4>Challenge</h4><p>{p.challenge}</p>
-                        <h4>Approach</h4><p>{p.solution}</p>
-                        <h4>Stack</h4>
-                        <div className="stack">{p.stack.map(s => <span key={s}>{s}</span>)}</div>
-                        {p.href && (
-                          <div style={{ marginTop: 20 }}>
-                            <a href={p.href} target="_blank" rel="noopener noreferrer" className="btn mono">Visit ↗</a>
-                          </div>
-                        )}
-                      </div>
-                      <div className="block">
-                        <h4>By the numbers</h4>
-                        <div className="metrics">
-                          {p.metrics.map(m => (
-                            <div key={m.k}><div className="v">{m.v}</div><div className="k">{m.k}</div></div>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </Fragment>
-              ))}
-            </div>
-          </div>
+                </div>
+              )}
+            </Fragment>
+          ))}
         </div>
       </div>
     </section>
