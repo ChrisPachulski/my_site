@@ -42,6 +42,7 @@ html, body {
   margin: 0; padding: 0; background: var(--bg); color: var(--ink);
   font-family: var(--sans); font-size: 16px; line-height: 1.55;
   -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+  overflow-x: clip;
 }
 html { scroll-behavior: smooth; scroll-padding-top: 80px; }
 body {
@@ -211,7 +212,8 @@ section.flow { justify-content: flex-start; padding: 120px 0 80px; }
 
 /* ═══════ SKILLS ═══════ */
 .skills-grid { display: grid; grid-template-columns: 1fr 1.6fr; gap: 64px; align-items: start; }
-@media (max-width: 1040px) { .skills-grid { grid-template-columns: 1fr; gap: 32px; } }
+.skills-grid > * { min-width: 0; }
+@media (max-width: 1040px) { .skills-grid { grid-template-columns: minmax(0, 1fr); gap: 32px; } }
 .skills-table { border: 1px solid var(--line); border-radius: 4px; overflow: hidden; background: var(--bg-card); font-family: var(--mono); font-size: 13px; }
 .skills-head { display: grid; grid-template-columns: 60px 1.2fr 1fr 80px 100px; padding: 12px 20px; background: var(--bg-elev); color: var(--ink-mute); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; border-bottom: 1px solid var(--line); }
 .skill-row { display: grid; grid-template-columns: 60px 1.2fr 1fr 80px 100px; padding: 16px 20px; border-bottom: 1px solid var(--line); align-items: center; transition: background 0.2s; position: relative; }
@@ -238,7 +240,7 @@ section.flow { justify-content: flex-start; padding: 120px 0 80px; }
 }
 
 /* ═══════ PROJECTS ═══════ */
-.projects-tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); margin-bottom: 40px; font-family: var(--mono); font-size: 12px; overflow-x: auto; }
+.projects-tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); margin-bottom: 40px; font-family: var(--mono); font-size: 12px; overflow-x: auto; min-width: 0; -webkit-overflow-scrolling: touch; }
 .projects-tabs button { padding: 14px 18px; color: var(--ink-mute); border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.2s; white-space: nowrap; }
 .projects-tabs button:hover { color: var(--ink-dim); }
 .projects-tabs button.active { color: var(--ink); border-bottom-color: var(--accent); }
