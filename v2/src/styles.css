@@ -287,7 +287,6 @@ section.flow { justify-content: flex-start; padding: 120px 0 80px; }
 .feature-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 48px; position: relative; }
 @media (max-width: 900px) { .feature-grid { grid-template-columns: 1fr; gap: 32px; } .feature { padding: 28px; } }
 .feature .tag { display: inline-flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: 11px; color: var(--accent); text-transform: uppercase; letter-spacing: 0.08em; padding: 4px 10px; background: var(--accent-soft); border-radius: 2px; margin-bottom: 16px; }
-.feature .tag::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px var(--accent); animation: pulse 1.6s ease-in-out infinite; }
 .feature h3 { font-family: var(--serif); font-size: clamp(24px, 2.8vw, 36px); line-height: 1.08; letter-spacing: -0.02em; margin: 0 0 16px; font-weight: 400; }
 .feature h3 em { color: var(--accent); }
 .feature p { color: var(--ink-dim); margin: 0 0 16px; }
@@ -326,8 +325,8 @@ section.flow { justify-content: flex-start; padding: 120px 0 80px; }
 .commit ul { margin: 0; padding: 0; list-style: none; }
 .commit ul li { padding: 2px 0 2px 18px; position: relative; color: var(--ink-dim); font-size: 13px; line-height: 1.5; }
 .git-connector { width: 100%; height: 180px; display: block; fill: none; stroke: var(--line-bright); stroke-width: 1.5; overflow: visible; }
-.git-connector .glow-path { stroke: var(--accent); stroke-width: 2; stroke-dasharray: 12 340; stroke-dashoffset: 0; filter: drop-shadow(0 0 6px var(--accent)); animation: gitFlow 3.6s linear infinite; }
-@keyframes gitFlow { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -352; } }
+.git-connector .glow-path { stroke: oklch(0.93 0.24 135); stroke-width: 3; stroke-linecap: round; stroke-dasharray: 6 4000; filter: drop-shadow(0 0 8px oklch(0.93 0.24 135)) drop-shadow(0 0 18px oklch(0.93 0.24 135 / 0.5)); animation: gitFlow 16s linear infinite; animation-delay: calc(var(--i, 0) * -2s); }
+@keyframes gitFlow { 0% { stroke-dashoffset: 300; } 100% { stroke-dashoffset: -3800; } }
 @media (max-width: 780px) {
   .commit { max-width: 100%; }
   .commit.side-right { align-self: flex-start; }
@@ -615,7 +614,6 @@ html[data-vibe="cyberpunk"] .project-detail .stack span:hover { box-shadow: 0 0 
 html[data-vibe="cyberpunk"] .project-detail .metrics .v { color: var(--accent); text-shadow: 0 0 12px var(--accent-soft); font-family: var(--display); }
 
 html[data-vibe="cyberpunk"] .git-connector { stroke: var(--accent); filter: drop-shadow(0 0 6px var(--accent-soft)); }
-html[data-vibe="cyberpunk"] .git-connector .glow-path { stroke: var(--accent-2); filter: drop-shadow(0 0 8px var(--accent-2)); }
 html[data-vibe="cyberpunk"] .commit { border-color: oklch(0.82 0.21 195 / 0.3); border-radius: 0; background: color-mix(in oklab, var(--accent) 3%, var(--bg-card)); }
 html[data-vibe="cyberpunk"] .commit:hover { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent), 0 0 48px var(--accent-soft); }
 html[data-vibe="cyberpunk"] .commit::before { border-color: var(--accent); box-shadow: 0 0 10px var(--accent); }

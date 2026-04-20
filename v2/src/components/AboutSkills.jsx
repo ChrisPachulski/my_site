@@ -118,7 +118,7 @@ export function Feature() {
         <div className="feature reveal">
           <div className="feature-grid">
             <div>
-              <span className="tag">● live · featured</span>
+              <span className="tag">featured</span>
               <h3>MTGBAN — I co-founded a <em>$1.2M</em> arbitrage engine for Magic: the Gathering.</h3>
               <p className="dim">
                 500+ paying customers use our aggregated pricing to buy, sell, and hedge across a fragmented collectibles market. I designed the BigQuery warehouse from scratch, and the entire pipeline runs on Digital Ocean droplets + the R tidyverse.

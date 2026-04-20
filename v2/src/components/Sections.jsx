@@ -311,7 +311,7 @@ export function Resume() {
               <Fragment key={c.hash}>
                 <Commit c={c} side={side} delayOffset={0} />
                 {i < list.length - 1 && (
-                  <svg className="git-connector" viewBox="0 0 100 180" preserveAspectRatio="none" aria-hidden="true">
+                  <svg className="git-connector" viewBox="0 0 100 180" preserveAspectRatio="none" aria-hidden="true" style={{ '--i': i }}>
                     {(() => {
                       const d = side === 'left'
                         ? "M 40 0 C 40 90, 98 130, 98 80 L 98 25 C 98 -25, 82 -50, 70 -70"
