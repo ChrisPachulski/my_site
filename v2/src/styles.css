@@ -330,6 +330,7 @@ section.flow { justify-content: flex-start; padding: 120px 0 80px; }
   stroke-linecap: round;
   stroke-dasharray: 0.1 9999;
   stroke-dashoffset: 2000;
+  visibility: hidden;
   vector-effect: non-scaling-stroke;
   animation: gitFlow 28s linear infinite;
   animation-delay: calc(var(--i, 0) * 4s);
@@ -337,7 +338,12 @@ section.flow { justify-content: flex-start; padding: 120px 0 80px; }
 .git-connector .glow-core  { stroke: #c8ff3d;                         stroke-width: 14;  }
 .git-connector .glow-mid   { stroke: oklch(0.93 0.24 135 / 0.45);     stroke-width: 44;  animation: gitFlow 28s linear infinite, gitDotPulse 1.8s ease-in-out infinite; animation-delay: calc(var(--i, 0) * 4s), 0s; }
 .git-connector .glow-outer { stroke: oklch(0.93 0.24 135 / 0.18);     stroke-width: 120; animation: gitFlow 28s linear infinite, gitDotPulse 1.8s ease-in-out infinite; animation-delay: calc(var(--i, 0) * 4s), 0s; }
-@keyframes gitFlow { 0% { stroke-dashoffset: 0; } 100% { stroke-dashoffset: -7000; } }
+@keyframes gitFlow {
+  0%      { stroke-dashoffset: 0;     visibility: visible; }
+  14.28%  { stroke-dashoffset: -1000; visibility: visible; }
+  14.29%  { stroke-dashoffset: 2000;  visibility: hidden; }
+  100%    { stroke-dashoffset: 2000;  visibility: hidden; }
+}
 @keyframes gitDotPulse {
   0%, 100% { opacity: 0.45; }
   50%      { opacity: 1; }
