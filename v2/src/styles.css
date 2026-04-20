@@ -330,6 +330,7 @@ section.flow { justify-content: flex-start; padding: 120px 0 80px; }
   stroke-width: 16;
   stroke-linecap: round;
   stroke-dasharray: 0.1 9999;
+  stroke-dashoffset: -1000;
   vector-effect: non-scaling-stroke;
   filter:
     drop-shadow(0 0 8px oklch(0.93 0.24 135))
