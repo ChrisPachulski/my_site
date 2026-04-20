@@ -450,8 +450,28 @@ export function Writing() {
 
 export function Contact() {
   const [sent, setSent] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState('');
   const [form, setForm] = useState({ name:'', email:'', msg:'' });
-  const submit = (e) => { e.preventDefault(); if (form.name && form.email && form.msg) setSent(true); };
+  const submit = async (e) => {
+    e.preventDefault();
+    if (!(form.name && form.email && form.msg)) return;
+    setSending(true);
+    setError('');
+    try {
+      const res = await fetch('https://formspree.io/f/xldjwezk', {
+        method: 'POST',
+        headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: form.name, email: form.email, message: form.msg }),
+      });
+      if (res.ok) setSent(true);
+      else setError('Something went wrong. Email pachun95@gmail.com directly.');
+    } catch {
+      setError('Network error. Email pachun95@gmail.com directly.');
+    } finally {
+      setSending(false);
+    }
+  };
   return (
     <section className="contact" id="contact" data-screen-label="06 Contact">
       <div className="wrap">
@@ -483,7 +503,12 @@ export function Contact() {
                   <label>What's on your mind?</label>
                   <textarea value={form.msg} onChange={e=>setForm({...form, msg:e.target.value})} placeholder="A warehouse on fire, a dashboard to rescue, a coffee chat..." required />
                 </div>
-                <button className="btn btn-primary mono" type="submit">Send message <span className="arrow">→</span></button>
+                <button className="btn btn-primary mono" type="submit" disabled={sending}>
+                  {sending ? 'Sending…' : <>Send message <span className="arrow">→</span></>}
+                </button>
+                {error && (
+                  <div className="dim" style={{ color: '#ff6b6b', fontSize: 14 }}>{error}</div>
+                )}
               </>
             ) : (
               <div style={{ padding:'32px 8px', textAlign:'center' }}>
