@@ -329,7 +329,7 @@ section.flow { justify-content: flex-start; padding: 120px 0 80px; }
   fill: none;
   stroke-linecap: round;
   stroke-dasharray: 0.1 9999;
-  stroke-dashoffset: -1000;
+  stroke-dashoffset: 2000;
   vector-effect: non-scaling-stroke;
   animation: gitFlow 28s linear infinite;
   animation-delay: calc(var(--i, 0) * 4s);
