@@ -336,9 +336,9 @@ section.flow { justify-content: flex-start; padding: 120px 0 80px; }
     drop-shadow(0 0 24px oklch(0.93 0.24 135))
     drop-shadow(0 0 56px oklch(0.93 0.24 135 / 0.85));
   animation: gitFlow 28s linear infinite, gitDotPulse 1.2s ease-in-out infinite;
-  animation-delay: calc((var(--i, 0) - 1) * 4s), 0s;
+  animation-delay: calc(var(--i, 0) * 4s), 0s;
 }
-@keyframes gitFlow { 0% { stroke-dashoffset: 350; } 100% { stroke-dashoffset: -1750; } }
+@keyframes gitFlow { 0% { stroke-dashoffset: 0; } 100% { stroke-dashoffset: -7000; } }
 @keyframes gitDotPulse {
   0%, 100% {
     filter:

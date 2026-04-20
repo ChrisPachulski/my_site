@@ -318,7 +318,7 @@ export function Resume() {
                         : "M 60 0 C 60 90, 2 130, 2 80 L 2 25 C 2 -25, 18 -50, 30 -70";
                       return (<>
                         <path d={d} />
-                        <path d={d} className="glow-path" />
+                        <path d={d} className="glow-path" pathLength="1000" />
                       </>);
                     })()}
                   </svg>
