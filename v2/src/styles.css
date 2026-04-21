@@ -543,22 +543,22 @@ html[data-vibe="cyberpunk"] .mtg-card::before {
     oklch(0.70 0.22 250 / 0.9)  44%,
     oklch(0.68 0.25 28  / 0.9)  56%,
     oklch(0.68 0.25 28  / 0.95) 100%);
-  animation: mtgAuraA 2.8s ease-in-out infinite;
+  animation: mtgAuraA 4.5s ease-in-out infinite;
 }
 html[data-vibe="cyberpunk"] .mtg-card::after {
   background: linear-gradient(45deg,
     oklch(0.70 0.22 250 / 0.6) 0%,
     oklch(0.68 0.25 28  / 0.6) 100%);
   filter: blur(56px);
-  animation: mtgAuraB 3.4s ease-in-out infinite;
+  animation: mtgAuraB 5.5s ease-in-out infinite;
 }
 @keyframes mtgAuraA {
-  0%, 100% { opacity: 0.65; transform: scale(0.92); }
-  50%      { opacity: 1;    transform: scale(1.16); }
+  0%, 100% { opacity: 0.75; transform: scale(0.97); }
+  50%      { opacity: 1;    transform: scale(1.06); }
 }
 @keyframes mtgAuraB {
-  0%, 100% { opacity: 0.5; transform: scale(0.95) rotate(-1deg); }
-  50%      { opacity: 1;   transform: scale(1.2)  rotate(3deg); }
+  0%, 100% { opacity: 0.65; transform: scale(0.98) rotate(-0.5deg); }
+  50%      { opacity: 1;    transform: scale(1.08) rotate(1.5deg); }
 }
 html[data-vibe="cyberpunk"] .mtg-card:hover {
   animation: none;
