@@ -50,6 +50,30 @@ body {
     radial-gradient(ellipse 1200px 600px at 20% -10%, var(--accent-soft), transparent 60%),
     radial-gradient(ellipse 800px 400px at 110% 110%, var(--accent-soft), transparent 70%);
 }
+
+/* Ambient drifting gradient behind all content — default vibe only.
+   Cyberpunk mode has its own body::before (see line ~437) and overrides this via specificity.
+   Provides color variation behind the page so liquid-glass surfaces have something to resolve against. */
+html:not([data-vibe="cyberpunk"]) body::before {
+  content: "";
+  position: fixed;
+  inset: -12%;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    radial-gradient(ellipse 900px 600px at 15% 20%, var(--accent-soft), transparent 65%),
+    radial-gradient(ellipse 800px 550px at 85% 60%, oklch(0.70 0.14 300 / 0.10), transparent 65%),
+    radial-gradient(ellipse 750px 500px at 50% 110%, var(--accent-soft), transparent 70%);
+  animation: ambientDrift 90s ease-in-out infinite;
+  will-change: transform;
+}
+@keyframes ambientDrift {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50%      { transform: translate3d(-2%, 1.5%, 0) scale(1.05); }
+}
+@media (prefers-reduced-motion: reduce) {
+  html:not([data-vibe="cyberpunk"]) body::before { animation: none; }
+}
 a { color: inherit; text-decoration: none; }
 button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; padding: 0; }
 ::selection { background: var(--accent); color: var(--accent-ink); }
@@ -215,8 +239,8 @@ section.flow { justify-content: flex-start; padding: 120px 0 80px; }
 .skills-grid { display: grid; grid-template-columns: 1fr 1.6fr; gap: 64px; align-items: start; }
 .skills-grid > * { min-width: 0; }
 @media (max-width: 1040px) { .skills-grid { grid-template-columns: minmax(0, 1fr); gap: 32px; } }
-.skills-table { border: 1px solid var(--line); border-radius: 4px; overflow: hidden; background: var(--bg-card); font-family: var(--mono); font-size: 13px; }
-.skills-head { display: grid; grid-template-columns: 60px 1.2fr 1fr 80px 100px; padding: 12px 20px; background: var(--bg-elev); color: var(--ink-mute); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; border-bottom: 1px solid var(--line); }
+.skills-table { border: 1px solid color-mix(in oklab, var(--line-bright) 45%, transparent); border-radius: 4px; overflow: hidden; background: color-mix(in oklab, var(--bg-card) 55%, transparent); backdrop-filter: blur(18px) saturate(140%); -webkit-backdrop-filter: blur(18px) saturate(140%); box-shadow: inset 0 1px 0 rgba(255,255,255,0.05); font-family: var(--mono); font-size: 13px; }
+.skills-head { display: grid; grid-template-columns: 60px 1.2fr 1fr 80px 100px; padding: 12px 20px; background: color-mix(in oklab, var(--bg-elev) 65%, transparent); color: var(--ink-mute); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; border-bottom: 1px solid color-mix(in oklab, var(--line) 60%, transparent); }
 .skill-row { display: grid; grid-template-columns: 60px 1.2fr 1fr 80px 100px; padding: 16px 20px; border-bottom: 1px solid var(--line); align-items: center; transition: background 0.2s; position: relative; }
 .skill-row:last-child { border-bottom: none; }
 .skill-row:hover { background: var(--bg-elev); }
@@ -283,7 +307,7 @@ section.flow { justify-content: flex-start; padding: 120px 0 80px; }
 }
 
 /* ═══════ FEATURE (MTGBAN) ═══════ */
-.feature { margin-top: 0; border: 1px solid var(--line); border-radius: 6px; background: var(--bg-card); padding: 36px; position: relative; overflow: hidden; }
+.feature { margin-top: 0; border: 1px solid color-mix(in oklab, var(--line-bright) 45%, transparent); border-radius: 6px; background: color-mix(in oklab, var(--bg-card) 60%, transparent); backdrop-filter: blur(20px) saturate(140%); -webkit-backdrop-filter: blur(20px) saturate(140%); box-shadow: inset 0 1px 0 rgba(255,255,255,0.05); padding: 36px; position: relative; overflow: hidden; }
 .feature::before { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse 600px 300px at 100% 0%, var(--accent-soft), transparent 60%); pointer-events: none; }
 .feature-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 48px; position: relative; }
 @media (max-width: 900px) { .feature-grid { grid-template-columns: 1fr; gap: 32px; } .feature { padding: 28px; } }
@@ -310,7 +334,7 @@ section.flow { justify-content: flex-start; padding: 120px 0 80px; }
 .gitlog { display: flex; flex-direction: column; width: 100%; position: relative; }
 .gitlog.serpentine { gap: 0; }
 .gitlog.serpentine .commit:nth-child(n+2) { margin-top: -250px; }
-.commit { position: relative; padding: 18px 22px; background: var(--bg-card); border: 1px solid var(--line); border-radius: 4px; max-width: 500px; width: 100%; min-height: 200px; box-sizing: border-box; z-index: 1; transition: border-color 0.3s, box-shadow 0.3s; }
+.commit { position: relative; padding: 18px 22px; background: color-mix(in oklab, var(--bg-card) 55%, transparent); backdrop-filter: blur(18px) saturate(140%); -webkit-backdrop-filter: blur(18px) saturate(140%); border: 1px solid color-mix(in oklab, var(--line-bright) 40%, transparent); border-radius: 4px; max-width: 500px; width: 100%; min-height: 200px; box-sizing: border-box; z-index: 1; box-shadow: inset 0 1px 0 rgba(255,255,255,0.05); transition: border-color 0.3s, box-shadow 0.3s, background 0.3s; }
 .commit:hover { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent-soft), 0 0 40px var(--accent-soft); }
 .commit.side-left { align-self: flex-start; }
 .commit.side-right { align-self: flex-end; }
@@ -396,7 +420,7 @@ section.flow { justify-content: flex-start; padding: 120px 0 80px; }
 @media (max-width: 900px) { .contact-grid { grid-template-columns: 1fr; gap: 40px; } }
 .contact h2 { font-family: var(--serif); font-size: clamp(26px, 3.2vw, 42px); line-height: 1.08; letter-spacing: -0.02em; margin: 0 0 20px; font-weight: 400; }
 .contact h2 em { color: var(--accent); }
-.contact-form { display: grid; gap: 12px; background: var(--bg-card); padding: 28px; border: 1px solid var(--line); border-radius: 6px; position: relative; transition: border-color 0.3s, box-shadow 0.3s; }
+.contact-form { display: grid; gap: 12px; background: color-mix(in oklab, var(--bg-card) 58%, transparent); backdrop-filter: blur(20px) saturate(140%); -webkit-backdrop-filter: blur(20px) saturate(140%); padding: 28px; border: 1px solid color-mix(in oklab, var(--line-bright) 45%, transparent); border-radius: 6px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.05); position: relative; transition: border-color 0.3s, box-shadow 0.3s; }
 .contact-form:focus-within { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent), 0 0 40px var(--accent-soft); }
 .contact-form label { font-family: var(--mono); font-size: 11px; color: var(--ink-mute); text-transform: uppercase; letter-spacing: 0.08em; }
 .contact-form input, .contact-form textarea { background: var(--bg); border: 1px solid var(--line-bright); border-radius: 3px; padding: 12px 14px; color: var(--ink); font: inherit; font-size: 14px; transition: border-color 0.2s, box-shadow 0.2s; }
