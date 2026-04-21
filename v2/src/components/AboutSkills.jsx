@@ -18,7 +18,7 @@ function useInView(threshold = 0.2) {
 
 export function About() {
   return (
-    <section className="about flow" id="about" data-screen-label="01 About">
+    <section className="about" id="about" data-screen-label="01 About">
       <div className="wrap">
         <div className="section-label reveal"><span className="num">01</span> / about</div>
         <div className="about-grid">
@@ -61,7 +61,7 @@ export function Skills() {
   ];
   const [tableRef, inView] = useInView(0.2);
   return (
-    <section id="skills" className="flow" data-screen-label="02 Skills">
+    <section id="skills" data-screen-label="02 Skills">
       <div className="wrap">
         <div className="section-label reveal">
           <span className="num">02</span> / skills &nbsp; <span className="mute">// SELECT * FROM tools ORDER BY depth DESC;</span>
