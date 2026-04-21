@@ -71,6 +71,25 @@ export default function App() {
 
   return (
     <>
+      {/* Geometry-safe painterly filter: soft-blur + posterize-lite + mild edge sharpen.
+          No displacement, no luminance-driven lighting — features stay intact. */}
+      <svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" aria-hidden="true"
+           style={{ position: 'absolute', width: 0, height: 0, overflow: 'hidden', pointerEvents: 'none' }}>
+        <defs>
+          <filter id="painterly" x="0" y="0" width="100%" height="100%" colorInterpolationFilters="sRGB">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="1.2" result="soft" />
+            <feComponentTransfer in="soft" result="posterized">
+              <feFuncR type="discrete" tableValues="0.05 0.16 0.27 0.39 0.52 0.66 0.80 0.94" />
+              <feFuncG type="discrete" tableValues="0.05 0.16 0.27 0.39 0.52 0.66 0.80 0.94" />
+              <feFuncB type="discrete" tableValues="0.05 0.16 0.27 0.39 0.52 0.66 0.80 0.94" />
+            </feComponentTransfer>
+            <feComposite in="posterized" in2="soft" operator="arithmetic"
+                         k1="0" k2="0.55" k3="0.45" k4="0" result="painted" />
+            <feConvolveMatrix in="painted" order="3" preserveAlpha="true"
+                              kernelMatrix="0 -0.35 0  -0.35 2.4 -0.35  0 -0.35 0" />
+          </filter>
+        </defs>
+      </svg>
       <Nav active={active} />
       <Hero heroVariant={HERO_VARIANT} />
       <About />
