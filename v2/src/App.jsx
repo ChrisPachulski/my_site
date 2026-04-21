@@ -71,22 +71,6 @@ export default function App() {
 
   return (
     <>
-      <svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" aria-hidden="true"
-           style={{ position: 'absolute', width: 0, height: 0, overflow: 'hidden', pointerEvents: 'none' }}>
-        <defs>
-          {/* Oil-paint filter: softens photo edges, displaces via turbulence for brushstrokes, warm color grade. */}
-          <filter id="oilpaint" x="-5%" y="-5%" width="110%" height="110%">
-            <feGaussianBlur in="SourceGraphic" stdDeviation="0.9" result="blur" />
-            <feTurbulence type="fractalNoise" baseFrequency="0.038 0.05" numOctaves="2" seed="7" result="turb" />
-            <feDisplacementMap in="blur" in2="turb" scale="5" xChannelSelector="R" yChannelSelector="G" result="disp" />
-            <feColorMatrix in="disp" type="matrix" values="
-              1.22 0.10 0.00 0 -0.04
-              0.04 1.10 0.00 0 -0.03
-              -0.04 0.00 0.88 0 -0.05
-              0    0    0    1 0" />
-          </filter>
-        </defs>
-      </svg>
       <Nav active={active} />
       <Hero heroVariant={HERO_VARIANT} />
       <About />
