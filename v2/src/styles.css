@@ -254,7 +254,9 @@ section.flow { justify-content: flex-start; padding: 120px 0 80px; }
    warm sepia lift, bumped saturation + contrast, slightly cooled highlights. */
 .mtg-art img {
   width: 100%; height: 100%; object-fit: cover; display: block;
-  filter: sepia(0.42) saturate(1.35) contrast(1.22) brightness(0.88) hue-rotate(-8deg);
+  /* SVG filter does Gaussian blur + turbulence displacement (brushstroke warp) + warm color grade.
+     Cascades with CSS filters for final polish. */
+  filter: url(#oilpaint) saturate(1.15) contrast(1.1) brightness(0.94);
 }
 /* Warm golden key light from upper-left + vignette darkening edges — classic painted-portrait lighting. */
 .mtg-art::before {
