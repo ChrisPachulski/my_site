@@ -63,8 +63,8 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
 
 .wrap { max-width: 1240px; margin: 0 auto; padding: 0 32px; }
 @media (max-width: 700px) { .wrap { padding: 0 20px; } }
-section { padding: 80px 0; position: relative; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; }
-section.flow { justify-content: flex-start; padding: 120px 0 80px; }
+section { padding: 80px 0; position: relative; }
+section.flow { padding: 120px 0 80px; }
 @media (max-width: 700px) { section { padding: 60px 0; } section.flow { padding: 100px 0 60px; } }
 
 .section-label {
@@ -390,7 +390,7 @@ section.flow { justify-content: flex-start; padding: 120px 0 80px; }
 .blog-content a { color: var(--accent); border-bottom: 1px dotted var(--accent); }
 
 /* ═══════ CONTACT ═══════ */
-.contact { border-top: 1px solid var(--line); padding: 48px 0 40px; min-height: auto; justify-content: flex-start; }
+.contact { border-top: 1px solid var(--line); padding: 80px 0 48px; }
 .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start; }
 @media (max-width: 900px) { .contact-grid { grid-template-columns: 1fr; gap: 40px; } }
 .contact h2 { font-family: var(--serif); font-size: clamp(26px, 3.2vw, 42px); line-height: 1.08; letter-spacing: -0.02em; margin: 0 0 20px; font-weight: 400; }
