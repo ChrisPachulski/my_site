@@ -818,30 +818,34 @@ html[data-vibe="cyberpunk"] .blog-content code { color: var(--accent); text-shad
 .izzet-card::after {
   content: "";
   position: absolute;
-  inset: -50px;
+  inset: -34px;
   border-radius: 16px;
   z-index: -1;
   pointer-events: none;
-  filter: blur(48px);
+  filter: blur(36px);
   transition: opacity 0.6s ease;
 }
 
-/* BLUE-DOMINANT (About) — sapphire core with a fire kicker on the far corner */
+/* BLUE-DOMINANT (About) — sapphire core with a fire kicker on the far corner.
+   Lower opacity than Skills so the prose content keeps contrast — About is
+   text-heavy without the skills-table as a visual anchor, so the aura has to
+   whisper, not shout. */
 .izzet-card.izzet-blue::before {
   background: linear-gradient(135deg,
-    oklch(0.70 0.22 250 / 0.95) 0%,
-    oklch(0.70 0.22 250 / 0.90) 55%,
-    oklch(0.70 0.14 300 / 0.55) 78%,
-    oklch(0.68 0.25 28  / 0.45) 100%);
-  opacity: 0.92;
+    oklch(0.70 0.22 250 / 0.80) 0%,
+    oklch(0.70 0.22 250 / 0.70) 55%,
+    oklch(0.70 0.14 300 / 0.40) 78%,
+    oklch(0.68 0.25 28  / 0.35) 100%);
+  opacity: 0.58;
   animation: izzetBreath 7s ease-in-out infinite;
 }
 .izzet-card.izzet-blue::after {
-  background: radial-gradient(ellipse at 18% 38%,
-    oklch(0.70 0.22 250 / 0.85) 0%,
-    oklch(0.70 0.22 250 / 0.35) 35%,
+  background: radial-gradient(ellipse at 20% 40%,
+    oklch(0.70 0.22 250 / 0.55) 0%,
+    oklch(0.70 0.22 250 / 0.18) 40%,
     transparent 62%);
-  filter: blur(28px);
+  filter: blur(24px);
+  opacity: 0.55;
   animation: izzetPulse 9s ease-out infinite;
 }
 
@@ -991,11 +995,21 @@ html[data-vibe="cyberpunk"] .izzet-card .skills-table {
 }
 html[data-vibe="cyberpunk"] .izzet-card .skills-head {
   border-bottom-color: oklch(0.72 0.25 28 / 0.3);
+  color: oklch(0.92 0.14 55);
+  text-shadow: 0 0 10px oklch(0.80 0.22 28 / 0.35);
+  background: color-mix(in oklab, oklch(0.22 0.06 28) 85%, transparent);
+}
+html[data-vibe="cyberpunk"] .izzet-card .skills-head > div {
+  color: oklch(0.92 0.14 55);
 }
 html[data-vibe="cyberpunk"] .izzet-card .skill-row {
   border-bottom-color: oklch(0.72 0.25 28 / 0.12);
   transition: background 0.3s, box-shadow 0.3s;
 }
+/* Bump row text contrast inside the izzet red card — the tint was swallowing the warm gray */
+html[data-vibe="cyberpunk"] .izzet-card .skill-row .name { color: oklch(0.96 0.03 60); }
+html[data-vibe="cyberpunk"] .izzet-card .skill-row .use  { color: oklch(0.82 0.04 60); }
+html[data-vibe="cyberpunk"] .izzet-card .skill-row .yrs  { color: oklch(0.88 0.16 28); text-shadow: 0 0 8px oklch(0.80 0.22 28 / 0.5); }
 html[data-vibe="cyberpunk"] .izzet-card .skill-row:hover {
   background: linear-gradient(90deg,
     oklch(0.72 0.22 250 / 0.08) 0%,
@@ -1034,5 +1048,30 @@ html[data-vibe="cyberpunk"] .izzet-card .skill-bar-fill::after {
 }
 
 /* Slightly intensify the card's own dominant-side aura when hovered — signals interactivity */
-.izzet-card:hover::before { opacity: 1; }
-.izzet-card:hover::after  { opacity: 0.6; }
+.izzet-card.izzet-blue:hover::before { opacity: 0.72; }
+.izzet-card.izzet-blue:hover::after  { opacity: 0.65; }
+.izzet-card.izzet-red:hover::before  { opacity: 1; }
+.izzet-card.izzet-red:hover::after   { opacity: 0.6; }
+
+/* About readability rescue — paragraphs inside the blue card need more punch
+   because the surrounding aura is still adding a cool bias to the whole region.
+   Bumping to full --ink, with warm-neutral bias on strong/accent passages. */
+html[data-vibe="cyberpunk"] .izzet-card.izzet-blue .about p {
+  color: oklch(0.92 0.02 60);
+}
+html[data-vibe="cyberpunk"] .izzet-card.izzet-blue .about p strong {
+  color: oklch(0.96 0.03 60);
+  font-weight: 500;
+}
+/* Fact-list labels and values inside the blue card — pushed warmer/brighter so
+   they separate from the cool perimeter glow. */
+html[data-vibe="cyberpunk"] .izzet-card.izzet-blue .fact-list .fact > :first-child {
+  color: oklch(0.82 0.03 60);
+}
+html[data-vibe="cyberpunk"] .izzet-card.izzet-blue .fact-list .fact > :nth-child(2) {
+  color: oklch(0.94 0.02 60);
+}
+html[data-vibe="cyberpunk"] .izzet-card.izzet-blue .fact-list .fact .accent {
+  color: oklch(0.82 0.18 250);
+  text-shadow: 0 0 10px oklch(0.72 0.22 250 / 0.5);
+}
