@@ -80,8 +80,7 @@
   background: color-mix(in oklab, var(--bg) 70%, transparent);
 }
 
-/* Focus ring for keyboard users, applied uniformly to all article-type cards */
-.article:focus-visible,
+/* Focus ring for featured super-tiles. Base .article focus ring lives in styles.css. */
 .featured-tile:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: -2px;

@@ -462,6 +462,7 @@ section.flow { justify-content: flex-start; padding: 120px 0 80px; }
 .article h4 { font-family: var(--serif); font-size: 17px; line-height: 1.25; letter-spacing: -0.01em; margin: 0; font-weight: 400; position: relative; transition: color 0.2s; }
 .article:hover h4 { color: var(--accent); }
 .article .meta { display: flex; gap: 14px; font-family: var(--mono); font-size: 10px; color: var(--ink-mute); margin-top: auto; padding-top: 10px; position: relative; }
+.article:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
 
 /* Blog modal */
 .blog-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); z-index: 500; display: flex; align-items: flex-start; justify-content: center; padding: 60px 20px 20px; overflow-y: auto; animation: fadeIn 0.3s; }

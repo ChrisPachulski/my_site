@@ -478,8 +478,19 @@ function ArticleCard({ a, onOpen }) {
     el.style.setProperty('--mx', `${((e.clientX - r.left) / r.width) * 100}%`);
     el.style.setProperty('--my', `${((e.clientY - r.top) / r.height) * 100}%`);
   };
+  const onKey = (e) => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onOpen(a.slug); }
+  };
   return (
-    <article className="article" ref={ref} onMouseMove={onMove} onClick={() => onOpen(a.slug)}>
+    <article
+      className="article"
+      ref={ref}
+      onMouseMove={onMove}
+      onClick={() => onOpen(a.slug)}
+      onKeyDown={onKey}
+      role="button"
+      tabIndex={0}
+    >
       <div className="cats">{a.cats}</div>
       <h4>{a.title}</h4>
       <div className="meta">
