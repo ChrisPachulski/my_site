@@ -965,3 +965,74 @@ section .izzet-card { margin-top: 8px; }
   .izzet-card .izzet-seal rect { transition: none; stroke-dashoffset: 0; opacity: 0.9; }
   .izzet-card .izzet-corner { transition: none; opacity: 1; transform: none; }
 }
+
+/* Red card: flip the h2 split so the dominant hue anchors the left side.
+   On the blue card left=blue, right=red. On the red card left=red, right=blue. */
+html[data-vibe="cyberpunk"] .izzet-card.izzet-red .izzet-split .izzet-text-left {
+  background-image: linear-gradient(90deg,
+    oklch(0.82 0.21 28) 0%,
+    oklch(0.72 0.25 28) 100%);
+}
+html[data-vibe="cyberpunk"] .izzet-card.izzet-red .izzet-split .izzet-text-right {
+  background-image: linear-gradient(90deg,
+    oklch(0.72 0.22 250) 0%,
+    oklch(0.82 0.21 250) 100%);
+}
+
+/* Skills-table inside the Izzet red card — "spell list" treatment.
+   Depth bars become blue-to-red gradients with a heavy glow; the row scroll-in
+   stagger is preserved via the existing transition-delay set inline. */
+html[data-vibe="cyberpunk"] .izzet-card .skills-table {
+  background: color-mix(in oklab, #0a0806 72%, transparent);
+  border: 1px solid oklch(0.72 0.25 28 / 0.35);
+  border-radius: 6px;
+  padding: 10px 16px;
+  box-shadow: inset 0 0 0 1px oklch(0.72 0.25 28 / 0.08), 0 0 42px oklch(0.68 0.25 28 / 0.15);
+}
+html[data-vibe="cyberpunk"] .izzet-card .skills-head {
+  border-bottom-color: oklch(0.72 0.25 28 / 0.3);
+}
+html[data-vibe="cyberpunk"] .izzet-card .skill-row {
+  border-bottom-color: oklch(0.72 0.25 28 / 0.12);
+  transition: background 0.3s, box-shadow 0.3s;
+}
+html[data-vibe="cyberpunk"] .izzet-card .skill-row:hover {
+  background: linear-gradient(90deg,
+    oklch(0.72 0.22 250 / 0.08) 0%,
+    oklch(0.72 0.25 28 / 0.08) 100%);
+  box-shadow: inset 0 0 0 1px oklch(0.72 0.25 28 / 0.2), 0 0 22px -8px oklch(0.72 0.25 28 / 0.5);
+}
+html[data-vibe="cyberpunk"] .izzet-card .skill-row .idx { color: oklch(0.72 0.22 250); }
+html[data-vibe="cyberpunk"] .izzet-card .skill-row .name .accent { color: oklch(0.78 0.25 28); text-shadow: 0 0 10px oklch(0.72 0.25 28 / 0.8); }
+
+/* The bars themselves — blue-to-red gradient, heavy glow, crisp leading edge */
+html[data-vibe="cyberpunk"] .izzet-card .skill-bar {
+  background: oklch(0.25 0.03 260 / 0.6);
+  border-radius: 0;
+}
+html[data-vibe="cyberpunk"] .izzet-card .skill-bar-fill {
+  background: linear-gradient(90deg,
+    oklch(0.74 0.22 250) 0%,
+    oklch(0.72 0.22 260) 30%,
+    oklch(0.70 0.18 310) 55%,
+    oklch(0.72 0.25 28)  85%,
+    oklch(0.80 0.22 28)  100%);
+  box-shadow:
+    0 0 18px oklch(0.72 0.25 28 / 0.55),
+    inset 0 0 8px oklch(0.80 0.22 28 / 0.3);
+  position: relative;
+}
+/* Crest at the leading edge — a brighter tip that lights up on fill */
+html[data-vibe="cyberpunk"] .izzet-card .skill-bar-fill::after {
+  content: "";
+  position: absolute;
+  right: 0; top: 0;
+  width: 6px; height: 100%;
+  background: linear-gradient(90deg, transparent 0%, oklch(0.92 0.18 28) 100%);
+  box-shadow: 0 0 10px oklch(0.92 0.18 28), 0 0 22px oklch(0.80 0.22 28 / 0.7);
+  opacity: 0.85;
+}
+
+/* Slightly intensify the card's own dominant-side aura when hovered — signals interactivity */
+.izzet-card:hover::before { opacity: 1; }
+.izzet-card:hover::after  { opacity: 0.6; }

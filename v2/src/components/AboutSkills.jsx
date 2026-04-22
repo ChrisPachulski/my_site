@@ -74,36 +74,48 @@ export function Skills() {
     { name: 'Docker',    use: 'reproducible reporting, CI',           yrs: '5y', depth: 75 },
   ];
   const [tableRef, inView] = useInView(0.2);
+  const [cardRef, cardInView] = useInView(0.15);
   return (
     <section id="skills" data-screen-label="02 Skills">
       <div className="wrap">
         <div className="section-label reveal">
           <span className="num">02</span> / skills &nbsp; <span className="mute">// SELECT * FROM tools ORDER BY depth DESC;</span>
         </div>
-        <div className="skills-grid">
-          <div className="skills-intro">
-            <h2 className="reveal" style={{ fontFamily:'var(--serif)', fontSize:'clamp(26px,3.2vw,42px)', margin:'0 0 20px', fontWeight:400, letterSpacing:'-0.02em', lineHeight:1.08 }}>
-              Here's where I can help.
-            </h2>
-            <p className="dim reveal" data-delay="1" style={{ maxWidth:440, fontSize:15, lineHeight:1.55 }}>
-              I work in and mentor SQL and Python daily, and hold a strong nostalgia for R — the language I reach for when the problem needs a real statistician. Looker and BigQuery are where I spend most of my warehousing hours.
-            </p>
-          </div>
-          <div className="skills-table reveal" data-delay="2" id="skills-table" ref={tableRef}>
-            <div className="skills-head">
-              <div>#</div><div>Tool</div><div className="use-col">Where I use it</div><div>Years</div><div className="bar-col">Depth</div>
+        <div ref={cardRef} className={`izzet-card izzet-red${cardInView ? ' in-view' : ''}`}>
+          <svg className="izzet-seal" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+            <rect x="0.5" y="0.5" width="99" height="99" pathLength="1" vectorEffect="non-scaling-stroke" />
+          </svg>
+          <span className="izzet-corner tl" aria-hidden="true" />
+          <span className="izzet-corner tr" aria-hidden="true" />
+          <span className="izzet-corner bl" aria-hidden="true" />
+          <span className="izzet-corner br" aria-hidden="true" />
+          <div className="skills-grid">
+            <div className="skills-intro">
+              <h2 className="reveal izzet-split" style={{ fontFamily:'var(--serif)', fontSize:'clamp(26px,3.2vw,42px)', margin:'0 0 20px', fontWeight:400, letterSpacing:'-0.02em', lineHeight:1.08 }}>
+                <span className="izzet-text-left">Here's </span>
+                <em>where</em>
+                <span className="izzet-text-right"> I can help.</span>
+              </h2>
+              <p className="dim reveal" data-delay="1" style={{ maxWidth:440, fontSize:15, lineHeight:1.55 }}>
+                I work in and mentor SQL and Python daily, and hold a strong nostalgia for R — the language I reach for when the problem needs a real statistician. Looker and BigQuery are where I spend most of my warehousing hours.
+              </p>
             </div>
-            {rows.map((r, i) => (
-              <div className={`skill-row${inView ? ' in-view' : ''}`} key={r.name}>
-                <div className="idx">{String(i+1).padStart(2,'0')}</div>
-                <div className="name">{r.name} {r.daily && <span className="accent" title="Daily driver">●</span>}</div>
-                <div className="use">{r.use}</div>
-                <div className="yrs">{r.yrs}</div>
-                <div className="skill-bar">
-                  <div className="skill-bar-fill" style={{ width: inView ? `${r.depth}%` : '0%', transitionDelay: `${i * 90}ms` }}/>
-                </div>
+            <div className="skills-table reveal" data-delay="2" id="skills-table" ref={tableRef}>
+              <div className="skills-head">
+                <div>#</div><div>Tool</div><div className="use-col">Where I use it</div><div>Years</div><div className="bar-col">Depth</div>
               </div>
-            ))}
+              {rows.map((r, i) => (
+                <div className={`skill-row${inView ? ' in-view' : ''}`} key={r.name}>
+                  <div className="idx">{String(i+1).padStart(2,'0')}</div>
+                  <div className="name">{r.name} {r.daily && <span className="accent" title="Daily driver">●</span>}</div>
+                  <div className="use">{r.use}</div>
+                  <div className="yrs">{r.yrs}</div>
+                  <div className="skill-bar">
+                    <div className="skill-bar-fill" style={{ width: inView ? `${r.depth}%` : '0%', transitionDelay: `${i * 90}ms` }}/>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
