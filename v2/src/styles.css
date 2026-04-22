@@ -449,9 +449,11 @@ section.flow { justify-content: flex-start; padding: 120px 0 80px; }
 .resume-toggle button.active { background: var(--accent); color: var(--accent-ink); box-shadow: 0 0 16px var(--accent-soft); }
 
 /* ═══════ WRITING ═══════ */
-.writing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 4px; overflow: hidden; }
+.writing-grid { display: grid; grid-template-columns: repeat(3, 1fr); grid-auto-flow: dense; gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 4px; overflow: hidden; }
 @media (max-width: 1040px) { .writing-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 780px) { .writing-grid { grid-template-columns: 1fr; } }
+.writing-grid .featured { grid-column: span 2; grid-row: span 2; }
+@media (max-width: 780px) { .writing-grid .featured { grid-column: 1; grid-row: auto; min-height: 320px; } }
 .article { background: var(--bg); padding: 20px 22px; transition: background 0.25s; cursor: pointer; display: flex; flex-direction: column; gap: 8px; position: relative; overflow: hidden; }
 .article::before { content: ""; position: absolute; inset: 0; background: radial-gradient(circle 180px at var(--mx, 50%) var(--my, 50%), var(--accent-soft), transparent 70%); opacity: 0; transition: opacity 0.3s; pointer-events: none; }
 .article:hover::before { opacity: 1; }

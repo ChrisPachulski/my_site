@@ -2,6 +2,9 @@ import { Fragment, useState, useEffect, useRef } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { getPost } from '../lib/blog.js';
+import ResearchLoopCard from './featured/ResearchLoopCard.jsx';
+import AtHomeMediaCard from './featured/AtHomeMediaCard.jsx';
+import ObsidianWikiCard from './featured/ObsidianWikiCard.jsx';
 
 function useInView(threshold = 0.2) {
   const ref = useRef(null);
@@ -402,6 +405,7 @@ export function Resume() {
 const ARTICLES = [
   { slug: '208-Survived-Opinionated-Obsidian-Wiki', cats: 'Obsidian · Claude Code · YouTube', title: 'A Wiki That Earns Its Keep: Five Article Types, a Stop Hook, and a YouTube Intake Pipeline', date: 'Apr 2026', read: '13 min' },
   { slug: 'Adding-a-Brain-to-a-Fork-career-ops-card-ops', cats: 'Claude Code · Personal Tools', title: 'Adding a Brain to a Fork: career-ops, card-ops, and the Compiled-Context Pattern', date: 'Apr 2026', read: '13 min' },
+  { slug: 'At-Home-Media', cats: 'Plex · Usenet', title: 'At Home Media Server', date: 'Sep 2025', read: '14 min' },
   { slug: 'Four-Terminals-Four-Sounds-session-sounds', cats: 'Claude Code · Codex · Windows', title: 'Four Terminals, Four Sounds: A Tab-Naming and Notification System for Parallel AI Sessions', date: 'Mar 2026', read: '10 min' },
   { slug: 'Building-an-Autonomous-Research-Loop', cats: 'Claude Code · Econometrics · AI Tooling', title: 'Building an Autonomous Research Loop: The Stack, The Rationale, and What I Borrowed From Karpathy and Feynman', date: 'Feb 2026', read: '28 min' },
   { slug: 'Memory-Hygiene-for-Long-Running-AI-Work', cats: 'Claude Code · AI Tooling', title: 'Memory Hygiene for Long-Running AI Work: Anti-Stickiness, Dreams, and Plan Clarity', date: 'Jan 2026', read: '17 min' },
@@ -410,7 +414,6 @@ const ARTICLES = [
   { slug: 'Production-Python-on-Windows-Task-Scheduler', cats: 'Python · Windows', title: 'Production Python on Windows Task Scheduler: The Dual-Logging Pattern', date: 'Nov 2025', read: '10 min' },
   { slug: 'The-IDs-Dont-Match-Cross-System-Reconciliation-Genesys-Salesforce', cats: 'Python · Salesforce · Genesys', title: "The IDs Don't Match: Cross-System Reconciliation Between Genesys and Salesforce", date: 'Oct 2025', read: '10 min' },
   { slug: 'Classifying-Call-Center-Agents-with-Genesys-API', cats: 'Python · Genesys', title: 'Classifying Call-Center Agents with the Genesys API', date: 'Oct 2025', read: '13 min' },
-  { slug: 'At-Home-Media', cats: 'Plex · Usenet', title: 'At Home Media Server', date: 'Sep 2025', read: '14 min' },
   { slug: 'Pet-Shop-Monitoring-With-R', cats: 'R · Web Scraping', title: 'Pet Shop Monitoring with R', date: 'Apr 2025', read: '9 min' },
   { slug: 'Efficient-Database-Structure-and-Cost-Management-in-BigQuery', cats: 'BigQuery · R', title: 'Efficient DB Structure and Cost Management in BigQuery', date: 'Mar 2025', read: '9 min' },
   { slug: 'Python--Sharepoint---File-Explorer-Downloader-Uploader', cats: 'Python · SharePoint', title: 'Streamlining SharePoint with sharepoint_utility', date: 'Mar 2025', read: '8 min' },
@@ -489,6 +492,12 @@ function ArticleCard({ a, onOpen }) {
   );
 }
 
+const FEATURED = {
+  'Building-an-Autonomous-Research-Loop':   ResearchLoopCard,
+  'At-Home-Media':                          AtHomeMediaCard,
+  '208-Survived-Opinionated-Obsidian-Wiki': ObsidianWikiCard,
+};
+
 export function Writing() {
   const [openSlug, setOpenSlug] = useState(null);
   const openArticle = ARTICLES.find(a => a.slug === openSlug);
@@ -505,7 +514,10 @@ export function Writing() {
           </p>
         </div>
         <div className="writing-grid reveal" data-delay="2">
-          {ARTICLES.map(a => <ArticleCard key={a.slug} a={a} onOpen={setOpenSlug} />)}
+          {ARTICLES.map(a => {
+            const Card = FEATURED[a.slug] || ArticleCard;
+            return <Card key={a.slug} a={a} onOpen={setOpenSlug} />;
+          })}
         </div>
       </div>
       {openArticle && (
