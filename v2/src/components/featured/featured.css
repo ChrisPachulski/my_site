@@ -200,3 +200,144 @@
   .research-loop-card.is-hover .loop-adv-pulse,
   .research-loop-card.is-hover .loop-replication { animation: none; }
 }
+
+/* ═══ At-Home Media (amber override) ═══ */
+
+.at-home-media-card {
+  --accent: oklch(0.75 0.14 70);
+  --accent-soft: oklch(0.75 0.14 70 / 0.14);
+}
+
+.at-home-media-card .scanlines {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent 2px,
+    oklch(0.75 0.14 70 / 0.06) 2px,
+    oklch(0.75 0.14 70 / 0.06) 3px
+  );
+  opacity: 0.9;
+  transition: opacity 0.3s;
+}
+.at-home-media-card.is-hover .scanlines { opacity: 1; }
+
+.at-home-media-card .vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.45) 100%);
+}
+
+.at-home-media-card .amh-title {
+  position: relative;
+}
+.at-home-media-card .amh-title::before,
+.at-home-media-card .amh-title::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0; left: 0;
+  pointer-events: none;
+  opacity: 0.45;
+  transition: transform 0.3s, opacity 0.3s;
+}
+.at-home-media-card .amh-title::before {
+  color: oklch(0.68 0.18 25);
+  transform: translate(-1.5px, 0);
+}
+.at-home-media-card .amh-title::after {
+  color: oklch(0.72 0.13 195);
+  transform: translate(1.5px, 0);
+}
+.at-home-media-card.is-hover .amh-title::before,
+.at-home-media-card.is-hover .amh-title::after {
+  transform: translate(0, 0);
+  opacity: 0;
+}
+
+.at-home-media-card .now-playing {
+  font-family: var(--mono);
+  font-size: 11px;
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  margin-top: 6px;
+  z-index: 2;
+  position: relative;
+}
+.at-home-media-card .np-label {
+  color: var(--accent);
+  letter-spacing: 0.12em;
+}
+.at-home-media-card .np-current {
+  color: var(--ink-dim);
+  transition: opacity 0.3s;
+}
+
+.at-home-media-card .progress-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 2;
+  position: relative;
+}
+.at-home-media-card .progress-bar {
+  flex: 1;
+  height: 3px;
+  background: var(--line);
+  position: relative;
+  overflow: hidden;
+}
+.at-home-media-card .progress-fill {
+  height: 100%;
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent-soft);
+  transition: width 0.6s linear;
+}
+.at-home-media-card .timecode {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--ink-mute);
+  min-width: 36px;
+}
+
+.at-home-media-card .chips {
+  display: flex;
+  gap: 6px;
+  z-index: 2;
+  position: relative;
+  margin-top: 2px;
+}
+.at-home-media-card .chip {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  padding: 2px 6px;
+  border: 1px solid color-mix(in oklab, var(--accent) 50%, var(--line));
+  color: var(--accent);
+}
+
+.at-home-media-card .play-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 64px;
+  color: var(--accent);
+  opacity: 0;
+  transform: scale(0.5);
+  transition: opacity 0.25s ease-out, transform 0.25s cubic-bezier(.2,.8,.2,1);
+  pointer-events: none;
+  z-index: 3;
+  text-shadow: 0 0 24px var(--accent);
+}
+.at-home-media-card.is-hover .play-overlay {
+  opacity: 0.9;
+  transform: scale(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .at-home-media-card .progress-fill { transition: none; }
+  .at-home-media-card .play-overlay { transition: opacity 0.15s; }
+}
