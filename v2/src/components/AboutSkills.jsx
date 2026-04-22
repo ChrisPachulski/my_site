@@ -17,31 +17,45 @@ function useInView(threshold = 0.2) {
 }
 
 export function About() {
+  const [cardRef, inView] = useInView(0.15);
   return (
     <section className="about" id="about" data-screen-label="01 About">
       <div className="wrap">
         <div className="section-label reveal"><span className="num">01</span> / about</div>
-        <div className="about-grid">
-          <div>
-            <h2 className="reveal">Data <em>done right</em> feels like the lights<br/>finally coming on.</h2>
-            <p className="reveal" data-delay="1">
-              I'm a data-driven professional with extensive experience in <strong>analytics, data engineering, and business intelligence</strong>. I specialize in turning complex datasets into decisions teams actually use.
-            </p>
-            <p className="reveal" data-delay="2">
-              I thrive at the intersection of analytics, automation, and storytelling — close to stakeholders, close to the metal. My work spans <strong>financial services, digital marketing, CPG, and tech</strong>, built with SQL, Python, R, Looker and Docker.
-            </p>
-            <p className="reveal" data-delay="3">
-              Outside of it: my daughter, my son, three dachshunds, the perennial heartbreak of the Toronto Maple Leafs, and tinkering with Magic: the Gathering collections.
-            </p>
-          </div>
-          <div className="reveal" data-delay="2">
-            <div className="fact-list">
-              <div className="fact"><span>role</span><span>Sr Economic Analyst · Analytics Engineer</span></div>
-              <div className="fact"><span>current</span><span>Wizards of the Coast — Magic: The Gathering</span></div>
-              <div className="fact"><span>previously</span><span>The Providencia Group · Ad.Net · Mozilla · Spins LLC · Consumer Edge Research</span></div>
-              <div className="fact"><span>education</span><span>MBA, Hofstra · BA Classics + Biology, Creighton</span></div>
-              <div className="fact"><span>location</span><span>Seattle, WA · Remote</span></div>
-              <div className="fact"><span>available</span><span className="accent">Selective consulting + mentoring</span></div>
+        <div ref={cardRef} className={`izzet-card izzet-blue${inView ? ' in-view' : ''}`}>
+          <svg className="izzet-seal" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+            <rect x="0.5" y="0.5" width="99" height="99" pathLength="1" vectorEffect="non-scaling-stroke" />
+          </svg>
+          <span className="izzet-corner tl" aria-hidden="true" />
+          <span className="izzet-corner tr" aria-hidden="true" />
+          <span className="izzet-corner bl" aria-hidden="true" />
+          <span className="izzet-corner br" aria-hidden="true" />
+          <div className="about-grid">
+            <div>
+              <h2 className="reveal izzet-split">
+                <span className="izzet-text-left">Data </span>
+                <em>done right</em>
+                <span className="izzet-text-right"> feels like the lights<br/>finally coming on.</span>
+              </h2>
+              <p className="reveal" data-delay="1">
+                I'm a data-driven professional with extensive experience in <strong>analytics, data engineering, and business intelligence</strong>. I specialize in turning complex datasets into decisions teams actually use.
+              </p>
+              <p className="reveal" data-delay="2">
+                I thrive at the intersection of analytics, automation, and storytelling — close to stakeholders, close to the metal. My work spans <strong>financial services, digital marketing, CPG, and tech</strong>, built with SQL, Python, R, Looker and Docker.
+              </p>
+              <p className="reveal" data-delay="3">
+                Outside of it: my daughter, my son, three dachshunds, the perennial heartbreak of the Toronto Maple Leafs, and tinkering with Magic: the Gathering collections.
+              </p>
+            </div>
+            <div className="reveal" data-delay="2">
+              <div className="fact-list">
+                <div className="fact"><span>role</span><span>Sr Economic Analyst · Analytics Engineer</span></div>
+                <div className="fact"><span>current</span><span>Wizards of the Coast — Magic: The Gathering</span></div>
+                <div className="fact"><span>previously</span><span>The Providencia Group · Ad.Net · Mozilla · Spins LLC · Consumer Edge Research</span></div>
+                <div className="fact"><span>education</span><span>MBA, Hofstra · BA Classics + Biology, Creighton</span></div>
+                <div className="fact"><span>location</span><span>Seattle, WA · Remote</span></div>
+                <div className="fact"><span>available</span><span className="accent">Selective consulting + mentoring</span></div>
+              </div>
             </div>
           </div>
         </div>

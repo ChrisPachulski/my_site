@@ -792,3 +792,176 @@ html[data-vibe="cyberpunk"] .blog-overlay { background: rgba(0,0,0,0.75); }
 html[data-vibe="cyberpunk"] .blog-modal { border-color: var(--accent); box-shadow: 0 40px 100px rgba(0,0,0,0.6), 0 0 80px var(--accent-soft); border-radius: 0; }
 html[data-vibe="cyberpunk"] .blog-content h1, html[data-vibe="cyberpunk"] .blog-content h2, html[data-vibe="cyberpunk"] .blog-content h3 { font-family: var(--display); text-transform: uppercase; letter-spacing: -0.005em; }
 html[data-vibe="cyberpunk"] .blog-content code { color: var(--accent); text-shadow: 0 0 6px var(--accent-soft); }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   IZZET CARDS — section-scale blue/red Izzet treatment for About + Skills
+   Mirrors the hero-card aura language at a larger scale. Blue-dominant on
+   About (izzet-blue), red-dominant on Skills (izzet-red). Breathing synced
+   with the hero-card at 7s, offset 3.5s between the two so they never peak
+   together.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.izzet-card {
+  position: relative;
+  padding: 56px clamp(28px, 4vw, 64px);
+  background: linear-gradient(135deg, #0e0b09 0%, #15120f 100%);
+  border: 1px solid var(--line-bright);
+  border-radius: 8px;
+  isolation: isolate;
+  box-shadow: 0 40px 80px -20px rgba(0,0,0,0.6);
+  overflow: visible;
+}
+@media (max-width: 700px) {
+  .izzet-card { padding: 36px 22px; }
+}
+.izzet-card::before,
+.izzet-card::after {
+  content: "";
+  position: absolute;
+  inset: -50px;
+  border-radius: 16px;
+  z-index: -1;
+  pointer-events: none;
+  filter: blur(48px);
+  transition: opacity 0.6s ease;
+}
+
+/* BLUE-DOMINANT (About) — sapphire core with a fire kicker on the far corner */
+.izzet-card.izzet-blue::before {
+  background: linear-gradient(135deg,
+    oklch(0.70 0.22 250 / 0.95) 0%,
+    oklch(0.70 0.22 250 / 0.90) 55%,
+    oklch(0.70 0.14 300 / 0.55) 78%,
+    oklch(0.68 0.25 28  / 0.45) 100%);
+  opacity: 0.92;
+  animation: izzetBreath 7s ease-in-out infinite;
+}
+.izzet-card.izzet-blue::after {
+  background: radial-gradient(ellipse at 18% 38%,
+    oklch(0.70 0.22 250 / 0.85) 0%,
+    oklch(0.70 0.22 250 / 0.35) 35%,
+    transparent 62%);
+  filter: blur(28px);
+  animation: izzetPulse 9s ease-out infinite;
+}
+
+/* RED-DOMINANT (Skills) — fire core with a sapphire kicker. Offset animation. */
+.izzet-card.izzet-red::before {
+  background: linear-gradient(135deg,
+    oklch(0.68 0.25 28  / 0.45) 0%,
+    oklch(0.70 0.14 300 / 0.55) 22%,
+    oklch(0.68 0.25 28  / 0.90) 45%,
+    oklch(0.68 0.25 28  / 0.95) 100%);
+  opacity: 0.92;
+  animation: izzetBreath 7s ease-in-out infinite;
+  animation-delay: -3.5s;
+}
+.izzet-card.izzet-red::after {
+  background: radial-gradient(ellipse at 82% 62%,
+    oklch(0.68 0.25 28 / 0.85) 0%,
+    oklch(0.68 0.25 28 / 0.35) 35%,
+    transparent 62%);
+  filter: blur(28px);
+  animation: izzetPulse 9s ease-out infinite;
+  animation-delay: -4.5s;
+}
+
+/* Slow breathing — matches mtgAuraA cadence (7s) with a brief hiccup mid-cycle */
+@keyframes izzetBreath {
+  0%   { opacity: 0.70; transform: scale(1); }
+  30%  { opacity: 0.86; transform: scale(1); }
+  47%  { opacity: 0.96; transform: scale(1); }
+  49%  { opacity: 1;    transform: scale(1.012); }
+  52%  { opacity: 1;    transform: scale(1); }
+  70%  { opacity: 0.86; transform: scale(1); }
+  100% { opacity: 0.70; transform: scale(1); }
+}
+@keyframes izzetPulse {
+  0%   { transform: scale(1);    opacity: 0.75; }
+  60%  { transform: scale(1.28); opacity: 0.35; }
+  100% { transform: scale(1.5);  opacity: 0; }
+}
+
+/* Summoning seal — rectangle outline that draws in when the card scrolls into view.
+   Uses pathLength=1 so stroke-dasharray/offset are aspect-ratio-agnostic. */
+.izzet-card .izzet-seal {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  overflow: visible;
+}
+.izzet-card .izzet-seal rect {
+  fill: none;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 2.2s cubic-bezier(.4,0,.2,1), opacity 0.8s ease;
+  opacity: 0;
+}
+.izzet-card.izzet-blue .izzet-seal rect { stroke: oklch(0.72 0.22 250); filter: drop-shadow(0 0 10px oklch(0.72 0.22 250 / 0.6)); }
+.izzet-card.izzet-red  .izzet-seal rect { stroke: oklch(0.72 0.25 28);  filter: drop-shadow(0 0 10px oklch(0.72 0.25 28  / 0.6)); }
+.izzet-card.in-view .izzet-seal rect { stroke-dashoffset: 0; opacity: 0.9; }
+
+/* Corner filigrees — four small squares in the corners, lit after the seal draws. */
+.izzet-card .izzet-corner {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 0.5s ease 1.8s, transform 0.6s cubic-bezier(.4,0,.2,1) 1.8s;
+  transform: scale(0.2);
+}
+.izzet-card .izzet-corner.tl { top: -6px; left: -6px;  border-top: 1.5px solid; border-left: 1.5px solid; }
+.izzet-card .izzet-corner.tr { top: -6px; right: -6px; border-top: 1.5px solid; border-right: 1.5px solid; }
+.izzet-card .izzet-corner.bl { bottom: -6px; left: -6px;  border-bottom: 1.5px solid; border-left: 1.5px solid; }
+.izzet-card .izzet-corner.br { bottom: -6px; right: -6px; border-bottom: 1.5px solid; border-right: 1.5px solid; }
+.izzet-card.izzet-blue .izzet-corner { color: oklch(0.78 0.22 250); filter: drop-shadow(0 0 6px oklch(0.72 0.22 250 / 0.7)); }
+.izzet-card.izzet-red  .izzet-corner { color: oklch(0.78 0.25 28);  filter: drop-shadow(0 0 6px oklch(0.72 0.25 28  / 0.7)); }
+.izzet-card.in-view .izzet-corner { opacity: 1; transform: scale(1); }
+
+/* h2 Izzet split — blue before the em pivot, red after it.
+   Applied only under cyberpunk vibe so non-cyberpunk users see plain h2. */
+html[data-vibe="cyberpunk"] .izzet-card .izzet-split .izzet-text-left,
+html[data-vibe="cyberpunk"] .izzet-card .izzet-split .izzet-text-right {
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+html[data-vibe="cyberpunk"] .izzet-card .izzet-split .izzet-text-left {
+  background-image: linear-gradient(90deg,
+    oklch(0.82 0.21 250) 0%,
+    oklch(0.72 0.22 250) 100%);
+}
+html[data-vibe="cyberpunk"] .izzet-card .izzet-split .izzet-text-right {
+  background-image: linear-gradient(90deg,
+    oklch(0.72 0.25 28) 0%,
+    oklch(0.82 0.21 28) 100%);
+}
+/* The pivot word (em) keeps a strong violet glow — the brand base between the Izzet halves. */
+html[data-vibe="cyberpunk"] .izzet-card .izzet-split em {
+  color: oklch(0.78 0.15 300);
+  text-shadow: 0 0 24px oklch(0.70 0.14 300 / 0.8), 0 0 48px oklch(0.70 0.14 300 / 0.4);
+}
+
+/* Fact-list inside izzet card — hover marker animates to the card's dominant hue. */
+html[data-vibe="cyberpunk"] .izzet-card.izzet-blue .fact-list .fact::before { background: oklch(0.72 0.22 250); box-shadow: 0 0 10px oklch(0.72 0.22 250); }
+html[data-vibe="cyberpunk"] .izzet-card.izzet-red  .fact-list .fact::before { background: oklch(0.72 0.25 28);  box-shadow: 0 0 10px oklch(0.72 0.25 28); }
+html[data-vibe="cyberpunk"] .izzet-card.izzet-blue .fact-list .fact:hover { color: oklch(0.88 0.12 250); }
+html[data-vibe="cyberpunk"] .izzet-card.izzet-red  .fact-list .fact:hover { color: oklch(0.88 0.14 28); }
+
+/* The about section already has padding; the card adds its own frame so tighten section padding */
+.about .izzet-card,
+section .izzet-card { margin-top: 8px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .izzet-card::before,
+  .izzet-card::after { animation: none !important; }
+  .izzet-card .izzet-seal rect { transition: none; stroke-dashoffset: 0; opacity: 0.9; }
+  .izzet-card .izzet-corner { transition: none; opacity: 1; transform: none; }
+}
