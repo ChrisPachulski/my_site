@@ -826,26 +826,27 @@ html[data-vibe="cyberpunk"] .blog-content code { color: var(--accent); text-shad
   transition: opacity 0.6s ease;
 }
 
-/* BLUE-DOMINANT (About) — sapphire core with a fire kicker on the far corner.
-   Lower opacity than Skills so the prose content keeps contrast — About is
-   text-heavy without the skills-table as a visual anchor, so the aura has to
-   whisper, not shout. */
+/* BLUE-DOMINANT (About) — sapphire halo that hugs the card perimeter only.
+   About is text-heavy (no visual anchor like the skills-table), so the aura
+   has to read as a perimeter glow rather than a bloom that sits across the
+   card interior. Opacity is intentionally low + hotspots moved to the far
+   corners so they don't wash over the h2 or paragraph text. */
 .izzet-card.izzet-blue::before {
   background: linear-gradient(135deg,
     oklch(0.70 0.22 250 / 0.80) 0%,
     oklch(0.70 0.22 250 / 0.70) 55%,
     oklch(0.70 0.14 300 / 0.40) 78%,
     oklch(0.68 0.25 28  / 0.35) 100%);
-  opacity: 0.58;
+  opacity: 0.38;
   animation: izzetBreath 7s ease-in-out infinite;
 }
 .izzet-card.izzet-blue::after {
-  background: radial-gradient(ellipse at 20% 40%,
+  background: radial-gradient(ellipse at 95% 5%,
     oklch(0.70 0.22 250 / 0.55) 0%,
     oklch(0.70 0.22 250 / 0.18) 40%,
     transparent 62%);
   filter: blur(24px);
-  opacity: 0.55;
+  opacity: 0.4;
   animation: izzetPulse 9s ease-out infinite;
 }
 
@@ -1055,12 +1056,14 @@ html[data-vibe="cyberpunk"] .izzet-card .skill-bar-fill::after {
 
 /* About readability rescue — paragraphs inside the blue card need more punch
    because the surrounding aura is still adding a cool bias to the whole region.
-   Bumping to full --ink, with warm-neutral bias on strong/accent passages. */
-html[data-vibe="cyberpunk"] .izzet-card.izzet-blue .about p {
-  color: oklch(0.92 0.02 60);
+   Bumping to full --ink, with warm-neutral bias on strong/accent passages.
+   Note: .about is the section wrapping the card, NOT a descendant — selector
+   must target p directly inside .izzet-card.izzet-blue. */
+html[data-vibe="cyberpunk"] .izzet-card.izzet-blue p {
+  color: oklch(0.94 0.02 60);
 }
-html[data-vibe="cyberpunk"] .izzet-card.izzet-blue .about p strong {
-  color: oklch(0.96 0.03 60);
+html[data-vibe="cyberpunk"] .izzet-card.izzet-blue p strong {
+  color: oklch(0.98 0.03 60);
   font-weight: 500;
 }
 /* Fact-list labels and values inside the blue card — pushed warmer/brighter so
