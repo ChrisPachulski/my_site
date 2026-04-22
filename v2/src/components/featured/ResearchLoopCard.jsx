@@ -57,7 +57,6 @@ export default function ResearchLoopCard({ a, onOpen }) {
       onKeyDown={onKey}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
-      role="button"
       tabIndex={0}
     >
       <div className="flair-bg">

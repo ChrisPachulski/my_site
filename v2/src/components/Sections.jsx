@@ -488,7 +488,6 @@ function ArticleCard({ a, onOpen }) {
       onMouseMove={onMove}
       onClick={() => onOpen(a.slug)}
       onKeyDown={onKey}
-      role="button"
       tabIndex={0}
     >
       <div className="cats">{a.cats}</div>

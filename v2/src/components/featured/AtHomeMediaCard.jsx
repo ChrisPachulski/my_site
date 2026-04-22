@@ -49,7 +49,6 @@ export default function AtHomeMediaCard({ a, onOpen }) {
       onKeyDown={onKey}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
-      role="button"
       tabIndex={0}
       data-accent-override="amber"
     >
