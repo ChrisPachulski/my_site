@@ -819,6 +819,19 @@ html[data-vibe="cyberpunk"] .blog-content code { color: var(--accent); text-shad
 }
 @media (max-width: 700px) {
   .izzet-card { padding: 36px 22px; }
+  /* Pull the bloom way in on mobile. Stacked About + Skills cards would
+     otherwise flood the whole column with violet from their desktop halos. */
+  .izzet-card {
+    box-shadow:
+      0 24px 50px -18px rgba(0,0,0,0.55),
+      0 0 60px 0 oklch(0.60 0.14 305 / 0.18);
+  }
+  .izzet-card::before,
+  .izzet-card::after {
+    inset: -18px;
+    border-radius: 12px;
+    filter: blur(22px);
+  }
 }
 .izzet-card::before,
 .izzet-card::after {
