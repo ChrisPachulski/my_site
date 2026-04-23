@@ -209,19 +209,19 @@ function Hero({ heroVariant }) {
         <div className="wrap">
           <div className="hero-grid">
             <div>
-              <h1 className="hero-headline reveal">
-                <span className="sub">Sr Economic Analyst · Analytics Engineer</span>
+              <h1 className="hero-headline reveal izzet-ignite">
+                <span className="sub">Sr Data Scientist · Analytics Engineer</span>
                 Turning messy <span className="italic">data</span><br/>
                 into decisions<br/>
                 worth <span className="italic">shipping</span>.
               </h1>
               <p className="hero-lede reveal" data-delay="1">
-                I'm <strong>Chris Pachulski</strong> — I turned a hobby into a career. Co-founded <strong>MTGBAN</strong>, a Magic: The Gathering arbitrage engine, and spent 7+ years building analytics pipelines for Ad.Net, Mozilla, SPINS, and Providencia along the way. Now I'm a <strong>Senior Economic Analyst at Wizards of the Coast</strong>, working on the game I built a business around.
+                I'm <strong>Chris Pachulski</strong> — I turned a hobby into a career. Co-founded <strong>MTGBAN</strong>, a Magic: The Gathering arbitrage engine, and spent 7+ years building analytics pipelines for Ad.Net, Mozilla, SPINS, and Providencia along the way. Now I'm a <strong>Senior Data Scientist at Wizards of the Coast</strong>, working on the game I built a business around.
               </p>
               <div className="hero-actions reveal" data-delay="2">
-                <a href="#contact" className="btn btn-primary mono">Let's talk <span className="arrow">→</span></a>
-                <a href="#portfolio" className="btn mono">View case studies</a>
-                <a href="https://github.com/ChrisPachulski" target="_blank" rel="noopener noreferrer" className="btn mono">GitHub ↗</a>
+                <a href="#contact" className="btn btn-primary mono izzet-magnetic">Let's talk <span className="arrow">→</span></a>
+                <a href="#portfolio" className="btn mono izzet-magnetic">View case studies</a>
+                <a href="https://github.com/ChrisPachulski" target="_blank" rel="noopener noreferrer" className="btn mono izzet-magnetic">GitHub ↗</a>
               </div>
             </div>
             <div className="reveal" data-delay="1"><HeroTerminal variant={heroVariant} /></div>
@@ -229,7 +229,7 @@ function Hero({ heroVariant }) {
 
           <div className="stats reveal" data-delay="3">
             <Stat num="7"    unit="+ yrs" label="Shipping data systems" delay={0} />
-            <Stat num="WotC" unit="."     label="Sr Economic Analyst, MTG" delay={120} />
+            <Stat num="WotC" unit="."     label="Sr Data Scientist, MTG" delay={120} />
             <Stat num="500"  unit="+"     label="Customers served @ MTGBAN" delay={240} />
             <Stat num="5"    unit="x"     label="Industries shipped into" delay={360} />
           </div>

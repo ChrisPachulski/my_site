@@ -808,7 +808,13 @@ html[data-vibe="cyberpunk"] .blog-content code { color: var(--accent); text-shad
   border: 1px solid var(--line-bright);
   border-radius: 8px;
   isolation: isolate;
-  box-shadow: 0 40px 80px -20px rgba(0,0,0,0.6);
+  /* Wide violet outer halo bridges the izzet blue/red bloom into the
+     site's default violet aurora, so the two palettes no longer meet
+     abruptly at the card edge. */
+  box-shadow:
+    0 40px 80px -20px rgba(0,0,0,0.6),
+    0 0 180px 12px oklch(0.60 0.14 305 / 0.18),
+    0 0 300px 40px oklch(0.55 0.10 300 / 0.09);
   overflow: visible;
 }
 @media (max-width: 700px) {
@@ -818,58 +824,60 @@ html[data-vibe="cyberpunk"] .blog-content code { color: var(--accent); text-shad
 .izzet-card::after {
   content: "";
   position: absolute;
-  inset: -34px;
-  border-radius: 16px;
+  inset: -56px;
+  border-radius: 20px;
   z-index: -1;
   pointer-events: none;
-  filter: blur(36px);
+  filter: blur(46px);
   transition: opacity 0.6s ease;
 }
 
-/* BLUE-DOMINANT (About) — sapphire halo that hugs the card perimeter only.
-   About is text-heavy (no visual anchor like the skills-table), so the aura
-   has to read as a perimeter glow rather than a bloom that sits across the
-   card interior. Opacity is intentionally low + hotspots moved to the far
-   corners so they don't wash over the h2 or paragraph text. */
+/* BLUE-DOMINANT (About) — sapphire halo fading through violet into the
+   site's purple aurora. Outer band is deliberately violet-dominant so the
+   transition to non-izzet sections feels continuous. */
 .izzet-card.izzet-blue::before {
   background: linear-gradient(135deg,
     oklch(0.70 0.22 250 / 0.80) 0%,
-    oklch(0.70 0.22 250 / 0.70) 55%,
-    oklch(0.70 0.14 300 / 0.40) 78%,
-    oklch(0.68 0.25 28  / 0.35) 100%);
-  opacity: 0.38;
+    oklch(0.70 0.22 250 / 0.65) 40%,
+    oklch(0.66 0.19 280 / 0.55) 62%,
+    oklch(0.62 0.16 300 / 0.42) 82%,
+    oklch(0.58 0.13 310 / 0.22) 100%);
+  opacity: 0.42;
   animation: izzetBreath 7s ease-in-out infinite;
 }
 .izzet-card.izzet-blue::after {
   background: radial-gradient(ellipse at 95% 5%,
     oklch(0.70 0.22 250 / 0.55) 0%,
-    oklch(0.70 0.22 250 / 0.18) 40%,
-    transparent 62%);
-  filter: blur(24px);
-  opacity: 0.4;
+    oklch(0.68 0.18 285 / 0.28) 45%,
+    oklch(0.60 0.14 305 / 0.10) 75%,
+    transparent 90%);
+  filter: blur(30px);
+  opacity: 0.45;
   animation: izzetPulse 9s ease-out infinite;
 }
 
-/* RED-DOMINANT (Skills) — fire perimeter halo with a sapphire kicker. Hotspot
-   placed in a corner away from the skills-table so the rows stay legible.
-   Breathing offset 3.5s from About so the two sections never peak together. */
+/* RED-DOMINANT (Skills) — fire bloom anchored in a corner, with a violet
+   midband kicker that carries the palette toward the site's purple aurora
+   at the outer edge. Breathing offset 3.5s so it never peaks with About. */
 .izzet-card.izzet-red::before {
   background: linear-gradient(135deg,
-    oklch(0.68 0.25 28  / 0.45) 0%,
-    oklch(0.70 0.14 300 / 0.55) 22%,
-    oklch(0.68 0.25 28  / 0.90) 45%,
-    oklch(0.68 0.25 28  / 0.95) 100%);
-  opacity: 0.45;
+    oklch(0.68 0.25 28  / 0.50) 0%,
+    oklch(0.66 0.18 320 / 0.60) 22%,
+    oklch(0.68 0.25 28  / 0.85) 48%,
+    oklch(0.64 0.17 310 / 0.55) 78%,
+    oklch(0.58 0.13 305 / 0.28) 100%);
+  opacity: 0.48;
   animation: izzetBreath 7s ease-in-out infinite;
   animation-delay: -3.5s;
 }
 .izzet-card.izzet-red::after {
   background: radial-gradient(ellipse at 5% 95%,
-    oklch(0.68 0.25 28 / 0.60) 0%,
-    oklch(0.68 0.25 28 / 0.22) 38%,
-    transparent 62%);
-  filter: blur(24px);
-  opacity: 0.5;
+    oklch(0.68 0.25 28  / 0.60) 0%,
+    oklch(0.65 0.18 320 / 0.28) 40%,
+    oklch(0.60 0.14 305 / 0.12) 72%,
+    transparent 90%);
+  filter: blur(30px);
+  opacity: 0.52;
   animation: izzetPulse 9s ease-out infinite;
   animation-delay: -4.5s;
 }

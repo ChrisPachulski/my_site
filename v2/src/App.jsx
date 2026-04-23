@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import Hero from './components/Hero.jsx';
 import { About, Skills, Feature } from './components/AboutSkills.jsx';
 import { Projects, Resume, Writing, Contact } from './components/Sections.jsx';
+import IzzetCursor from './components/izzet-cursor/IzzetCursor.jsx';
+import './components/izzet-cursor/izzet-cursor.css';
 
 const ACCENT = 'violet';
 const THEME = 'dark';
@@ -71,6 +73,7 @@ export default function App() {
 
   return (
     <>
+      <IzzetCursor />
       <Nav active={active} />
       <Hero heroVariant={HERO_VARIANT} />
       <About />
