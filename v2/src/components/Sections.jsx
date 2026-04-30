@@ -197,8 +197,8 @@ export function Projects() {
         <div className="section-label reveal"><span className="num">03</span> / case studies &nbsp; <span className="mute">// where I've delivered value</span></div>
         <div className="about-grid" style={{ marginBottom: 40 }}>
           <div>
-            <h2 className="reveal" style={{ fontFamily:'var(--serif)', fontSize:'clamp(26px,3.2vw,42px)', margin:'0 0 20px', fontWeight:400, letterSpacing:'-0.02em', lineHeight:1.08 }}>
-              A curated list of the work I'd show you <em style={{color:'var(--accent)', fontStyle:'italic'}}>over coffee.</em>
+            <h2 className="reveal section-headline">
+              A curated list of the work I'd show you <em>over coffee.</em>
             </h2>
             <p className="dim reveal" data-delay="1" style={{ fontSize: 15, maxWidth: 520, lineHeight: 1.55 }}>
               Projects where I've built something that outlasted me, or moved a number that mattered. Click any row for the challenge, the shape of the solution, and the numbers.
@@ -432,8 +432,8 @@ export function Resume() {
         <div className="section-label reveal"><span className="num">04</span> / resume &nbsp; <span className="mute">// git log --oneline --graph career</span></div>
         <div className="about-grid" style={{ marginBottom: 40 }}>
           <div>
-            <h2 className="reveal" style={{ fontFamily:'var(--serif)', fontSize:'clamp(26px,3.2vw,42px)', margin:'0 0 16px', fontWeight:400, letterSpacing:'-0.02em', lineHeight:1.08 }}>
-              Seven years of <em style={{color:'var(--accent)', fontStyle:'italic'}}>shipping</em>.
+            <h2 className="reveal section-headline tight">
+              Seven years of <em>shipping</em>.
             </h2>
             <p className="dim reveal" data-delay="1" style={{ maxWidth: 520, fontSize: 15, lineHeight: 1.55 }}>
               A git log of the work. Most recent at top, origin/HEAD marked. Financial services, digital marketing, CPG, tech — plus my own startup since 2017.
@@ -529,8 +529,8 @@ export function Writing({ onArticleOpen }) {
       <div className="wrap">
         <div className="section-label reveal"><span className="num">05</span> / writing &nbsp; <span className="mute">// {POSTS.length} posts</span></div>
         <div style={{ maxWidth: 720, marginBottom: 40 }}>
-          <h2 className="reveal" style={{ fontFamily:'var(--serif)', fontSize:'clamp(26px,3.2vw,42px)', margin:'0 0 16px', fontWeight:400, letterSpacing:'-0.02em', lineHeight:1.08 }}>
-            Field notes from the <em style={{color:'var(--accent)', fontStyle:'italic'}}>warehouse.</em>
+          <h2 className="reveal section-headline tight">
+            Field notes from the <em>warehouse.</em>
           </h2>
           <p className="dim reveal" data-delay="1" style={{ fontSize: 15, maxWidth: 560, lineHeight: 1.55 }}>
             Practical write-ups — R, Python, SQL, and the occasional Docker-assisted life hack. I write them as I solve them.

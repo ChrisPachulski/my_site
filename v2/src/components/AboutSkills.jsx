@@ -98,7 +98,7 @@ export function Skills() {
           <span className="izzet-corner br" aria-hidden="true" />
           <div className="skills-grid">
             <div className="skills-intro">
-              <h2 className="reveal izzet-split" style={{ fontFamily:'var(--serif)', fontSize:'clamp(26px,3.2vw,42px)', margin:'0 0 20px', fontWeight:400, letterSpacing:'-0.02em', lineHeight:1.08 }}>
+              <h2 className="reveal izzet-split section-headline">
                 <span className="izzet-text-left">Here's </span>
                 <em>where</em>
                 <span className="izzet-text-right"> I can help.</span>

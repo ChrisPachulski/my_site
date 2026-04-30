@@ -26,7 +26,7 @@
 }
 
 html[data-theme="light"] {
-  --bg: #f4efe4; --bg-elev: #ebe5d6; --bg-card: #ffffff;
+  --bg: #f4efe4; --bg-elev: #ebe5d6; --bg-card: oklch(0.99 0.005 280);
   --ink: #1a1713; --ink-dim: #5b5347; --ink-mute: #8c8476;
   --line: #ddd5c3; --line-bright: #c8bfa9; --accent-ink: #f4efe4;
 }
@@ -149,8 +149,8 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
 
 .wrap { max-width: 1240px; margin: 0 auto; padding: 0 32px; }
 @media (max-width: 700px) { .wrap { padding: 0 20px; } }
-section { padding: 80px 0; position: relative; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; }
-section.flow { justify-content: flex-start; padding: 120px 0 80px; }
+section { padding: 80px 0; position: relative; }
+section.flow { padding: 120px 0 80px; }
 @media (max-width: 700px) { section { padding: 60px 0; } section.flow { padding: 100px 0 60px; } }
 
 .section-label {
@@ -160,6 +160,19 @@ section.flow { justify-content: flex-start; padding: 120px 0 80px; }
 }
 .section-label::before { content: ""; width: 40px; height: 1px; background: var(--line-bright); }
 .section-label .num { color: var(--accent); }
+
+/* Shared section headline — Instrument Serif, italic pivot in --accent.
+   Used on Skills/Projects/Resume/Writing intros (the 4 h2s outside the .about scope). */
+.section-headline {
+  font-family: var(--serif);
+  font-size: clamp(26px, 3.2vw, 42px);
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  margin: 0 0 20px;
+  font-weight: 400;
+}
+.section-headline.tight { margin-bottom: 16px; }
+.section-headline em { color: var(--accent); font-style: italic; }
 
 /* ═══════ SCROLL REVEAL SYSTEM ═══════ */
 .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.9s cubic-bezier(.2,.7,.2,1), transform 0.9s cubic-bezier(.2,.7,.2,1); }
@@ -193,13 +206,14 @@ section.flow { justify-content: flex-start; padding: 120px 0 80px; }
 .nav-links { display: flex; align-items: center; gap: 28px; font-family: var(--mono); font-size: 12px; }
 .nav-links a { color: var(--ink-dim); transition: color 0.15s; display: flex; align-items: baseline; gap: 6px; position: relative; }
 .nav-links a:not(.cta)::after { content: ""; position: absolute; left: 0; right: 0; bottom: -6px; height: 1px; background: var(--accent); transform: scaleX(0); transform-origin: left; transition: transform 0.3s cubic-bezier(.2,.7,.2,1); }
-.nav-links a:hover::after, .nav-links a.active::after { transform: scaleX(1); }
-.nav-links a:hover, .nav-links a.active { color: var(--ink); }
+.nav-links a:hover::after, .nav-links a.active::after, .nav-links a:focus-visible::after { transform: scaleX(1); }
+.nav-links a:hover, .nav-links a.active, .nav-links a:focus-visible { color: var(--ink); outline: none; }
 .nav-links a .idx { color: var(--ink-mute); font-size: 10px; }
-.nav-links a.active .idx { color: var(--accent); }
+.nav-links a.active .idx, .nav-links a:focus-visible .idx { color: var(--accent); }
 @media (max-width: 780px) { .nav-links a:not(.cta) { display: none; } }
 .cta { padding: 8px 14px; border: 1px solid var(--line-bright); border-radius: 2px; color: var(--ink) !important; transition: all 0.2s; }
 .cta:hover { background: var(--accent); color: var(--accent-ink) !important; border-color: var(--accent); }
+.cta:focus-visible { outline: none; border-color: var(--accent); background: var(--accent-soft); box-shadow: 0 0 0 1px var(--accent), 0 0 16px var(--accent-soft); }
 
 /* ═══════ HERO ═══════ */
 .hero { min-height: 100vh; padding: 110px 0 40px; display: flex; flex-direction: column; justify-content: center; position: relative; isolation: isolate; }
@@ -215,10 +229,13 @@ section.flow { justify-content: flex-start; padding: 120px 0 80px; }
 .btn::before { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, var(--accent-soft), transparent); transform: translateX(-100%); transition: transform 0.6s; }
 .btn:hover::before { transform: translateX(100%); }
 .btn:hover { border-color: var(--accent); transform: translateY(-2px); }
+.btn:focus-visible { outline: none; border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent), 0 0 28px var(--accent-soft); }
 .btn-primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
 .btn-primary:hover { background: transparent; color: var(--accent); }
+.btn-primary:focus-visible { box-shadow: 0 0 0 2px var(--accent-ink), 0 0 0 4px var(--accent), 0 0 32px var(--accent-soft); }
 .btn .arrow { transition: transform 0.2s; }
 .btn:hover .arrow { transform: translateX(4px); }
+.btn:focus-visible .arrow { transform: translateX(4px); }
 
 /* ═══════ MTG CARD (hero right) ═══════ */
 .mtg-card {
@@ -300,6 +317,7 @@ section.flow { justify-content: flex-start; padding: 120px 0 80px; }
 .fact-list .fact > :first-child { flex: 0 0 120px; color: var(--ink-mute); text-transform: uppercase; letter-spacing: 0.08em; font-size: 11px; }
 .fact-list .fact > :nth-child(2) { flex: 1 1 auto; min-width: 0; word-break: break-word; }
 .fact-list .fact a { color: var(--accent); border-bottom: 1px dotted var(--accent); }
+.fact-list .fact a:focus-visible { outline: 1px solid var(--accent); outline-offset: 4px; border-radius: 1px; }
 
 /* ═══════ SKILLS ═══════ */
 .skills-grid { display: grid; grid-template-columns: 1fr 1.6fr; gap: 64px; align-items: start; }
@@ -340,12 +358,14 @@ section.flow { justify-content: flex-start; padding: 120px 0 80px; }
 .projects-tabs button { padding: 14px 18px; color: var(--ink-mute); border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.2s; white-space: nowrap; }
 .projects-tabs button:hover { color: var(--ink-dim); }
 .projects-tabs button.active { color: var(--ink); border-bottom-color: var(--accent); }
+.projects-tabs button:focus-visible { outline: none; color: var(--ink); border-bottom-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent-soft); }
 .projects-tabs .count { color: var(--ink-mute); margin-left: 6px; font-size: 10px; }
 
 .project-list { display: grid; gap: 1px; background: color-mix(in oklab, var(--line) 50%, transparent); border: 1px solid color-mix(in oklab, var(--line-bright) 45%, transparent); border-radius: 6px; overflow: hidden; backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px); }
 .project-row { background: color-mix(in oklab, var(--bg-card) 55%, transparent); backdrop-filter: blur(18px) saturate(140%); -webkit-backdrop-filter: blur(18px) saturate(140%); padding: 20px 28px; cursor: pointer; transition: background 0.25s, transform 0.25s, box-shadow 0.25s; display: grid; grid-template-columns: 48px 1fr auto; gap: 24px; align-items: center; position: relative; }
 .project-row::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: var(--accent); transform: scaleY(0); transform-origin: top; transition: transform 0.3s cubic-bezier(.2,.7,.2,1); }
-.project-row:hover::before, .project-row.expanded::before { transform: scaleY(1); }
+.project-row:hover::before, .project-row.expanded::before, .project-row:focus-visible::before { transform: scaleY(1); }
+.project-row:focus-visible { outline: 1px solid var(--accent); outline-offset: -1px; box-shadow: 0 0 0 1px var(--accent-soft), 0 0 24px var(--accent-soft); }
 .project-row:hover { background: color-mix(in oklab, var(--bg-elev) 75%, transparent); box-shadow: inset 0 1px 0 rgba(255,255,255,0.06); }
 .project-row.expanded { background: color-mix(in oklab, var(--bg-elev) 85%, transparent); box-shadow: inset 0 1px 0 rgba(255,255,255,0.06); }
 .project-row .pidx { font-family: var(--mono); font-size: 12px; color: var(--ink-mute); transition: color 0.2s; }
@@ -401,10 +421,14 @@ section.flow { justify-content: flex-start; padding: 120px 0 80px; }
 .pipe-arrow { color: var(--ink-mute); padding-left: 30px; font-size: 14px; height: 12px; line-height: 1; }
 
 /* ═══════ GITLOG (serpentine resume) ═══════ */
-.gitlog { display: flex; flex-direction: column; width: 100%; position: relative; }
+/* Serpentine geometry: each commit is --commit-h tall, the SVG connector
+   between commits is --connector-h tall. The negative margin pulls each
+   subsequent commit up so the connector visually threads from the previous
+   commit's edge into the next commit's body — overlap = connector + 70px. */
+.gitlog { display: flex; flex-direction: column; width: 100%; position: relative; --commit-h: 200px; --connector-h: 180px; --commit-overlap: calc(var(--connector-h) + 70px); }
 .gitlog.serpentine { gap: 0; }
-.gitlog.serpentine .commit:nth-child(n+2) { margin-top: -250px; }
-.commit { position: relative; padding: 18px 22px; background: color-mix(in oklab, var(--bg-card) 55%, transparent); backdrop-filter: blur(18px) saturate(140%); -webkit-backdrop-filter: blur(18px) saturate(140%); border: 1px solid color-mix(in oklab, var(--line-bright) 40%, transparent); border-radius: 4px; max-width: 500px; width: 100%; min-height: 200px; box-sizing: border-box; z-index: 1; box-shadow: inset 0 1px 0 rgba(255,255,255,0.05); transition: border-color 0.3s, box-shadow 0.3s, background 0.3s; }
+.gitlog.serpentine .commit:nth-child(n+2) { margin-top: calc(-1 * var(--commit-overlap)); }
+.commit { position: relative; padding: 18px 22px; background: color-mix(in oklab, var(--bg-card) 55%, transparent); backdrop-filter: blur(18px) saturate(140%); -webkit-backdrop-filter: blur(18px) saturate(140%); border: 1px solid color-mix(in oklab, var(--line-bright) 40%, transparent); border-radius: 4px; max-width: 500px; width: 100%; min-height: var(--commit-h); box-sizing: border-box; z-index: 1; box-shadow: inset 0 1px 0 rgba(255,255,255,0.05); transition: border-color 0.3s, box-shadow 0.3s, background 0.3s; }
 .commit:hover { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent-soft), 0 0 40px var(--accent-soft); }
 .commit.side-left { align-self: flex-start; }
 .commit.side-right { align-self: flex-end; }
@@ -419,7 +443,7 @@ section.flow { justify-content: flex-start; padding: 120px 0 80px; }
 .commit .when { font-family: var(--mono); font-size: 10px; color: var(--ink-mute); margin-bottom: 8px; }
 .commit ul { margin: 0; padding: 0; list-style: none; }
 .commit ul li { padding: 2px 0 2px 18px; position: relative; color: var(--ink-dim); font-size: 13px; line-height: 1.5; }
-.git-connector { width: 100%; height: 180px; display: block; fill: none; stroke: var(--line-bright); stroke-width: 1.5; overflow: visible; }
+.git-connector { width: 100%; height: var(--connector-h, 180px); display: block; fill: none; stroke: var(--line-bright); stroke-width: 1.5; overflow: visible; }
 .git-connector .glow-path {
   fill: none;
   stroke-linecap: round;
@@ -1079,11 +1103,6 @@ html[data-vibe="cyberpunk"] .fact-list { border-top-color: oklch(0.82 0.21 195 /
 html[data-vibe="cyberpunk"] .fact-list .fact { border-bottom-color: oklch(0.82 0.21 195 / 0.14); }
 html[data-vibe="cyberpunk"] .fact-list .fact::before { background: var(--accent); box-shadow: 0 0 6px var(--accent); }
 html[data-vibe="cyberpunk"] .fact-list .fact a { color: var(--accent); border-bottom-color: var(--accent); text-shadow: 0 0 8px var(--accent-soft); }
-
-html[data-vibe="cyberpunk"] .blog-overlay { background: rgba(0,0,0,0.75); }
-html[data-vibe="cyberpunk"] .blog-modal { border-color: var(--accent); box-shadow: 0 40px 100px rgba(0,0,0,0.6), 0 0 80px var(--accent-soft); border-radius: 0; }
-html[data-vibe="cyberpunk"] .blog-content h1, html[data-vibe="cyberpunk"] .blog-content h2, html[data-vibe="cyberpunk"] .blog-content h3 { font-family: var(--display); text-transform: uppercase; letter-spacing: -0.005em; }
-html[data-vibe="cyberpunk"] .blog-content code { color: var(--accent); text-shadow: 0 0 6px var(--accent-soft); }
 
 html[data-vibe="cyberpunk"] .section-label { color: var(--accent); text-shadow: 0 0 8px var(--accent-soft); }
 html[data-vibe="cyberpunk"] .section-label::before { background: var(--accent); box-shadow: 0 0 8px var(--accent); }
