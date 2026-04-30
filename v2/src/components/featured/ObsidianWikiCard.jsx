@@ -160,6 +160,9 @@ export default function ObsidianWikiCard({ a, onOpen }) {
     <article
       ref={cardRef}
       className={`featured-tile featured obsidian-wiki-card${hover ? ' is-hover' : ''}`}
+      role="button"
+      aria-haspopup="dialog"
+      aria-label={`Read: ${a.title}`}
       onClick={open}
       onKeyDown={onKey}
       onMouseEnter={() => setHover(true)}

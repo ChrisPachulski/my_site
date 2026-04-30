@@ -53,6 +53,9 @@ export default function ResearchLoopCard({ a, onOpen }) {
   return (
     <article
       className={`featured-tile featured research-loop-card${hover ? ' is-hover' : ''}`}
+      role="button"
+      aria-haspopup="dialog"
+      aria-label={`Read: ${a.title}`}
       onClick={open}
       onKeyDown={onKey}
       onMouseEnter={() => setHover(true)}

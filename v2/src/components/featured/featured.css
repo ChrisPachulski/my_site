@@ -208,21 +208,6 @@
   --accent-soft: oklch(0.75 0.14 70 / 0.14);
 }
 
-.at-home-media-card .scanlines {
-  position: absolute;
-  inset: 0;
-  background: repeating-linear-gradient(
-    to bottom,
-    transparent 0,
-    transparent 2px,
-    oklch(0.75 0.14 70 / 0.06) 2px,
-    oklch(0.75 0.14 70 / 0.06) 3px
-  );
-  opacity: 0.9;
-  transition: opacity 0.3s;
-}
-.at-home-media-card.is-hover .scanlines { opacity: 1; }
-
 .at-home-media-card .vignette {
   position: absolute;
   inset: 0;

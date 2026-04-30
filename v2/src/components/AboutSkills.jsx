@@ -1,19 +1,25 @@
 import { Fragment, useState, useEffect, useRef } from 'react';
+import usePrefersReducedMotion from './featured/usePrefersReducedMotion.js';
 
-/* Hook: adds .in-view to a ref'd element once it enters the viewport. */
+/* Hook: adds .in-view to a ref'd element once it enters the viewport.
+   Short-circuits to in-view immediately when the user prefers reduced motion,
+   so we don't spin up an IntersectionObserver only to flip a class that the
+   stylesheet then has to neutralize. */
 function useInView(threshold = 0.2) {
+  const reduced = usePrefersReducedMotion();
   const ref = useRef(null);
-  const [inView, setInView] = useState(false);
+  const [intersected, setIntersected] = useState(false);
   useEffect(() => {
+    if (reduced) return;
     const el = ref.current;
     if (!el) return;
     const io = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) { setInView(true); io.disconnect(); }
+      if (entry.isIntersecting) { setIntersected(true); io.disconnect(); }
     }, { threshold });
     io.observe(el);
     return () => io.disconnect();
-  }, [threshold]);
-  return [ref, inView];
+  }, [threshold, reduced]);
+  return [ref, reduced || intersected];
 }
 
 export function About() {
@@ -38,10 +44,10 @@ export function About() {
                 <span className="izzet-text-right"> feels like the lights<br/>finally coming on.</span>
               </h2>
               <p className="reveal" data-delay="1">
-                I'm a data-driven professional with extensive experience in <strong>analytics, data engineering, and business intelligence</strong>. I specialize in turning complex datasets into decisions teams actually use.
+                I make the data layer load-bearing. Pipelines that don't drop, warehouses that still compose six months later, models that survive a production deploy. Seven years shipping that work; SQL and Python daily, R when the problem actually needs a statistician.
               </p>
               <p className="reveal" data-delay="2">
-                I thrive at the intersection of analytics, automation, and storytelling — close to stakeholders, close to the metal. My work spans <strong>financial services, digital marketing, CPG, and tech</strong>, built with SQL, Python, R, Looker and Docker.
+                Same shape, different domain every time. Government contracting, adtech, browser telemetry, CPG retail panel, equity research, and now collectibles economics at Wizards. The stack changes; the discipline doesn't.
               </p>
               <p className="reveal" data-delay="3">
                 Outside of it: my daughter, my son, three dachshunds, the perennial heartbreak of the Toronto Maple Leafs, and tinkering with Magic: the Gathering collections.
@@ -51,6 +57,7 @@ export function About() {
               <div className="fact-list">
                 <div className="fact"><span>role</span><span>Sr Data Scientist · Analytics Engineer</span></div>
                 <div className="fact"><span>current</span><span>Wizards of the Coast — Magic: The Gathering</span></div>
+                <div className="fact"><span>experience</span><span>7+ yrs shipping data systems · 5 industries</span></div>
                 <div className="fact"><span>previously</span><span>The Providencia Group · Ad.Net · Mozilla · Spins LLC · Consumer Edge Research</span></div>
                 <div className="fact"><span>education</span><span>MBA, Hofstra · BA Classics + Biology, Creighton</span></div>
                 <div className="fact"><span>location</span><span>Seattle, WA · Remote</span></div>
@@ -111,7 +118,7 @@ export function Skills() {
                   <div className="use">{r.use}</div>
                   <div className="yrs">{r.yrs}</div>
                   <div className="skill-bar">
-                    <div className="skill-bar-fill" style={{ width: inView ? `${r.depth}%` : '0%', transitionDelay: `${i * 90}ms` }}/>
+                    <div className="skill-bar-fill" style={{ '--depth': inView ? r.depth / 100 : 0, transitionDelay: `${i * 90}ms` }}/>
                   </div>
                 </div>
               ))}
@@ -125,12 +132,6 @@ export function Skills() {
 
 export function Feature() {
   const [active, setActive] = useState(0);
-  const [ref, inView] = useInView(0.25);
-  useEffect(() => {
-    if (!inView) return;
-    const id = setInterval(() => setActive(a => (a + 1) % 5), 1400);
-    return () => clearInterval(id);
-  }, [inView]);
   const nodes = [
     { glyph: '◉', nm: 'scrape.tcgplayer',     ss: 'r · tidyverse · rvest' },
     { glyph: '◎', nm: 'scrape.cardkingdom',   ss: 'r · async http' },
@@ -139,7 +140,7 @@ export function Feature() {
     { glyph: '✦', nm: 'notify.subscribers',   ss: '500+ paying users' },
   ];
   return (
-    <section id="feature" data-screen-label="02b Feature" ref={ref}>
+    <section id="feature" data-screen-label="02b Feature">
       <div className="wrap">
         <div className="feature reveal">
           <div className="feature-grid">
@@ -157,13 +158,24 @@ export function Feature() {
               </div>
             </div>
             <div>
-              <div className="pipe">
+              <div
+                className="pipe"
+                role="list"
+                aria-label="MTGBAN daily pipeline — hover or focus a step to advance"
+              >
                 <div style={{ color:'var(--ink-mute)', fontSize:11, textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:4 }}>
                   dag: mtgban_daily_pricing · 03:00 UTC
                 </div>
                 {nodes.map((n, i) => (
                   <Fragment key={i}>
-                    <div className={`pipe-node${active === i ? ' active' : ''}`}>
+                    <div
+                      className={`pipe-node${active === i ? ' active' : ''}`}
+                      role="listitem"
+                      tabIndex={0}
+                      aria-current={active === i ? 'step' : undefined}
+                      onMouseEnter={() => setActive(i)}
+                      onFocus={() => setActive(i)}
+                    >
                       <span className="glyph">{n.glyph}</span>
                       <div>
                         <div className="nm">{n.nm}</div>

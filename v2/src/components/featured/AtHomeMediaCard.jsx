@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import usePrefersReducedMotion from './usePrefersReducedMotion.js';
 import './featured.css';
 
@@ -45,6 +45,9 @@ export default function AtHomeMediaCard({ a, onOpen }) {
   return (
     <article
       className={`featured-tile featured at-home-media-card${hover ? ' is-hover' : ''}`}
+      role="button"
+      aria-haspopup="dialog"
+      aria-label={`Read: ${a.title}`}
       onClick={open}
       onKeyDown={onKey}
       onMouseEnter={() => setHover(true)}
@@ -53,7 +56,6 @@ export default function AtHomeMediaCard({ a, onOpen }) {
       data-accent-override="amber"
     >
       <div className="flair-bg">
-        <div className="scanlines" />
         <div className="vignette" />
       </div>
 

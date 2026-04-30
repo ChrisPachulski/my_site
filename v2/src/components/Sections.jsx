@@ -1,24 +1,26 @@
 import { Fragment, useState, useEffect, useRef } from 'react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import { getPost } from '../lib/blog.js';
+import { POSTS } from '../lib/blog.js';
+import { articlePath } from '../lib/router.js';
+import usePrefersReducedMotion from './featured/usePrefersReducedMotion.js';
 import ResearchLoopCard from './featured/ResearchLoopCard.jsx';
 import AtHomeMediaCard from './featured/AtHomeMediaCard.jsx';
 import ObsidianWikiCard from './featured/ObsidianWikiCard.jsx';
 
 function useInView(threshold = 0.2) {
+  const reduced = usePrefersReducedMotion();
   const ref = useRef(null);
-  const [inView, setInView] = useState(false);
+  const [intersected, setIntersected] = useState(false);
   useEffect(() => {
+    if (reduced) return;
     const el = ref.current;
     if (!el) return;
     const io = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) { setInView(true); io.disconnect(); }
+      if (entry.isIntersecting) { setIntersected(true); io.disconnect(); }
     }, { threshold });
     io.observe(el);
     return () => io.disconnect();
-  }, [threshold]);
-  return [ref, inView];
+  }, [threshold, reduced]);
+  return [ref, reduced || intersected];
 }
 
 const PROJECTS = [
@@ -216,47 +218,65 @@ export function Projects() {
           </div>
         </div>
         <div className="project-list reveal" data-delay="2">
-          {filtered.map((p, i) => (
-            <Fragment key={p.title}>
-              <div
-                className={`project-row${expanded === i ? ' expanded' : ''}`}
-                onClick={() => setExpanded(expanded === i ? null : i)}
-              >
-                <div className="pidx">{String(i+1).padStart(2, '0')}.</div>
-                <div>
-                  <div className="ptitle">{p.title}</div>
-                  <div className="pdesc">{p.desc}</div>
-                </div>
-                <div className="pmeta">
-                  <span className="tag">{p.tag}</span>
-                  <span className="pchevron">›</span>
-                </div>
-              </div>
-              {expanded === i && (
-                <div className="project-detail">
-                  <div className="block">
-                    <h4>Challenge</h4><p>{p.challenge}</p>
-                    <h4>Approach</h4><p>{p.solution}</p>
-                    <h4>Stack</h4>
-                    <div className="stack">{p.stack.map(s => <span key={s}>{s}</span>)}</div>
-                    {p.href && (
-                      <div style={{ marginTop: 20 }}>
-                        <a href={p.href} target="_blank" rel="noopener noreferrer" className="btn mono">Visit ↗</a>
-                      </div>
-                    )}
+          {filtered.map((p, i) => {
+            const isOpen = expanded === i;
+            const detailId = `project-${i}-detail`;
+            const toggle = () => setExpanded(isOpen ? null : i);
+            const onKeyDown = (e) => {
+              if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
+            };
+            return (
+              <Fragment key={p.title}>
+                <div
+                  className={`project-row${isOpen ? ' expanded' : ''}`}
+                  role="button"
+                  tabIndex={0}
+                  aria-expanded={isOpen}
+                  aria-controls={detailId}
+                  onClick={toggle}
+                  onKeyDown={onKeyDown}
+                >
+                  <div className="pidx">{String(i+1).padStart(2, '0')}.</div>
+                  <div>
+                    <div className="ptitle">{p.title}</div>
+                    <div className="pdesc">{p.desc}</div>
                   </div>
-                  <div className="block">
-                    <h4>By the numbers</h4>
-                    <div className="metrics">
-                      {p.metrics.map(m => (
-                        <div key={m.k}><div className="v">{m.v}</div><div className="k">{m.k}</div></div>
-                      ))}
+                  <div className="pmeta">
+                    <span className="tag">{p.tag}</span>
+                    <span className="pchevron" aria-hidden="true">›</span>
+                  </div>
+                </div>
+                {isOpen && (
+                  <div
+                    id={detailId}
+                    className="project-detail"
+                    role="region"
+                    aria-label={`${p.title} — details`}
+                  >
+                    <div className="block">
+                      <h4>Challenge</h4><p>{p.challenge}</p>
+                      <h4>Approach</h4><p>{p.solution}</p>
+                      <h4>Stack</h4>
+                      <div className="stack">{p.stack.map(s => <span key={s}>{s}</span>)}</div>
+                      {p.href && (
+                        <div style={{ marginTop: 20 }}>
+                          <a href={p.href} target="_blank" rel="noopener noreferrer" className="btn mono">Visit ↗</a>
+                        </div>
+                      )}
+                    </div>
+                    <div className="block">
+                      <h4>By the numbers</h4>
+                      <div className="metrics">
+                        {p.metrics.map(m => (
+                          <div key={m.k}><div className="v">{m.v}</div><div className="k">{m.k}</div></div>
+                        ))}
+                      </div>
                     </div>
                   </div>
-                </div>
-              )}
-            </Fragment>
-          ))}
+                )}
+              </Fragment>
+            );
+          })}
         </div>
       </div>
     </section>
@@ -317,16 +337,18 @@ const EDUCATION = [
 
 /* Individual commit card — watches for itself coming into view for the reveal. */
 function Commit({ c, side, delayOffset }) {
+  const reduced = usePrefersReducedMotion();
   const [ref, inView] = useInView(0.25);
+  const revealStyle = reduced ? undefined : {
+    opacity: inView ? 1 : 0,
+    transform: inView ? 'none' : `translateX(${side === 'left' ? -24 : 24}px) translateY(12px)`,
+    transition: `opacity 0.7s cubic-bezier(.2,.7,.2,1) ${delayOffset}s, transform 0.7s cubic-bezier(.2,.7,.2,1) ${delayOffset}s`,
+  };
   return (
     <div
       ref={ref}
       className={`commit side-${side}${c.current ? ' current' : ''}`}
-      style={{
-        opacity: inView ? 1 : 0,
-        transform: inView ? 'none' : `translateX(${side === 'left' ? -24 : 24}px) translateY(12px)`,
-        transition: `opacity 0.7s cubic-bezier(.2,.7,.2,1) ${delayOffset}s, transform 0.7s cubic-bezier(.2,.7,.2,1) ${delayOffset}s`,
-      }}
+      style={revealStyle}
     >
       <div className="hash">commit {c.hash}{c.current && <span className="accent"> · (HEAD)</span>}</div>
       <div className="role">{c.role}</div>
@@ -348,6 +370,59 @@ function Commit({ c, side, delayOffset }) {
   );
 }
 
+const RESUME_MODES = [
+  { id: 'experience', label: 'Experience' },
+  { id: 'education',  label: 'Education' },
+];
+
+function ResumeToggle({ mode, setMode }) {
+  const refs = useRef([]);
+  const onKeyDown = (e) => {
+    const i = RESUME_MODES.findIndex(m => m.id === mode);
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+      e.preventDefault();
+      const next = RESUME_MODES[(i + 1) % RESUME_MODES.length];
+      setMode(next.id);
+      refs.current[(i + 1) % RESUME_MODES.length]?.focus();
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      const prev = RESUME_MODES[(i - 1 + RESUME_MODES.length) % RESUME_MODES.length];
+      setMode(prev.id);
+      refs.current[(i - 1 + RESUME_MODES.length) % RESUME_MODES.length]?.focus();
+    } else if (e.key === 'Home') {
+      e.preventDefault();
+      setMode(RESUME_MODES[0].id);
+      refs.current[0]?.focus();
+    } else if (e.key === 'End') {
+      e.preventDefault();
+      setMode(RESUME_MODES[RESUME_MODES.length - 1].id);
+      refs.current[RESUME_MODES.length - 1]?.focus();
+    }
+  };
+  return (
+    <div className="resume-toggle" role="radiogroup" aria-label="Resume timeline view">
+      {RESUME_MODES.map((m, i) => {
+        const checked = mode === m.id;
+        return (
+          <button
+            key={m.id}
+            type="button"
+            role="radio"
+            aria-checked={checked}
+            tabIndex={checked ? 0 : -1}
+            ref={el => { refs.current[i] = el; }}
+            className={checked ? 'active' : ''}
+            onClick={() => setMode(m.id)}
+            onKeyDown={onKeyDown}
+          >
+            {m.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 export function Resume() {
   const [mode, setMode] = useState('experience');
   const list = mode === 'experience' ? EXPERIENCE : EDUCATION;
@@ -365,10 +440,7 @@ export function Resume() {
             </p>
           </div>
           <div className="reveal" data-delay="2">
-            <div className="resume-toggle">
-              <button className={mode==='experience'?'active':''} onClick={()=>setMode('experience')}>Experience</button>
-              <button className={mode==='education'?'active':''} onClick={()=>setMode('education')}>Education</button>
-            </div>
+            <ResumeToggle mode={mode} setMode={setMode} />
             <a href="/cv/Chris_Pachulski_Resume.pdf" className="btn mono" download>Download CV (PDF) ↓</a>
           </div>
         </div>
@@ -402,74 +474,8 @@ export function Resume() {
   );
 }
 
-const ARTICLES = [
-  { slug: '208-Survived-Opinionated-Obsidian-Wiki', cats: 'Obsidian · Claude Code · YouTube', title: 'A Wiki That Earns Its Keep: Five Article Types, a Stop Hook, and a YouTube Intake Pipeline', date: 'Apr 2026', read: '13 min' },
-  { slug: 'Adding-a-Brain-to-a-Fork-career-ops-card-ops', cats: 'Claude Code · Personal Tools', title: 'Adding a Brain to a Fork: career-ops, card-ops, and the Compiled-Context Pattern', date: 'Apr 2026', read: '13 min' },
-  { slug: 'At-Home-Media', cats: 'Plex · Usenet', title: 'At Home Media Server', date: 'Sep 2025', read: '14 min' },
-  { slug: 'Four-Terminals-Four-Sounds-session-sounds', cats: 'Claude Code · Codex · Windows', title: 'Four Terminals, Four Sounds: A Tab-Naming and Notification System for Parallel AI Sessions', date: 'Mar 2026', read: '10 min' },
-  { slug: 'Building-an-Autonomous-Research-Loop', cats: 'Claude Code · Econometrics · AI Tooling', title: 'Building an Autonomous Research Loop: The Stack, The Rationale, and What I Borrowed From Karpathy and Feynman', date: 'Feb 2026', read: '28 min' },
-  { slug: 'Memory-Hygiene-for-Long-Running-AI-Work', cats: 'Claude Code · AI Tooling', title: 'Memory Hygiene for Long-Running AI Work: Anti-Stickiness, Dreams, and Plan Clarity', date: 'Jan 2026', read: '17 min' },
-  { slug: 'Automating-Microsoft-365-in-Python-Without-an-Azure-App-Registration', cats: 'Python · Microsoft 365', title: 'Automating Microsoft 365 in Python Without an Azure App Registration', date: 'Dec 2025', read: '15 min' },
-  { slug: 'Streamlining-Smartsheet-with-smartsheet_utils', cats: 'Python · Smartsheet', title: 'Streamlining Smartsheet with smartsheet_utils: A pandas-First Python Wrapper', date: 'Dec 2025', read: '17 min' },
-  { slug: 'Production-Python-on-Windows-Task-Scheduler', cats: 'Python · Windows', title: 'Production Python on Windows Task Scheduler: The Dual-Logging Pattern', date: 'Nov 2025', read: '10 min' },
-  { slug: 'The-IDs-Dont-Match-Cross-System-Reconciliation-Genesys-Salesforce', cats: 'Python · Salesforce · Genesys', title: "The IDs Don't Match: Cross-System Reconciliation Between Genesys and Salesforce", date: 'Oct 2025', read: '10 min' },
-  { slug: 'Classifying-Call-Center-Agents-with-Genesys-API', cats: 'Python · Genesys', title: 'Classifying Call-Center Agents with the Genesys API', date: 'Oct 2025', read: '13 min' },
-  { slug: 'Pet-Shop-Monitoring-With-R', cats: 'R · Web Scraping', title: 'Pet Shop Monitoring with R', date: 'Apr 2025', read: '9 min' },
-  { slug: 'Efficient-Database-Structure-and-Cost-Management-in-BigQuery', cats: 'BigQuery · R', title: 'Efficient DB Structure and Cost Management in BigQuery', date: 'Mar 2025', read: '9 min' },
-  { slug: 'Python--Sharepoint---File-Explorer-Downloader-Uploader', cats: 'Python · SharePoint', title: 'Streamlining SharePoint with sharepoint_utility', date: 'Mar 2025', read: '8 min' },
-  { slug: 'Advanced-SQL-Techniques-and-Analytics', cats: 'SQL · BigQuery', title: 'Advanced SQL Techniques and Analytics', date: 'Mar 2025', read: '7 min' },
-  { slug: 'Salesforce-Data-Management-with-Python-and-SOQL', cats: 'Python · Salesforce', title: 'Salesforce Data Management with Python and SOQL', date: 'Feb 2025', read: '9 min' },
-  { slug: 'Card-Kingdoms-API-Analysis', cats: 'R · API', title: 'Card Kingdom\u2019s API Analysis', date: 'Jan 2025', read: '8 min' },
-  { slug: 'R--Python---Comprehensive-Set-Up', cats: 'R · Python', title: 'R & Python — Comprehensive Set Up', date: 'Jan 2025', read: '7 min' },
-  { slug: 'Automation-for-Social-Advertising-Data-Management-with-Python-and-SQL', cats: 'Python · SQL', title: 'Automation for Social Advertising Data Management with Python and SQL', date: 'Sep 2024', read: '7 min' },
-  { slug: 'Win-Rate-Analysis-and-Optimization-for-Blind-RTB-Bidding-with-Python-and-SQL', cats: 'Python · RTB', title: 'Win Rate Analysis and Optimization for Blind RTB Bidding with Python and SQL', date: 'Aug 2024', read: '10 min' },
-  { slug: 'R-vs-Python---Google-Sheets-', cats: 'R · Python', title: 'R vs Python — Google Sheets', date: 'Jun 2024', read: '6 min' },
-  { slug: 'Bash-Fun-Full-On-Sync--Setup-For-Mac-', cats: 'Bash · macOS', title: 'Bash Fun: Full On Sync & Setup For Mac', date: 'Feb 2024', read: '7 min' },
-  { slug: 'Leveraging-R-for-Advanced-Client-Revenue-Analytics', cats: 'R · Analytics', title: 'Leveraging R for Advanced Client Revenue Analytics', date: 'Nov 2023', read: '8 min' },
-  { slug: 'Inventory-Acquisition-with-Google-Sheets-Apps-Script-SQL-and-R', cats: 'Google Sheets · R', title: 'Inventory Acquisition with Google Sheets, Apps Script, SQL, and R', date: 'Oct 2023', read: '7 min' },
-  { slug: 'Bash-Fun-Download-Folder-File-Organizer', cats: 'Bash', title: 'Bash Fun: Download Folder File Organizer', date: 'Oct 2023', read: '5 min' },
-  { slug: 'In-Depth-Product-Level-Analysis-Using-R-for-Advanced-Market-Insights', cats: 'R · Market', title: 'In-Depth Product-Level Analysis Using R for Advanced Market Insights', date: 'Sep 2023', read: '8 min' },
-  { slug: 'Advanced-Analytics-and-Revenue-Optimization-with-R', cats: 'R · Analytics', title: 'Advanced Analytics and Revenue Optimization with R', date: 'Jul 2023', read: '6 min' },
-  { slug: 'Advanced-Advertising-Analytics-with-R-Unlocking-Data-Driven-Insights', cats: 'R · Advertising', title: 'Advanced Advertising Analytics with R: Unlocking Data-Driven Insights', date: 'May 2023', read: '8 min' },
-  { slug: 'Buying-Support-for-Journeys-End-Game-Store-Through-R-SQL-and-Effective-Communication', cats: 'R · SQL', title: 'Buying Support for Journey\u2019s End Game Store Through R, SQL, and Communication', date: 'May 2023', read: '7 min' },
-  { slug: 'Understanding-Lazy-vs-Non-Lazy-Evaluation-My-Experiences-with-R-and-Python', cats: 'R · Python', title: 'R vs Python — Lazy vs Non-Lazy Evaluation', date: 'Apr 2023', read: '8 min' },
-  { slug: 'Advanced-Traffic-Flow-Analysis-and-Data-Management-with-Python-and-SQL', cats: 'Python · SQL', title: 'Advanced Traffic Flow Analysis and Data Management with Python and SQL', date: 'Dec 2022', read: '9 min' },
-  { slug: 'Package-Management---R-vs-Python', cats: 'R · Python', title: 'R vs Python — Package Management', date: 'Dec 2022', read: '6 min' },
-  { slug: 'MTGBAN---Newspaper-Updater-R-Google-Cloud-Platform-BigQuery', cats: 'R · GCP', title: 'MTGBAN — Newspaper Updater: R, Google Cloud Platform, BigQuery', date: 'Oct 2022', read: '5 min' },
-  { slug: 'Google-Analytics-and-Gmail-Automation-with-Python', cats: 'Python · Gmail', title: 'Google Analytics and Gmail Automation with Python', date: 'Jul 2022', read: '9 min' },
-  { slug: 'ClickHouse-An-In-Depth-Overview-and-Integration-with-Python-and-R', cats: 'ClickHouse · Py · R', title: 'ClickHouse: An In-Depth Overview and Integration with Python and R', date: 'Mar 2022', read: '10 min' },
-  { slug: 'R--Twitter---Automation', cats: 'R · Twitter', title: 'R & Twitter — Automation', date: 'Feb 2022', read: '7 min' },
-  { slug: 'How-I-Automated-Booking-a-Baby-Hospital-Tour-Using-R-and-Docker', cats: 'R · Docker', title: 'How I Automated Booking a Baby Hospital Tour Using R and Docker', date: 'Oct 2021', read: '6 min' },
-  { slug: 'Arbitrage-in-Magic-The-Gathering-Primer', cats: 'R · MTG', title: 'Arbitrage in Magic: The Gathering — a Primer', date: 'Jun 2021', read: '7 min' },
-  { slug: 'Racing-Ahead-Data-Driven-Insights-into-ZED-RUN', cats: 'R · Blockchain', title: 'Racing Ahead: Data-Driven Insights into ZED RUN', date: 'Jun 2021', read: '5 min' },
-  { slug: 'R---Trading-Card-Market-Analytics-and-Automated-Reporting-A-Comprehensive-Breakdown', cats: 'R · MTG', title: 'R — Trading Card Market Analytics and Automated Reporting', date: 'Jan 2017', read: '8 min' },
-];
 
-function BlogModal({ slug, title, onClose }) {
-  const post = getPost(slug);
-  useEffect(() => {
-    const onKey = (e) => { if (e.key === 'Escape') onClose(); };
-    window.addEventListener('keydown', onKey);
-    document.body.style.overflow = 'hidden';
-    return () => {
-      window.removeEventListener('keydown', onKey);
-      document.body.style.overflow = '';
-    };
-  }, [onClose]);
-  return (
-    <div className="blog-overlay" onClick={onClose}>
-      <div className="blog-modal" onClick={e => e.stopPropagation()}>
-        <button className="blog-close" onClick={onClose} aria-label="Close">×</button>
-        <article className="blog-content">
-          <h1>{title}</h1>
-          {post ? <ReactMarkdown remarkPlugins={[remarkGfm]}>{post.body}</ReactMarkdown> : <p className="dim">Article not found.</p>}
-        </article>
-      </div>
-    </div>
-  );
-}
-
-/* Article card with mouse-follow radial glow. */
+/* Article card with mouse-follow radial glow. Real anchor for crawlers + cmd-click. */
 function ArticleCard({ a, onOpen }) {
   const ref = useRef(null);
   const onMove = (e) => {
@@ -478,17 +484,23 @@ function ArticleCard({ a, onOpen }) {
     el.style.setProperty('--mx', `${((e.clientX - r.left) / r.width) * 100}%`);
     el.style.setProperty('--my', `${((e.clientY - r.top) / r.height) * 100}%`);
   };
+  const handle = (e) => {
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button > 0) return;
+    e.preventDefault();
+    onOpen(a.slug);
+  };
   const onKey = (e) => {
     if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onOpen(a.slug); }
   };
   return (
-    <article
+    <a
+      href={articlePath(a.slug)}
       className="article"
+      aria-haspopup="dialog"
       ref={ref}
       onMouseMove={onMove}
-      onClick={() => onOpen(a.slug)}
+      onClick={handle}
       onKeyDown={onKey}
-      tabIndex={0}
     >
       <div className="cats">{a.cats}</div>
       <h4>{a.title}</h4>
@@ -498,23 +510,24 @@ function ArticleCard({ a, onOpen }) {
         <span>{a.read} read</span>
         <span style={{ marginLeft:'auto', color:'var(--accent)' }}>Read ›</span>
       </div>
-    </article>
+    </a>
   );
 }
 
 const FEATURED = {
-  'Building-an-Autonomous-Research-Loop':   ResearchLoopCard,
-  'At-Home-Media':                          AtHomeMediaCard,
-  '208-Survived-Opinionated-Obsidian-Wiki': ObsidianWikiCard,
+  'autonomous-research-loop':  ResearchLoopCard,
+  'at-home-media':             AtHomeMediaCard,
+  'opinionated-obsidian-wiki': ObsidianWikiCard,
 };
 
-export function Writing() {
-  const [openSlug, setOpenSlug] = useState(null);
-  const openArticle = ARTICLES.find(a => a.slug === openSlug);
+export function Writing({ onArticleOpen }) {
+  const openInFlow = (slug) => {
+    if (onArticleOpen) onArticleOpen(slug);
+  };
   return (
     <section id="writing" className="flow" data-screen-label="05 Writing">
       <div className="wrap">
-        <div className="section-label reveal"><span className="num">05</span> / writing &nbsp; <span className="mute">// 30+ posts on my blog</span></div>
+        <div className="section-label reveal"><span className="num">05</span> / writing &nbsp; <span className="mute">// {POSTS.length} posts</span></div>
         <div style={{ maxWidth: 720, marginBottom: 40 }}>
           <h2 className="reveal" style={{ fontFamily:'var(--serif)', fontSize:'clamp(26px,3.2vw,42px)', margin:'0 0 16px', fontWeight:400, letterSpacing:'-0.02em', lineHeight:1.08 }}>
             Field notes from the <em style={{color:'var(--accent)', fontStyle:'italic'}}>warehouse.</em>
@@ -524,15 +537,12 @@ export function Writing() {
           </p>
         </div>
         <div className="writing-grid reveal" data-delay="2">
-          {ARTICLES.map(a => {
+          {POSTS.map(a => {
             const Card = FEATURED[a.slug] || ArticleCard;
-            return <Card key={a.slug} a={a} onOpen={setOpenSlug} />;
+            return <Card key={a.slug} a={a} onOpen={openInFlow} />;
           })}
         </div>
       </div>
-      {openArticle && (
-        <BlogModal slug={openArticle.slug} title={openArticle.title} onClose={() => setOpenSlug(null)} />
-      )}
     </section>
   );
 }
