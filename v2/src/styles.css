@@ -37,9 +37,10 @@
   --text-title:    1.375rem;   /* 22 — project row title */
   --text-subtitle: 1.25rem;    /* 20 — commit role, post-modal h1 small */
   --text-lede:     1.0625rem;  /* 17 — article lede, contact lede */
-  --text-body:     1rem;       /* 16 — body baseline */
+  --text-body:     1rem;       /* 16 — body baseline, form inputs (iOS-zoom floor) */
   --text-body-sm:  0.9375rem;  /* 15 — about p, supporting paragraphs */
-  --text-body-xs:  0.8125rem;  /* 13 — small body, btn label, skill use, code blocks */
+  --text-body-2xs: 0.875rem;   /* 14 — code blocks, article tables, contact-error */
+  --text-body-xs:  0.8125rem;  /* 13 — small body, btn label, skill use, pre */
   --text-label:    0.75rem;    /* 12 — mono section-label, nav links, footer, tabs */
   --text-label-sm: 0.6875rem;  /* 11 — chip text, fact-list key, table head, fine labels */
   --text-mini:     0.625rem;   /* 10 — nav idx, commit hash/when, article meta (mono only) */
@@ -265,17 +266,24 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
 .accent { color: var(--accent); }
 
 /* Section-lede paragraph — the supporting body that follows a section
-   headline. 15px reading size, body-leading. Max-width is a constraint of
-   each section's grid, applied via the JSX. */
+   headline. 15px reading size, body-leading. Max-width is in `ch` so the
+   measure scales with user font-size. The .tight / .wide modifiers replace
+   the per-instance inline max-widths the sections used to ship. */
 .section-lede {
   font-size: var(--text-body-sm);
   line-height: var(--leading-body);
+  max-width: 60ch;
 }
-/* Contact-lede — the larger 17px lede on the contact section, sized up
-   from the standard section-lede because it carries the closing argument. */
+.section-lede.tight { max-width: 50ch; }
+.section-lede.wide  { max-width: 70ch; }
+/* Contact-lede — the 17px lede on the contact section, sized up from the
+   standard section-lede because it carries the closing argument. The
+   bottom-margin matches the rhythm under the contact section h2. */
 .contact-lede {
   font-size: var(--text-lede);
   line-height: var(--leading-body);
+  max-width: 50ch;
+  margin: 0 0 32px;
 }
 /* Mono micro-eyebrow — the 11px uppercase mono label used inside hero card
    tab strips and similar callouts. */
@@ -289,7 +297,7 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
 /* Sent-state success badge for the contact form. */
 .contact-success-glyph { font-size: 3rem; margin-bottom: 16px; }
 .contact-success-title { font-family: var(--serif); font-size: 1.75rem; margin-bottom: 8px; letter-spacing: var(--tracking-tight); }
-.contact-error { color: var(--danger); font-size: 0.875rem; }
+.contact-error { color: var(--danger); font-size: var(--text-body-2xs); }
 
 .wrap { max-width: 1240px; margin: 0 auto; padding: 0 32px; }
 @media (max-width: 700px) { .wrap { padding: 0 20px; } }
@@ -314,6 +322,7 @@ section.flow { padding: 120px 0 80px; }
   letter-spacing: var(--tracking-tighter);
   margin: 0 0 20px;
   font-weight: 400;
+  text-wrap: balance;
 }
 .section-headline.tight { margin-bottom: 16px; }
 .section-headline em { color: var(--accent); font-style: italic; }
@@ -521,10 +530,10 @@ html.mode-transitioning .accent {
 .hero { min-height: 100vh; padding: 110px 0 40px; display: flex; flex-direction: column; justify-content: center; position: relative; isolation: isolate; }
 .hero-grid { display: grid; grid-template-columns: 1.3fr 1fr; gap: 64px; align-items: center; }
 @media (max-width: 1040px) { .hero-grid { grid-template-columns: 1fr; gap: 40px; } }
-.hero-headline { font-family: var(--serif); font-size: var(--text-hero); line-height: var(--leading-display); letter-spacing: var(--tracking-tighter); margin: 0 0 24px; font-weight: 400; }
+.hero-headline { font-family: var(--serif); font-size: var(--text-hero); line-height: var(--leading-display); letter-spacing: var(--tracking-tighter); margin: 0 0 24px; font-weight: 400; text-wrap: balance; }
 .hero-headline .italic { font-style: italic; color: var(--accent); }
 .hero-headline .sub { display: block; font-family: var(--sans); font-size: 0.22em; letter-spacing: var(--tracking-display); text-transform: uppercase; color: var(--ink-mute); margin-bottom: 16px; font-weight: 500; }
-.hero-lede { font-size: var(--text-body); max-width: 520px; color: var(--ink-dim); margin: 0 0 24px; line-height: var(--leading-comfort); }
+.hero-lede { font-size: var(--text-body); max-width: 60ch; color: var(--ink-dim); margin: 0 0 24px; line-height: var(--leading-comfort); }
 .hero-lede strong { color: var(--ink); font-weight: 500; }
 .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
 .btn { display: inline-flex; align-items: center; gap: 10px; padding: 14px 22px; font-family: var(--mono); font-size: var(--text-body-xs); border-radius: 2px; border: 1px solid var(--line-bright); transition: all 0.2s cubic-bezier(.2,.7,.2,1); position: relative; overflow: hidden; }
@@ -637,9 +646,9 @@ html.mode-transitioning .accent {
 /* ═══════ ABOUT ═══════ */
 .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: start; }
 @media (max-width: 900px) { .about-grid { grid-template-columns: 1fr; gap: 32px; } }
-.about h2 { font-family: var(--serif); font-size: var(--text-h2); line-height: var(--leading-tight); letter-spacing: var(--tracking-tighter); margin: 0 0 20px; font-weight: 400; }
+.about h2 { font-family: var(--serif); font-size: var(--text-h2); line-height: var(--leading-tight); letter-spacing: var(--tracking-tighter); margin: 0 0 20px; font-weight: 400; text-wrap: balance; }
 .about h2 em { color: var(--accent); font-style: italic; }
-.about p { color: var(--ink-dim); font-size: var(--text-body-sm); line-height: var(--leading-body); margin: 0 0 14px; max-width: 520px; }
+.about p { color: var(--ink-dim); font-size: var(--text-body-sm); line-height: var(--leading-body); margin: 0 0 14px; max-width: 60ch; }
 .about p strong { color: var(--ink); font-weight: 500; }
 .fact-list { border-top: 1px solid var(--line); margin-top: 24px; }
 .fact-list .fact { display: flex; gap: 20px; padding: 12px 0; border-bottom: 1px solid var(--line); font-family: var(--mono); font-size: var(--text-label); align-items: baseline; flex-wrap: nowrap; transition: background 0.3s; position: relative; }
@@ -735,7 +744,7 @@ html.mode-transitioning .accent {
 .feature-grid { display: grid; grid-template-columns: 1fr 1.4fr; gap: 56px; position: relative; align-items: center; }
 @media (max-width: 900px) { .feature-grid { grid-template-columns: 1fr; gap: 32px; align-items: stretch; } .feature { padding: 28px; } }
 .feature .tag { display: inline-flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: var(--text-label-sm); color: var(--accent); text-transform: uppercase; letter-spacing: var(--tracking-label); padding: 4px 10px; background: var(--accent-soft); border-radius: 2px; margin-bottom: 16px; }
-.feature h3 { font-family: var(--serif); font-size: var(--text-h2-sm); line-height: var(--leading-tight); letter-spacing: var(--tracking-tighter); margin: 0 0 16px; font-weight: 400; }
+.feature h3 { font-family: var(--serif); font-size: var(--text-h2-sm); line-height: var(--leading-tight); letter-spacing: var(--tracking-tighter); margin: 0 0 16px; font-weight: 400; text-wrap: balance; }
 .feature h3 em { color: var(--accent); }
 .feature p { color: var(--ink-dim); margin: 0 0 16px; }
 .feature-evidence { font-family: var(--mono); font-size: var(--text-label); line-height: 1.6; color: var(--ink-mute); letter-spacing: var(--tracking-wide); margin: 24px 0 0; }
@@ -746,11 +755,11 @@ html.mode-transitioning .accent {
 .pipe-node { display: grid; grid-template-columns: 24px 1fr auto; gap: 12px; align-items: center; padding: 10px 14px; background: var(--bg-card); border: 1px solid var(--line); border-radius: 3px; transition: all 0.3s; position: relative; }
 .pipe-node.active { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent-soft), 0 0 24px var(--accent-soft); transform: translateX(4px); }
 .pipe-node.active::after { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--accent); box-shadow: 0 0 8px var(--accent); }
-.pipe-node .glyph { color: var(--accent); font-size: 0.875rem; transition: text-shadow 0.3s; }
+.pipe-node .glyph { color: var(--accent); font-size: var(--text-body-2xs); transition: text-shadow 0.3s; }
 .pipe-node.active .glyph { text-shadow: 0 0 12px var(--accent); }
 .pipe-node .nm { color: var(--ink); }
 .pipe-node .ss { color: var(--ink-mute); font-size: var(--text-label-sm); }
-.pipe-arrow { color: var(--ink-mute); padding-left: 30px; font-size: 0.875rem; height: 12px; line-height: 1; }
+.pipe-arrow { color: var(--ink-mute); padding-left: 30px; font-size: var(--text-body-2xs); height: 12px; line-height: 1; }
 .pipe-status { color: var(--ink-mute); font-size: var(--text-label-sm); font-variant-numeric: tabular-nums; transition: color 0.2s; }
 .pipe-status[data-active] { color: var(--accent); }
 
@@ -772,7 +781,7 @@ html.mode-transitioning .accent {
 .commit:hover::before { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 12px var(--accent); }
 .commit.current::before { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft), 0 0 12px var(--accent); animation: pulse 2.4s ease-in-out infinite; }
 .commit .hash { font-family: var(--mono); font-size: var(--text-mini); color: var(--ink-mute); letter-spacing: var(--tracking-wide); }
-.commit .role { font-family: var(--serif); font-size: var(--text-subtitle); line-height: var(--leading-snug); margin: 2px 0 2px; letter-spacing: var(--tracking-snug); }
+.commit .role { font-family: var(--serif); font-size: var(--text-subtitle); line-height: var(--leading-snug); margin: 2px 0 2px; letter-spacing: var(--tracking-snug); text-wrap: balance; }
 .commit .company { font-family: var(--mono); font-size: var(--text-label); color: var(--accent); margin-bottom: 6px; }
 .commit .when { font-family: var(--mono); font-size: var(--text-mini); color: var(--ink-mute); margin-bottom: 8px; }
 .commit ul { margin: 0; padding: 0; list-style: none; }
@@ -948,7 +957,7 @@ html.mode-transitioning .accent {
 .article-title {
   font-family: var(--serif);
   font-size: var(--text-display);
-  line-height: 1.06;
+  line-height: var(--leading-display);
   letter-spacing: var(--tracking-tighter);
   font-weight: 400;
   color: var(--ink);
@@ -994,9 +1003,9 @@ html.mode-transitioning .accent {
   margin: 1.6em 0 0.4em;
   text-wrap: balance;
 }
-.article-content h2 { font-size: var(--text-h3); line-height: 1.2; }
+.article-content h2 { font-size: var(--text-h3); line-height: var(--leading-snug); }
 .article-content h3 { font-size: var(--text-h4); line-height: var(--leading-normal); }
-.article-content h4 { font-size: 1.125rem; }
+.article-content h4 { font-size: 1.125rem; line-height: var(--leading-normal); }
 .article-content p { margin: 1em 0; }
 .article-content a {
   color: var(--accent);
@@ -1005,7 +1014,7 @@ html.mode-transitioning .accent {
 }
 .article-content a:hover { border-bottom-color: var(--accent); color: var(--ink); }
 .article-content code {
-  font-family: var(--mono); font-size: 0.86em;
+  font-family: var(--mono); font-size: 0.875em;
   background: color-mix(in oklab, var(--bg-deep) 75%, transparent);
   padding: 2px 6px; border-radius: 3px;
   color: var(--accent);
@@ -1017,7 +1026,7 @@ html.mode-transitioning .accent {
   border-radius: 4px;
   padding: 18px 20px;
   overflow-x: auto;
-  font-size: 0.84375rem; line-height: var(--leading-body);
+  font-size: var(--text-body-xs); line-height: var(--leading-body);
   margin: 1.4em 0;
 }
 .article-content pre code {
@@ -1041,7 +1050,7 @@ html.mode-transitioning .accent {
 }
 .article-content table {
   width: 100%; border-collapse: collapse;
-  font-size: 0.875rem; margin: 1.4em 0;
+  font-size: var(--text-body-2xs); margin: 1.4em 0;
   border: 1px solid color-mix(in oklab, var(--line-bright) 40%, transparent);
 }
 .article-content th, .article-content td {
@@ -1153,12 +1162,14 @@ html.mode-transitioning .accent {
 .contact { border-top: 1px solid var(--line); padding: 120px 0 40px; }
 .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start; }
 @media (max-width: 900px) { .contact-grid { grid-template-columns: 1fr; gap: 40px; } }
-.contact h2 { font-family: var(--serif); font-size: var(--text-h2); line-height: var(--leading-tight); letter-spacing: var(--tracking-tighter); margin: 0 0 20px; font-weight: 400; }
+.contact h2 { font-family: var(--serif); font-size: var(--text-h2); line-height: var(--leading-tight); letter-spacing: var(--tracking-tighter); margin: 0 0 20px; font-weight: 400; text-wrap: balance; }
 .contact h2 em { color: var(--accent); }
 .contact-form { display: grid; gap: 12px; background: color-mix(in oklab, var(--bg-card) 58%, transparent); backdrop-filter: blur(20px) saturate(140%); -webkit-backdrop-filter: blur(20px) saturate(140%); padding: 28px; border: 1px solid color-mix(in oklab, var(--line-bright) 45%, transparent); border-radius: 6px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.05); position: relative; transition: border-color 0.3s, box-shadow 0.3s; }
 .contact-form:focus-within { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent), 0 0 40px var(--accent-soft); }
 .contact-form label { font-family: var(--mono); font-size: var(--text-label-sm); color: var(--ink-mute); text-transform: uppercase; letter-spacing: var(--tracking-label); }
-.contact-form input, .contact-form textarea { background: var(--bg); border: 1px solid var(--line-bright); border-radius: 3px; padding: 12px 14px; color: var(--ink); font: inherit; font-size: 0.875rem; transition: border-color 0.2s, box-shadow 0.2s; }
+/* font-size: 1rem (var(--text-body)) prevents iOS Safari from auto-zooming
+   on focus — anything <16px triggers the zoom-to-input UX defect. */
+.contact-form input, .contact-form textarea { background: var(--bg); border: 1px solid var(--line-bright); border-radius: 3px; padding: 12px 14px; color: var(--ink); font: inherit; font-size: var(--text-body); transition: border-color 0.2s, box-shadow 0.2s; }
 .contact-form input:focus, .contact-form textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent-soft); }
 .contact-form textarea { min-height: 120px; resize: vertical; font-family: var(--sans); }
 .contact-form button { justify-self: start; margin-top: 8px; }

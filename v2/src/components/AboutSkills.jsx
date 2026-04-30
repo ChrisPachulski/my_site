@@ -103,7 +103,7 @@ export function Skills() {
                 <em>where</em>
                 <span className="izzet-text-right"> I can help.</span>
               </h2>
-              <p className="dim reveal section-lede" data-delay="1" style={{ maxWidth: 440 }}>
+              <p className="dim reveal section-lede tight" data-delay="1">
                 I work in and mentor SQL and Python daily, and hold a strong nostalgia for R — the language I reach for when the problem needs a real statistician. Looker and BigQuery are where I spend most of my warehousing hours.
               </p>
             </div>
