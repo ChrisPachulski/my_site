@@ -1,0 +1,331 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-04-29T00:00:00Z",
+  "title": "Design System: Chris Pachulski Portfolio",
+  "extensions": {
+    "colorMeta": {
+      "plasma-violet": {
+        "role": "primary",
+        "displayName": "Plasma Violet",
+        "canonical": "oklch(0.70 0.26 300)",
+        "tonalRamp": [
+          "oklch(0.10 0.04 300)",
+          "oklch(0.20 0.10 300)",
+          "oklch(0.30 0.16 300)",
+          "oklch(0.40 0.20 300)",
+          "oklch(0.55 0.24 300)",
+          "oklch(0.70 0.26 300)",
+          "oklch(0.82 0.18 300)",
+          "oklch(0.94 0.06 300)"
+        ]
+      },
+      "cryo-blue": {
+        "role": "secondary",
+        "displayName": "Cryo Blue",
+        "canonical": "oklch(0.82 0.21 195)",
+        "tonalRamp": [
+          "oklch(0.15 0.04 195)",
+          "oklch(0.25 0.08 195)",
+          "oklch(0.35 0.12 195)",
+          "oklch(0.45 0.16 195)",
+          "oklch(0.60 0.19 195)",
+          "oklch(0.72 0.21 195)",
+          "oklch(0.82 0.21 195)",
+          "oklch(0.92 0.10 195)"
+        ]
+      },
+      "solar-red": {
+        "role": "secondary",
+        "displayName": "Solar Red",
+        "canonical": "oklch(0.82 0.21 28)",
+        "tonalRamp": [
+          "oklch(0.15 0.05 28)",
+          "oklch(0.25 0.10 28)",
+          "oklch(0.35 0.14 28)",
+          "oklch(0.48 0.18 28)",
+          "oklch(0.60 0.22 28)",
+          "oklch(0.68 0.25 28)",
+          "oklch(0.82 0.21 28)",
+          "oklch(0.94 0.10 28)"
+        ]
+      },
+      "izzet-sapphire": {
+        "role": "tertiary",
+        "displayName": "Izzet Sapphire",
+        "canonical": "oklch(0.72 0.22 250)",
+        "tonalRamp": [
+          "oklch(0.14 0.05 250)",
+          "oklch(0.24 0.09 250)",
+          "oklch(0.36 0.14 250)",
+          "oklch(0.48 0.18 250)",
+          "oklch(0.60 0.20 250)",
+          "oklch(0.72 0.22 250)",
+          "oklch(0.84 0.18 250)",
+          "oklch(0.94 0.08 250)"
+        ]
+      },
+      "izzet-fire": {
+        "role": "tertiary",
+        "displayName": "Izzet Fire",
+        "canonical": "oklch(0.68 0.25 28)",
+        "tonalRamp": [
+          "oklch(0.14 0.05 28)",
+          "oklch(0.24 0.10 28)",
+          "oklch(0.34 0.14 28)",
+          "oklch(0.46 0.18 28)",
+          "oklch(0.58 0.22 28)",
+          "oklch(0.68 0.25 28)",
+          "oklch(0.82 0.20 28)",
+          "oklch(0.94 0.10 28)"
+        ]
+      },
+      "chartreuse-spark": {
+        "role": "tertiary",
+        "displayName": "Chartreuse Spark",
+        "canonical": "oklch(0.88 0.20 125)",
+        "tonalRamp": [
+          "oklch(0.18 0.05 125)",
+          "oklch(0.30 0.10 125)",
+          "oklch(0.42 0.14 125)",
+          "oklch(0.55 0.17 125)",
+          "oklch(0.68 0.19 125)",
+          "oklch(0.78 0.20 125)",
+          "oklch(0.88 0.20 125)",
+          "oklch(0.96 0.10 125)"
+        ]
+      },
+      "bg-deep": {
+        "role": "neutral",
+        "displayName": "Aurora Deep",
+        "canonical": "oklch(0.10 0.04 280)",
+        "tonalRamp": [
+          "oklch(0.06 0.02 280)",
+          "oklch(0.10 0.04 280)",
+          "oklch(0.16 0.05 280)",
+          "oklch(0.22 0.06 280)",
+          "oklch(0.30 0.08 280)",
+          "oklch(0.40 0.07 275)",
+          "oklch(0.65 0.08 270)",
+          "oklch(0.92 0.04 270)"
+        ]
+      },
+      "ink-cool": {
+        "role": "neutral",
+        "displayName": "Periwinkle Ink",
+        "canonical": "oklch(0.92 0.04 270)",
+        "tonalRamp": [
+          "oklch(0.10 0.04 280)",
+          "oklch(0.20 0.05 280)",
+          "oklch(0.30 0.06 275)",
+          "oklch(0.40 0.07 275)",
+          "oklch(0.55 0.08 272)",
+          "oklch(0.65 0.08 270)",
+          "oklch(0.78 0.06 270)",
+          "oklch(0.92 0.04 270)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display (Orbitron)",
+        "purpose": "Cyberpunk-mode section titles only. Uppercase. Replaces serif headlines when data-vibe=cyberpunk."
+      },
+      "headline": {
+        "displayName": "Headline (Instrument Serif)",
+        "purpose": "Hero only. Single italic-pivot word tinted Plasma Violet."
+      },
+      "title": {
+        "displayName": "Title (Instrument Serif)",
+        "purpose": "Project rows, commit roles, blog modal h1, feature h3."
+      },
+      "body": {
+        "displayName": "Body (Inter Tight)",
+        "purpose": "Paragraph prose, lede, supporting copy. Max-width 65–75ch."
+      },
+      "label": {
+        "displayName": "Label / Mono (JetBrains Mono)",
+        "purpose": "Hashes, labels, indices, captions, code, stack tags. The font is the truth-claim."
+      }
+    },
+    "shadows": [
+      {
+        "name": "ambient-halo",
+        "value": "0 0 60px -20px oklch(0.70 0.26 300 / 0.22)",
+        "purpose": "Idle glow under the hero MTG card and the feature panel. Always-on, very low intensity."
+      },
+      {
+        "name": "hover-halo",
+        "value": "0 0 0 1px oklch(0.70 0.26 300), 0 0 40px oklch(0.70 0.26 300 / 0.22)",
+        "purpose": "Hover affordance on commit cards, project rows, pipe nodes. The 1px ring is the affordance, the 40px wash is the warmth."
+      },
+      {
+        "name": "focus-halo",
+        "value": "0 0 0 1px oklch(0.70 0.26 300), 0 0 56px oklch(0.70 0.26 300 / 0.22)",
+        "purpose": "Contact form on :focus-within. Larger, longer wash than hover — focus is more committed."
+      },
+      {
+        "name": "panel-inset-light",
+        "value": "inset 0 1px 0 rgba(255,255,255,0.05)",
+        "purpose": "Hairline along the top edge of every translucent panel. Suggests light catching the lip."
+      },
+      {
+        "name": "card-physical",
+        "value": "0 40px 80px -20px rgba(0,0,0,0.6), 0 0 0 1px oklch(0.30 0.08 280), 0 0 60px -20px oklch(0.70 0.26 300 / 0.22)",
+        "purpose": "The literal MTG card only. The single sanctioned drop-shadow in the system — the card is meant to read as a physical object lifted off the page."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-out-quart",
+        "value": "cubic-bezier(0.2, 0.7, 0.2, 1)",
+        "purpose": "Default ease for state transitions, scroll-reveals, project-row expansion. Exponential ease-out, no bounce."
+      },
+      {
+        "name": "breath-cycle",
+        "value": "7s ease-in-out infinite",
+        "purpose": "Izzet aura + hero card aura. Color-only pulse with a brief 1.012–1.035x scale hiccup mid-cycle. Halts under prefers-reduced-motion."
+      },
+      {
+        "name": "ripple-cycle",
+        "value": "9s ease-out infinite",
+        "purpose": "Hero card outer ripple. Scale + opacity, slow expansion."
+      },
+      {
+        "name": "aurora-drift-a",
+        "value": "72s ease-in-out infinite",
+        "purpose": "Background aurora layer A. Slow translation + 1.06x scale."
+      },
+      {
+        "name": "aurora-drift-b",
+        "value": "95s ease-in-out infinite",
+        "purpose": "Background aurora layer B. Counter-direction to layer A. Slightly slower."
+      },
+      {
+        "name": "git-trace",
+        "value": "14s linear infinite",
+        "purpose": "Resume git-log connector glow trace. Staggered by --i index across consecutive connectors."
+      }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "700px" },
+      { "name": "md", "value": "780px" },
+      { "name": "lg", "value": "900px" },
+      { "name": "xl", "value": "1040px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Plasma Violet fill, deep-bg ink, mono label. Cyberpunk clipped corners. Sweep gradient on hover.",
+      "html": "<button class=\"ds-btn-primary\">Let's talk <span class=\"ds-arrow\">&rarr;</span></button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; gap: 10px; padding: 14px 22px; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 13px; font-weight: 500; letter-spacing: 0.04em; background: oklch(0.70 0.26 300); color: oklch(0.10 0.04 280); border: 1px solid oklch(0.70 0.26 300); border-radius: 0; clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px); cursor: pointer; transition: background 0.2s cubic-bezier(0.2,0.7,0.2,1), color 0.2s, box-shadow 0.2s, transform 0.2s; box-shadow: 0 0 0 1px oklch(0.70 0.26 300), 0 0 32px oklch(0.70 0.26 300 / 0.22); position: relative; overflow: hidden; } .ds-btn-primary::before { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, oklch(0.70 0.26 300 / 0.22), transparent); transform: translateX(-100%); transition: transform 0.6s; } .ds-btn-primary:hover { background: oklch(0.10 0.04 280); color: oklch(0.70 0.26 300); transform: translateY(-2px); box-shadow: 0 0 0 1px oklch(0.70 0.26 300), 0 0 48px oklch(0.70 0.26 300); } .ds-btn-primary:hover::before { transform: translateX(100%); } .ds-btn-primary:focus-visible { outline: 2px solid oklch(0.82 0.21 195); outline-offset: 2px; } .ds-btn-primary .ds-arrow { transition: transform 0.2s; } .ds-btn-primary:hover .ds-arrow { transform: translateX(4px); }"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Bg-elev fill with clipped corners, ink-cool text, line-bright border. Hovers to violet glow.",
+      "html": "<button class=\"ds-btn-ghost\">View case studies <span class=\"ds-arrow\">&rarr;</span></button>",
+      "css": ".ds-btn-ghost { display: inline-flex; align-items: center; gap: 10px; padding: 14px 22px; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 13px; font-weight: 500; letter-spacing: 0.04em; background: oklch(0.16 0.05 280); color: oklch(0.92 0.04 270); border: 1px solid oklch(0.30 0.08 280); border-radius: 0; clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px); cursor: pointer; transition: all 0.2s cubic-bezier(0.2,0.7,0.2,1); position: relative; overflow: hidden; } .ds-btn-ghost::before { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, oklch(0.70 0.26 300 / 0.22), transparent); transform: translateX(-100%); transition: transform 0.6s; } .ds-btn-ghost:hover { border-color: oklch(0.70 0.26 300); color: oklch(0.70 0.26 300); transform: translateY(-2px); box-shadow: 0 0 0 1px oklch(0.70 0.26 300), 0 0 28px oklch(0.70 0.26 300 / 0.22); } .ds-btn-ghost:hover::before { transform: translateX(100%); } .ds-btn-ghost:focus-visible { outline: 2px solid oklch(0.82 0.21 195); outline-offset: 2px; } .ds-btn-ghost .ds-arrow { transition: transform 0.2s; } .ds-btn-ghost:hover .ds-arrow { transform: translateX(4px); }"
+    },
+    {
+      "name": "Section Label",
+      "kind": "custom",
+      "refersTo": "section-label",
+      "description": "Recurring section opener. Mono caption with leading numeric index and a trailing rule line.",
+      "html": "<div class=\"ds-section-label\"><span class=\"ds-num\">02</span> / skills <span class=\"ds-mute\">// SELECT * FROM tools ORDER BY depth DESC;</span></div>",
+      "css": ".ds-section-label { display: flex; align-items: center; gap: 14px; color: oklch(0.70 0.26 300); font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; letter-spacing: 0.08em; text-shadow: 0 0 8px oklch(0.70 0.26 300 / 0.22); } .ds-section-label::before { content: ''; width: 40px; height: 1px; background: oklch(0.70 0.26 300); box-shadow: 0 0 8px oklch(0.70 0.26 300); } .ds-section-label .ds-num { color: oklch(0.82 0.21 195); text-shadow: 0 0 8px oklch(0.82 0.21 195); } .ds-section-label .ds-mute { color: oklch(0.40 0.07 275); margin-left: 8px; }"
+    },
+    {
+      "name": "Project Row (interactive list row)",
+      "kind": "custom",
+      "refersTo": "project-row",
+      "description": "Editorial table row replacing the cliché icon-card grid. Left edge accent scaleY's in on hover. Title recolors. Click expands.",
+      "html": "<div class=\"ds-project-row\"><div class=\"ds-pidx\">01.</div><div><div class=\"ds-ptitle\">Wizards of the Coast — MTG Economics &amp; Analytics</div><div class=\"ds-pdesc\">Econometrics + internal tooling for Magic: The Gathering — pricing, cannibalization, POS weighting.</div></div><div class=\"ds-pmeta\"><span class=\"ds-tag\">Sr Data Scientist</span><span class=\"ds-pchevron\">&rsaquo;</span></div></div>",
+      "css": ".ds-project-row { background: color-mix(in oklab, oklch(0.18 0.07 280) 55%, transparent); backdrop-filter: blur(18px) saturate(140%); -webkit-backdrop-filter: blur(18px) saturate(140%); padding: 20px 28px; cursor: pointer; transition: background 0.25s, transform 0.25s, box-shadow 0.25s; display: grid; grid-template-columns: 48px 1fr auto; gap: 24px; align-items: center; position: relative; border: 1px solid oklch(0.82 0.21 195 / 0.25); border-radius: 0; box-shadow: inset 0 1px 0 rgba(255,255,255,0.05); } .ds-project-row::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: oklch(0.70 0.26 300); transform: scaleY(0); transform-origin: top; transition: transform 0.3s cubic-bezier(0.2,0.7,0.2,1); box-shadow: 0 0 12px oklch(0.70 0.26 300); } .ds-project-row:hover::before { transform: scaleY(1); } .ds-project-row:hover { background: color-mix(in oklab, oklch(0.70 0.26 300) 5%, oklch(0.10 0.04 280)); } .ds-pidx { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; color: oklch(0.40 0.07 275); transition: color 0.2s; } .ds-project-row:hover .ds-pidx { color: oklch(0.70 0.26 300); } .ds-ptitle { font-family: 'Instrument Serif', Georgia, serif; font-size: 22px; letter-spacing: -0.015em; color: oklch(0.92 0.04 270); transition: color 0.2s; } .ds-project-row:hover .ds-ptitle { color: oklch(0.70 0.26 300); text-shadow: 0 0 10px oklch(0.70 0.26 300 / 0.22); } .ds-pdesc { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; color: oklch(0.40 0.07 275); margin-top: 6px; } .ds-pmeta { display: flex; gap: 10px; align-items: center; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; color: oklch(0.65 0.08 270); } .ds-pmeta .ds-tag { padding: 4px 8px; border: 1px solid oklch(0.30 0.08 280); border-radius: 0; background: oklch(0.16 0.05 280); } .ds-pmeta .ds-pchevron { color: oklch(0.40 0.07 275); transition: transform 0.3s cubic-bezier(0.2,0.7,0.2,1), color 0.2s; }"
+    },
+    {
+      "name": "Commit Card (git-log resume)",
+      "kind": "card",
+      "refersTo": "commit-card",
+      "description": "Translucent panel framed as a git commit. Hash header, role, company, time, additions list with '+' bullets. Hover lights an accent border + halo.",
+      "html": "<div class=\"ds-commit\"><div class=\"ds-hash\">commit c0ffee1 <span class=\"ds-current\">&middot; (HEAD)</span></div><div class=\"ds-role\">Senior Data Scientist</div><div class=\"ds-company\">Wizards of the Coast</div><div class=\"ds-when\">Nov 2025 &mdash; present</div><ul><li>Partner with product strategy, sales, finance, and economics on Magic growth</li><li>Build scalable revenue reporting across channels and set cycles</li><li>Deep-dive profitability around pricing, inventory, and revenue recognition</li></ul></div>",
+      "css": ".ds-commit { position: relative; padding: 18px 22px; background: color-mix(in oklab, oklch(0.18 0.07 280) 55%, transparent); backdrop-filter: blur(18px) saturate(140%); -webkit-backdrop-filter: blur(18px) saturate(140%); border: 1px solid oklch(0.82 0.21 195 / 0.3); border-radius: 0; max-width: 500px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.05); transition: border-color 0.3s, box-shadow 0.3s; color: oklch(0.92 0.04 270); } .ds-commit:hover { border-color: oklch(0.70 0.26 300); box-shadow: 0 0 0 1px oklch(0.70 0.26 300), 0 0 48px oklch(0.70 0.26 300 / 0.22); } .ds-commit::before { content: ''; position: absolute; top: 20px; left: -6px; width: 10px; height: 10px; border-radius: 50%; background: oklch(0.82 0.21 195); border: 2px solid oklch(0.82 0.21 195); box-shadow: 0 0 12px oklch(0.82 0.21 195); animation: dsCommitPulse 2.4s ease-in-out infinite; } @keyframes dsCommitPulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.55; transform: scale(0.85); } } .ds-commit .ds-hash { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; color: oklch(0.40 0.07 275); letter-spacing: 0.04em; } .ds-commit .ds-current { color: oklch(0.70 0.26 300); } .ds-commit .ds-role { font-family: 'Instrument Serif', Georgia, serif; font-size: 20px; line-height: 1.15; margin: 2px 0; letter-spacing: -0.01em; } .ds-commit .ds-company { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; color: oklch(0.70 0.26 300); margin-bottom: 6px; text-shadow: 0 0 8px oklch(0.70 0.26 300 / 0.22); } .ds-commit .ds-when { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; color: oklch(0.40 0.07 275); margin-bottom: 8px; } .ds-commit ul { margin: 0; padding: 0; list-style: none; } .ds-commit ul li { padding: 2px 0 2px 18px; position: relative; color: oklch(0.65 0.08 270); font-size: 13px; line-height: 1.5; } .ds-commit ul li::before { content: '+'; position: absolute; left: 0; color: oklch(0.88 0.20 125); font-family: 'JetBrains Mono', ui-monospace, monospace; text-shadow: 0 0 8px oklch(0.88 0.20 125); }"
+    },
+    {
+      "name": "DAG Pipe Node (active state)",
+      "kind": "custom",
+      "refersTo": "pipe-node",
+      "description": "A node in the DAG pipeline visualization. Three states (queued / run / ok). Active state lights up with accent border, glyph glow, and a left-edge stripe.",
+      "html": "<div class=\"ds-pipe-node ds-active\"><span class=\"ds-glyph\">&#x25C6;</span><div><div class=\"ds-nm\">forecast.prophet</div><div class=\"ds-ss\">r &middot; time series ml</div></div><span class=\"ds-status\">&#9679; run</span></div>",
+      "css": ".ds-pipe-node { display: grid; grid-template-columns: 24px 1fr auto; gap: 12px; align-items: center; padding: 10px 14px; background: oklch(0.16 0.05 280); border: 1px solid oklch(0.22 0.06 280); border-radius: 0; transition: all 0.3s; position: relative; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; color: oklch(0.92 0.04 270); } .ds-pipe-node.ds-active { border-color: oklch(0.70 0.26 300); box-shadow: 0 0 0 1px oklch(0.70 0.26 300), 0 0 28px oklch(0.70 0.26 300 / 0.22); transform: translateX(4px); } .ds-pipe-node.ds-active::after { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: oklch(0.70 0.26 300); box-shadow: 0 0 8px oklch(0.70 0.26 300); } .ds-pipe-node .ds-glyph { color: oklch(0.70 0.26 300); font-size: 14px; transition: text-shadow 0.3s; } .ds-pipe-node.ds-active .ds-glyph { text-shadow: 0 0 12px oklch(0.70 0.26 300); } .ds-pipe-node .ds-nm { color: oklch(0.92 0.04 270); } .ds-pipe-node .ds-ss { color: oklch(0.40 0.07 275); font-size: 11px; } .ds-pipe-node .ds-status { color: oklch(0.70 0.26 300); font-size: 11px; }"
+    },
+    {
+      "name": "Article Card (writing tile)",
+      "kind": "card",
+      "refersTo": "article-card",
+      "description": "Blog post tile with mouse-follow radial glow on hover. Mono category eyebrow, serif title, mono meta footer. Keyboard-focusable.",
+      "html": "<article class=\"ds-article\" tabindex=\"0\"><div class=\"ds-cats\">Claude Code &middot; Econometrics</div><h4>Building an Autonomous Research Loop: The Stack, the Rationale, and What I Borrowed From Karpathy and Feynman</h4><div class=\"ds-meta\"><span>Feb 2026</span><span>&middot;</span><span>28 min read</span><span class=\"ds-readmore\">Read &rsaquo;</span></div></article>",
+      "css": ".ds-article { background: oklch(0.10 0.04 280); padding: 20px 22px; cursor: pointer; display: flex; flex-direction: column; gap: 8px; position: relative; overflow: hidden; transition: background 0.25s; border: 1px solid oklch(0.22 0.06 280); } .ds-article::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle 180px at var(--mx, 50%) var(--my, 50%), oklch(0.70 0.26 300 / 0.22), transparent 70%); opacity: 0; transition: opacity 0.3s; pointer-events: none; } .ds-article:hover::before { opacity: 1; } .ds-article:hover { background: oklch(0.16 0.05 280); } .ds-article .ds-cats { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; color: oklch(0.88 0.20 125); text-transform: uppercase; letter-spacing: 0.08em; position: relative; text-shadow: 0 0 8px oklch(0.88 0.20 125); } .ds-article h4 { font-family: 'Instrument Serif', Georgia, serif; font-size: 16px; line-height: 1.25; letter-spacing: -0.01em; margin: 0; font-weight: 400; position: relative; transition: color 0.2s; color: oklch(0.92 0.04 270); } .ds-article:hover h4 { color: oklch(0.70 0.26 300); } .ds-article .ds-meta { display: flex; gap: 14px; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; color: oklch(0.40 0.07 275); margin-top: auto; padding-top: 10px; position: relative; } .ds-article .ds-readmore { margin-left: auto; color: oklch(0.70 0.26 300); } .ds-article:focus-visible { outline: 2px solid oklch(0.70 0.26 300); outline-offset: -2px; }"
+    },
+    {
+      "name": "Skill Row + Depth Bar",
+      "kind": "custom",
+      "refersTo": "skill-row",
+      "description": "Single row from the skills table. Index, name, usage description, years, and a depth bar with a blue→red gradient and a glowing leading-edge crest.",
+      "html": "<div class=\"ds-skill-row\"><div class=\"ds-idx\">01</div><div class=\"ds-name\">SQL <span class=\"ds-daily\">&#9679;</span></div><div class=\"ds-use\">analytics, warehousing, reporting</div><div class=\"ds-yrs\">8y</div><div class=\"ds-bar\"><div class=\"ds-bar-fill\" style=\"width: 95%;\"></div></div></div>",
+      "css": ".ds-skill-row { display: grid; grid-template-columns: 60px 1.2fr 1fr 80px 100px; padding: 16px 20px; align-items: center; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 13px; transition: background 0.3s, box-shadow 0.3s; background: color-mix(in oklab, oklch(0.10 0.04 280) 72%, transparent); border: 1px solid oklch(0.68 0.25 28 / 0.35); border-radius: 6px; } .ds-skill-row:hover { background: linear-gradient(90deg, oklch(0.72 0.22 250 / 0.08) 0%, oklch(0.72 0.25 28 / 0.08) 100%); box-shadow: inset 0 0 0 1px oklch(0.72 0.25 28 / 0.2), 0 0 22px -8px oklch(0.72 0.25 28 / 0.5); } .ds-skill-row .ds-idx { color: oklch(0.72 0.22 250); } .ds-skill-row .ds-name { color: oklch(0.96 0.03 60); font-weight: 500; } .ds-skill-row .ds-daily { color: oklch(0.78 0.25 28); margin-left: 4px; text-shadow: 0 0 10px oklch(0.72 0.25 28 / 0.8); } .ds-skill-row .ds-use { color: oklch(0.82 0.04 60); font-size: 12px; } .ds-skill-row .ds-yrs { color: oklch(0.88 0.16 28); text-shadow: 0 0 8px oklch(0.80 0.22 28 / 0.5); } .ds-skill-row .ds-bar { height: 6px; background: oklch(0.25 0.03 260 / 0.6); border-radius: 0; overflow: hidden; position: relative; } .ds-skill-row .ds-bar-fill { height: 100%; background: linear-gradient(90deg, oklch(0.74 0.22 250) 0%, oklch(0.72 0.22 260) 30%, oklch(0.70 0.18 310) 55%, oklch(0.72 0.25 28) 85%, oklch(0.80 0.22 28) 100%); box-shadow: 0 0 18px oklch(0.72 0.25 28 / 0.55), inset 0 0 8px oklch(0.80 0.22 28 / 0.3); position: relative; transition: width 1.2s cubic-bezier(0.2, 0.8, 0.2, 1); } .ds-skill-row .ds-bar-fill::after { content: ''; position: absolute; right: 0; top: 0; width: 6px; height: 100%; background: linear-gradient(90deg, transparent 0%, oklch(0.92 0.18 28) 100%); box-shadow: 0 0 10px oklch(0.92 0.18 28), 0 0 22px oklch(0.80 0.22 28 / 0.7); opacity: 0.85; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Grimoire and the Git Log",
+    "overview": "A senior data scientist's portfolio staged as two registers in one frame: the arcane (Magic: The Gathering, Izzet guild colors, summoning seals, 'Legendary Creature, Human Wizard') and the version-controlled (git log resume, commit hashes, DAG flow, hand-coded everything). Every page element answers to one of those two registers, often both. The system is dark, cool, and wide-spaced. The base layer is a deep aurora-painted purple; content panels float in front, lit from underneath by violet halos that breathe on a 7-second cycle. Surfaces are quiet at rest. Color, glow, and motion arrive on cue, when the user does something to earn them. Cyberpunk is an undertone, not a costume — the mood is sorcerer's workshop at 2am, not Tron. This system explicitly rejects the category-reflex aesthetic.",
+    "keyCharacteristics": [
+      "Dark + cool: deep purple base, cool-white ink, violet primary accent.",
+      "Aurora-layered: continuous color field underneath, translucent panels in front. No hard drop-shadows.",
+      "Editorial typography: Instrument Serif headlines (italic accents on the operative word) over Inter Tight body, with JetBrains Mono carrying every label, hash, and code fragment. Orbitron arrives for cyberpunk-mode display headers.",
+      "Izzet duality: sapphire + fire as a paired signature on the two largest content cards (About = blue-dominant, Skills = red-dominant), with violet as the permanent base hue between them.",
+      "Sharp geometry: cards are flat panels with 0–8px radii. No bevels, no embossment, no glassmorphism in the macOS sense — just translucency + halo.",
+      "Motion is agency-bound: every animation responds to mouse, scroll, click, or focus. The two breathing auras are the only autoplay, and they are deliberately slow and color-only."
+    ],
+    "rules": [
+      { "name": "The One Voice Rule", "body": "Plasma Violet is the page's voice. Every other accent (Cryo Blue, Solar Red, Chartreuse) earns its place by carrying a specific role the violet cannot. Never use two accents of equal weight on the same screen — pick one to lead.", "section": "colors" },
+      { "name": "The Izzet Pair Is Sacred", "body": "Sapphire + Fire only appear together, only on the two large editorial cards and the hero MTG card. Never use sapphire alone, never use fire alone. The pair is the signature; splitting it dissolves it.", "section": "colors" },
+      { "name": "The Tinted-Black Rule", "body": "No #000. Every dark surface is tinted toward 280° (deep violet). The page background reads as charcoal-with-aurora, never as void.", "section": "colors" },
+      { "name": "The Italic Pivot Rule", "body": "In every serif headline and h2, exactly one word is set in italic and tinted Plasma Violet. That word IS the meaning of the line. Never two italic words. Never zero. The pivot does the work the rest of the line supports.", "section": "typography" },
+      { "name": "The Mono-Carries-Evidence Rule", "body": "Anything that needs to read as machine-recorded — git hashes, file paths, stack tags, schedule cadences, line numbers, indices — is JetBrains Mono. Anything written by a person is sans (body) or serif (headline). The font is the truth-claim.", "section": "typography" },
+      { "name": "The Display Font Is Cyberpunk-Only", "body": "Orbitron only fires under data-vibe=cyberpunk. In light mode or default vibe, headlines stay in Instrument Serif. The display font is a costume the site wears when it's in cyberpunk register, not a baseline.", "section": "typography" },
+      { "name": "The No-Shadow Rule", "body": "Drop-shadows are forbidden except on the literal MTG card. Depth is communicated through halo glow, backdrop-filter, and translucent layering — never through box-shadow with rgba black. If a panel needs to feel elevated, it floats over the aurora; if it needs to feel pressable, it gets a halo.", "section": "elevation" },
+      { "name": "The Breathing Is Color-Only", "body": "The two Izzet auras and the hero MTG aura breathe on a 7-second cycle. The breath is opacity-and-color, almost no scale (max 1.035x). Never animate width, height, padding, or any layout property — only opacity and transform: scale() within ±3.5%. Reduced motion freezes the breath entirely.", "section": "elevation" },
+      { "name": "The Halo Earns Hover, Not Idle", "body": "Cards have no permanent ring. The 1px accent border arrives on :hover or :focus-within and disappears when the user moves on. Permanent rings would clutter the aurora; affordance-on-demand keeps the page quiet at rest.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do anchor every screen on Plasma Violet as the single voice color. Use Cryo Blue / Solar Red / Chartreuse only for the specific roles named in §2.",
+      "Do italicize exactly one word per serif headline and tint it Plasma Violet — the italic word IS the claim.",
+      "Do make every animation respond to a user input — mouse, scroll, click, focus. The two breathing halo auras are the only autoplay; both are color-only and slow.",
+      "Do respect prefers-reduced-motion: reduce. Halt aurora drift, breathing halos, hero card tilt, particle drift, scroll reveals. Reduce all animation durations to 1ms. New components must follow.",
+      "Do translucent panels with backdrop-filter blur and a color-mix alpha background. The aurora is part of the component — let it bleed through.",
+      "Do use Instrument Serif for argument, Inter Tight for prose, JetBrains Mono for evidence. Orbitron only in cyberpunk-mode display headers.",
+      "Do keep cards flat at rest. Affordance arrives on :hover or :focus-within as a 1px violet ring + violet wash, not as a permanent border-or-shadow.",
+      "Do preserve the Izzet pair (Sapphire + Fire) as a single signature on About + Skills + the hero card only. Never separate them, never extend them."
+    ],
+    "donts": [
+      "Don't ship a generic Vercel/Linear-clone tech-bro portfolio: centered hero, gradient-text headline, glassmorphism cards, three-feature grid of identical icons-with-headings, dark-mode-violet-accent template. (PRODUCT.md anti-reference, propagated.)",
+      "Don't use recruiter-baiting buzzword voice: 'passionate,' 'data-driven storyteller,' 'unicorn,' 'I love coffee and impact.' LinkedIn-bio voice. Linktree-style one-page reduction. (PRODUCT.md anti-reference, propagated.)",
+      "Don't ship cinematic autoplay or scroll-jacking: Lottie sequences that play themselves, big effects that perform without user input, trailer energy. Interactivity must respond to input. (PRODUCT.md anti-reference, propagated.)",
+      "Don't descend into cyberpunk LARP: heavy synthwave gradients, scanlines used as ornament, fake-terminal hero with Matrix rain, neon-on-black gamer aesthetic. Cyberpunk is the undertone, not the costume. (PRODUCT.md anti-reference, propagated.)",
+      "Don't use border-left greater than 1px as a colored stripe on cards or list items. The project-row's 2px violet edge is the only sanctioned use, and it animates on transform: scaleY from 0, not as a static stripe.",
+      "Don't use background-clip: text with a gradient on regular UI text. The Izzet h2-split is the only sanctioned use, and it's tied to the dominant-aura logic. Headlines elsewhere use a single solid color.",
+      "Don't use macOS-style glassmorphism (heavy blur + bright bg + chunky shadow). The system already uses backdrop-filter blur structurally; adding white-tinted glass cards on top reads as clutter, not depth.",
+      "Don't add hard box-shadow drop-shadows. Depth is halo. The only exception is the literal MTG card.",
+      "Don't use #000 or #fff. Every dark surface is tinted toward 280° (violet); every cool-white is tinted toward 270°. Never neutral black, never neutral white.",
+      "Don't introduce a new accent color 'for variety.' The palette has roles. New colors dilute the One Voice.",
+      "Don't rebuild the hero around a centered profile photo + name + role triad. The MTG card IS the hero. Replacing it with a generic portfolio template is the failure mode this site exists to refuse.",
+      "Don't wire MTGBAN stats live. The $1.2M, 500+ subs, 8 yrs numbers are historical and frozen by design — divestiture compliance, not a placeholder. (PRODUCT.md design principle 5, propagated.)",
+      "Don't animate width, height, padding, margin, or any layout property. Animate transform, opacity, filter, box-shadow, and background-color only. Layout animations cause jank and reflow.",
+      "Don't wrap every component in a card. Most things don't need one. The aurora itself provides the visual frame; cards are reserved for editorial content (About, Skills, project rows, blog modal, contact form, commit history)."
+    ]
+  }
+}
