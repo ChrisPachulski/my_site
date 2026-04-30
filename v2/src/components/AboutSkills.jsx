@@ -132,6 +132,9 @@ export function Skills() {
 
 export function Feature() {
   const [active, setActive] = useState(0);
+  const reduced = usePrefersReducedMotion();
+  const userTookOver = useRef(false);
+  const pipeRef = useRef(null);
   const nodes = [
     { glyph: '◉', nm: 'scrape.tcgplayer',     ss: 'r · tidyverse · rvest' },
     { glyph: '◎', nm: 'scrape.cardkingdom',   ss: 'r · async http' },
@@ -139,6 +142,32 @@ export function Feature() {
     { glyph: '◆', nm: 'forecast.prophet',     ss: 'r · time series ml' },
     { glyph: '✦', nm: 'notify.subscribers',   ss: '500+ paying users' },
   ];
+  const total = nodes.length;
+  const claim = (i) => { userTookOver.current = true; setActive(i); };
+  // One demo cycle on viewport entry: advances every 1.6s through all steps,
+  // then freezes on the last step. Hover/focus/tap takes over permanently.
+  // Skipped under prefers-reduced-motion.
+  useEffect(() => {
+    if (reduced) return;
+    const el = pipeRef.current;
+    if (!el) return;
+    let timer = 0;
+    const io = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting) return;
+      io.disconnect();
+      let step = 0;
+      const tick = () => {
+        if (userTookOver.current) return;
+        step += 1;
+        if (step >= total) return;
+        setActive(step);
+        timer = window.setTimeout(tick, 1600);
+      };
+      timer = window.setTimeout(tick, 1600);
+    }, { threshold: 0.4 });
+    io.observe(el);
+    return () => { io.disconnect(); if (timer) window.clearTimeout(timer); };
+  }, [reduced, total]);
   return (
     <section id="feature">
       <div className="wrap">
@@ -159,7 +188,8 @@ export function Feature() {
               <div
                 className="pipe"
                 role="list"
-                aria-label="MTGBAN daily pipeline — hover or focus a step to advance"
+                aria-label="MTGBAN daily pipeline — tap, hover, or focus a step to advance"
+                ref={pipeRef}
               >
                 <div className="t-eyebrow" style={{ marginBottom: 4 }}>
                   dag: mtgban_daily_pricing · 03:00 UTC
@@ -171,8 +201,10 @@ export function Feature() {
                       role="listitem"
                       tabIndex={0}
                       aria-current={active === i ? 'step' : undefined}
-                      onMouseEnter={() => setActive(i)}
-                      onFocus={() => setActive(i)}
+                      onMouseEnter={() => claim(i)}
+                      onFocus={() => claim(i)}
+                      onClick={() => claim(i)}
+                      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); claim(i); } }}
                     >
                       <span className="glyph">{n.glyph}</span>
                       <div>

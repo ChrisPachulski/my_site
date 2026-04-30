@@ -191,6 +191,32 @@ export function Projects() {
   const [cat, setCat] = useState('all');
   const [expanded, setExpanded] = useState(null);
   const filtered = PROJECTS.filter(CATEGORIES.find(c => c.id === cat).filter);
+  const tabsRef = useRef(null);
+  const wrapRef = useRef(null);
+  useEffect(() => {
+    const el = tabsRef.current;
+    const wrap = wrapRef.current;
+    if (!el || !wrap) return;
+    const update = () => {
+      const overflows = el.scrollWidth - el.clientWidth > 1;
+      const atStart = el.scrollLeft <= 1;
+      const atEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 1;
+      const flags = [];
+      if (overflows && !atStart) flags.push('start');
+      if (overflows && !atEnd) flags.push('end');
+      wrap.setAttribute('data-overflow', flags.join(' '));
+    };
+    update();
+    el.addEventListener('scroll', update, { passive: true });
+    const ro = 'ResizeObserver' in window ? new ResizeObserver(update) : null;
+    if (ro) ro.observe(el);
+    window.addEventListener('resize', update);
+    return () => {
+      el.removeEventListener('scroll', update);
+      window.removeEventListener('resize', update);
+      if (ro) ro.disconnect();
+    };
+  }, []);
   return (
     <section id="portfolio">
       <div className="wrap">
@@ -205,15 +231,17 @@ export function Projects() {
             </p>
           </div>
           <div className="reveal" data-delay="2">
-            <div className="projects-tabs">
-              {CATEGORIES.map(c => {
-                const count = PROJECTS.filter(c.filter).length;
-                return (
-                  <button key={c.id} className={cat === c.id ? 'active' : ''} onClick={() => { setCat(c.id); setExpanded(null); }}>
-                    {c.label} <span className="count">({count})</span>
-                  </button>
-                );
-              })}
+            <div className="projects-tabs-wrap" ref={wrapRef}>
+              <div className="projects-tabs" role="tablist" ref={tabsRef}>
+                {CATEGORIES.map(c => {
+                  const count = PROJECTS.filter(c.filter).length;
+                  return (
+                    <button key={c.id} className={cat === c.id ? 'active' : ''} onClick={() => { setCat(c.id); setExpanded(null); }}>
+                      {c.label} <span className="count">({count})</span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </div>
         </div>

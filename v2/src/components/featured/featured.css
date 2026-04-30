@@ -381,3 +381,60 @@
 @media (prefers-reduced-motion: reduce) {
   .obsidian-wiki-card .graph-edge { opacity: 0.4 !important; }
 }
+
+/* Mobile: featured-tile flair was designed for a 2x2 grid cell. Compressed
+   into a 1-col 240-tall mobile cell, the SVG labels crash into the title
+   and meta and the whole thing reads as overlapping noise. Pull the flair
+   back to a quiet ambient gesture so the title and read-meta are legible. */
+@media (max-width: 780px) {
+  /* Push content below the absolutely-positioned badge band so the title
+     never wraps under it. The badge is ~24px tall + 12px top + 8px breathing
+     room ≈ 44px reserved at the top. */
+  .featured-tile { padding: 48px 22px 22px; gap: 10px; }
+  .featured-tile h4 { font-size: 1.0625rem; line-height: 1.3; }
+  .featured-tile .cats { margin-top: 0; }
+  .featured-tile .badge {
+    top: 12px;
+    right: 12px;
+    font-size: 8px;
+    padding: 3px 7px;
+  }
+
+  .research-loop-card .loop-svg { opacity: 0.18; }
+  .research-loop-card .loop-node .loop-label { display: none; }
+  /* Decorative iter-counter is redundant on mobile with the meta row already
+     showing the read-time/date — hiding it removes the bottom-overlap. */
+  .research-loop-card .iter-counter { display: none; }
+
+  .at-home-media-card .vignette {
+    background: radial-gradient(ellipse at center, transparent 35%, rgba(0,0,0,0.6) 100%);
+  }
+  /* Drop the CRT chromatic-aberration ghosting on the title — at mobile
+     scale it reads as illegible 3D rather than retro-tube callback. */
+  .at-home-media-card .amh-title::before,
+  .at-home-media-card .amh-title::after { display: none; }
+
+  .obsidian-wiki-card .graph-svg { opacity: 0.22; }
+  /* Centered showpiece number, not bottom-anchored — bottom is reserved for
+     the meta row. */
+  .obsidian-wiki-card .graph-counter {
+    position: relative;
+    left: 0;
+    top: auto;
+    bottom: auto;
+    transform: none;
+    margin-top: 8px;
+  }
+  .obsidian-wiki-card .count-num { font-size: 40px; text-shadow: none; }
+  .obsidian-wiki-card .count-sub { font-size: 9px; margin-top: 2px; max-width: none; }
+}
+
+/* Parchment: the dark vignette and dark-mode neutrals on flair were tuned
+   against deep purple. On parchment they read as smudges. Lighten or invert
+   the gestures so the foreground text wins. */
+html[data-theme="light"] .at-home-media-card .vignette {
+  background: radial-gradient(ellipse at center, transparent 60%, rgba(60,40,20,0.18) 100%);
+}
+html[data-theme="light"] .research-loop-card .loop-svg { opacity: 0.4; }
+html[data-theme="light"] .obsidian-wiki-card .graph-svg { opacity: 0.4; }
+html[data-theme="light"] .obsidian-wiki-card .count-num { text-shadow: 0 0 18px var(--accent-soft); }

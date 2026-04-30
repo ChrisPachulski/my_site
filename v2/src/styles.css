@@ -549,13 +549,27 @@ html.mode-transitioning .accent {
 .btn:focus-visible .arrow { transform: translateX(4px); }
 
 /* ═══════ MTG CARD (hero right) ═══════ */
+/* The card is a literal physical object, so its frame and inner panels stay
+   dark in both themes — its colors are pinned, not pulled from theme tokens. */
 .mtg-card {
+  /* Pinned card-internal palette so the card reads as a Magic card whether
+     the page is dark or parchment. */
+  --mtg-frame-deep: #0d0b0a;
+  --mtg-frame-soft: #1a1815;
+  --mtg-frame-mid:  #1f1c18;
+  --mtg-frame-rim:  #2a2621;
+  --mtg-line:       #3a342d;
+  --mtg-ink:        #f2ebdd;
+  --mtg-ink-dim:    #c5beae;
+  --mtg-ink-mute:   #8c8476;
+
   width: 100%; max-width: 420px; aspect-ratio: 2.5 / 3.5;
-  background: #0d0b0a linear-gradient(135deg, #1a1815, #0d0b0a);
+  background: var(--mtg-frame-deep) linear-gradient(135deg, var(--mtg-frame-soft), var(--mtg-frame-deep));
   background-clip: padding-box;
-  border: 1px solid var(--line-bright); border-radius: 14px;
+  border: 1px solid var(--mtg-line); border-radius: 14px;
   padding: 14px; position: relative; margin: 0 auto;
-  box-shadow: 0 40px 80px -20px rgba(0,0,0,0.6), 0 0 0 1px var(--line-bright), 0 0 60px -20px var(--accent-soft);
+  color: var(--mtg-ink);
+  box-shadow: 0 40px 80px -20px rgba(0,0,0,0.6), 0 0 0 1px var(--mtg-line), 0 0 60px -20px var(--accent-soft);
   transform-style: preserve-3d; transition: transform 0.4s cubic-bezier(.2,.7,.2,1), box-shadow 0.4s;
   will-change: transform;
 }
@@ -563,8 +577,8 @@ html.mode-transitioning .accent {
   box-shadow: 0 60px 100px -20px rgba(0,0,0,0.7), 0 0 0 1px var(--accent), 0 0 80px -10px var(--accent-soft);
 }
 .mtg-frame { display: grid; grid-template-rows: auto 1fr auto auto auto; gap: 8px; height: 100%; }
-.mtg-titlebar { display: flex; justify-content: space-between; align-items: center; background: linear-gradient(90deg, #2a2621, #1a1815); padding: 8px 12px; border-radius: 4px; border: 1px solid var(--line-bright); }
-.mtg-name { font-family: var(--serif); font-size: var(--text-lede); font-weight: 500; letter-spacing: var(--tracking-snug); }
+.mtg-titlebar { display: flex; justify-content: space-between; align-items: center; background: linear-gradient(90deg, var(--mtg-frame-rim), var(--mtg-frame-soft)); padding: 8px 12px; border-radius: 4px; border: 1px solid var(--mtg-line); }
+.mtg-name { font-family: var(--serif); font-size: var(--text-lede); font-weight: 500; letter-spacing: var(--tracking-snug); color: var(--mtg-ink); }
 .mtg-mana { display: flex; gap: 4px; }
 .mtg-pip { width: 22px; height: 22px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: var(--text-label-sm); font-weight: 600; box-shadow: inset 0 -2px 0 rgba(0,0,0,0.2), 0 0 0 1px rgba(0,0,0,0.3); }
 .pip-gen { background: #d8d0bc; color: #1a1713; }
@@ -573,20 +587,20 @@ html.mode-transitioning .accent {
 .pip-r { background: #f0a39b; color: #5c1a1a; }
 .pip-r svg { width: 13px; height: 13px; }
 .mtg-art {
-  border: 1px solid var(--line-bright); border-radius: 4px; overflow: hidden;
+  border: 1px solid var(--mtg-line); border-radius: 4px; overflow: hidden;
   background: linear-gradient(135deg, oklch(0.35 0.08 55), oklch(0.18 0.04 30));
   position: relative; min-height: 0;
 }
 .mtg-art img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.mtg-typebar { display: flex; justify-content: space-between; align-items: center; background: linear-gradient(90deg, #2a2621, #1a1815); padding: 6px 12px; border-radius: 3px; border: 1px solid var(--line-bright); font-family: var(--mono); font-size: var(--text-label-sm); }
-.mtg-type { color: var(--ink-dim); }
+.mtg-typebar { display: flex; justify-content: space-between; align-items: center; background: linear-gradient(90deg, var(--mtg-frame-rim), var(--mtg-frame-soft)); padding: 6px 12px; border-radius: 3px; border: 1px solid var(--mtg-line); font-family: var(--mono); font-size: var(--text-label-sm); }
+.mtg-type { color: var(--mtg-ink-dim); }
 .mtg-setsymbol { color: var(--accent); font-size: var(--text-body-xs); }
-.mtg-textbox { background: linear-gradient(180deg, #1f1c18, #15120f); border: 1px solid var(--line-bright); border-radius: 4px; padding: 10px 14px; font-size: var(--text-body-xs); line-height: var(--leading-comfort); min-height: 110px; }
-.mtg-rule { margin: 0 0 6px; color: var(--ink-dim); }
+.mtg-textbox { background: linear-gradient(180deg, var(--mtg-frame-mid), #15120f); border: 1px solid var(--mtg-line); border-radius: 4px; padding: 10px 14px; font-size: var(--text-body-xs); line-height: var(--leading-comfort); min-height: 110px; color: var(--mtg-ink-dim); }
+.mtg-rule { margin: 0 0 6px; color: var(--mtg-ink-dim); }
 .mtg-rule:first-of-type { color: var(--accent); font-family: var(--mono); font-size: var(--text-label-sm); letter-spacing: var(--tracking-loose); text-transform: uppercase; }
-.mtg-flavor { margin: 8px 0 0; font-style: italic; color: var(--ink-mute); font-size: var(--text-label); border-top: 1px solid var(--line); padding-top: 8px; }
+.mtg-flavor { margin: 8px 0 0; font-style: italic; color: var(--mtg-ink-mute); font-size: var(--text-label); border-top: 1px solid color-mix(in oklab, var(--mtg-line) 70%, transparent); padding-top: 8px; }
 .mtg-bottom { display: flex; justify-content: flex-end; padding: 0 8px; }
-.mtg-pt { font-family: var(--serif); font-size: 1.125rem; background: #1a1815; border: 1px solid var(--line-bright); padding: 3px 14px; border-radius: 3px; letter-spacing: var(--tracking-snug); }
+.mtg-pt { font-family: var(--serif); font-size: 1.125rem; background: var(--mtg-frame-soft); border: 1px solid var(--mtg-line); padding: 3px 14px; border-radius: 3px; letter-spacing: var(--tracking-snug); color: var(--mtg-ink); }
 
 /* MTG staged reveals */
 .mtg-stage { opacity: 0; transform: translateY(8px); animation: mtgIn 0.9s cubic-bezier(.2,.7,.2,1) forwards; animation-delay: var(--d, 0s); }
@@ -644,8 +658,9 @@ html.mode-transitioning .accent {
 }
 
 /* ═══════ ABOUT ═══════ */
-.about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: start; }
-@media (max-width: 900px) { .about-grid { grid-template-columns: 1fr; gap: 32px; } }
+.about-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 64px; align-items: start; }
+.about-grid > * { min-width: 0; }
+@media (max-width: 900px) { .about-grid { grid-template-columns: minmax(0, 1fr); gap: 32px; } }
 .about h2 { font-family: var(--serif); font-size: var(--text-h2); line-height: var(--leading-tight); letter-spacing: var(--tracking-tighter); margin: 0 0 20px; font-weight: 400; text-wrap: balance; }
 .about h2 em { color: var(--accent); font-style: italic; }
 .about p { color: var(--ink-dim); font-size: var(--text-body-sm); line-height: var(--leading-body); margin: 0 0 14px; max-width: 60ch; }
@@ -695,8 +710,37 @@ html.mode-transitioning .accent {
 }
 
 /* ═══════ PROJECTS ═══════ */
-.projects-tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); margin-bottom: 40px; font-family: var(--mono); font-size: var(--text-label); overflow-x: auto; overflow-y: hidden; min-width: 0; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+/* Edge-fade wrapper: signals "scrollable" on phones where the tab row would
+   otherwise look like it just truncates after the second tab.
+   `min-width: 0` is load-bearing — without it, the parent grid track defaults
+   to min-content and the tab row expands the column past the viewport,
+   breaking the inner overflow-x: auto. */
+.projects-tabs-wrap { position: relative; margin-bottom: 40px; min-width: 0; max-width: 100%; }
+.projects-tabs-wrap::before,
+.projects-tabs-wrap::after {
+  content: ""; position: absolute; top: 0; bottom: 1px; width: 32px;
+  pointer-events: none; z-index: 1;
+  opacity: 0; transition: opacity 0.2s ease;
+}
+.projects-tabs-wrap::before {
+  left: 0;
+  background: linear-gradient(90deg, var(--bg) 0%, transparent 100%);
+}
+.projects-tabs-wrap::after {
+  right: 0;
+  background: linear-gradient(270deg, var(--bg) 0%, transparent 100%);
+}
+.projects-tabs-wrap[data-overflow~="start"]::before { opacity: 1; }
+.projects-tabs-wrap[data-overflow~="end"]::after { opacity: 1; }
+/* Fallback: when JS hasn't tagged the wrapper, show end-fade by default
+   on touch viewports so the affordance still appears. */
+@media (max-width: 780px) {
+  .projects-tabs-wrap:not([data-overflow])::after { opacity: 1; }
+}
+
+.projects-tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); font-family: var(--mono); font-size: var(--text-label); overflow-x: auto; overflow-y: hidden; min-width: 0; -webkit-overflow-scrolling: touch; scrollbar-width: none; scroll-snap-type: x proximity; }
 .projects-tabs::-webkit-scrollbar { display: none; }
+.projects-tabs button { scroll-snap-align: start; }
 .projects-tabs button { padding: 14px 18px; color: var(--ink-mute); border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.2s; white-space: nowrap; }
 .projects-tabs button:hover { color: var(--ink-dim); }
 .projects-tabs button.active { color: var(--ink); border-bottom-color: var(--accent); }
@@ -827,9 +871,22 @@ html.mode-transitioning .accent {
 /* ═══════ WRITING ═══════ */
 .writing-grid { display: grid; grid-template-columns: repeat(3, 1fr); grid-auto-flow: dense; gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 4px; overflow: hidden; }
 @media (max-width: 1040px) { .writing-grid { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 780px) { .writing-grid { grid-template-columns: 1fr; } }
 .writing-grid .featured { grid-column: span 2; grid-row: span 2; }
-@media (max-width: 780px) { .writing-grid .featured { grid-column: 1; grid-row: auto; min-height: 320px; } }
+/* Mobile: switch to flex-column and float the three large flair cards to
+   the top so the page reads as "showcase, then archive" instead of a
+   stair-step of small/large/small/large/small. */
+@media (max-width: 780px) {
+  .writing-grid {
+    display: flex;
+    flex-direction: column;
+    grid-template-columns: none;
+  }
+  .writing-grid .featured { grid-column: auto; grid-row: auto; min-height: 240px; order: -1; }
+  /* Subtle separator between the showcase block and the archive list. */
+  .writing-grid .featured + :not(.featured)::before {
+    content: ""; display: none;
+  }
+}
 .article { background: var(--bg); padding: 20px 22px; transition: background 0.25s; cursor: pointer; display: flex; flex-direction: column; gap: 8px; position: relative; overflow: hidden; }
 .article::before { content: ""; position: absolute; inset: 0; background: radial-gradient(circle 180px at var(--mx, 50%) var(--my, 50%), var(--accent-soft), transparent 70%); opacity: 0; transition: opacity 0.3s; pointer-events: none; }
 .article:hover::before { opacity: 1; }
@@ -1142,11 +1199,41 @@ html.mode-transitioning .accent {
 @media (max-width: 700px) {
   .article-modal-backdrop { padding: 24px 0 0; }
   .article-modal-panel { border-radius: 8px 8px 0 0; min-height: calc(100vh - 24px); }
-  .article-head { padding: 28px 22px 24px; }
-  .article-content { padding: 28px 22px; font-size: var(--text-body); }
-  .article-foot { padding: 22px 22px 28px; }
-  .article-shell { padding: 80px 18px 60px; }
+  .article-head { padding: 28px 18px 24px; }
+  .article-content {
+    padding: 28px 18px;
+    font-size: var(--text-body);
+    line-height: 1.65;
+  }
+  .article-content > * + * { margin-top: 1.15em; }
+  .article-content p { margin: 0.9em 0; }
+  .article-content h2,
+  .article-content h3,
+  .article-content h4 { margin: 1.4em 0 0.4em; }
+  .article-content pre { padding: 14px 16px; margin: 1.2em -2px; border-radius: 4px; }
+  .article-foot { padding: 22px 18px 28px; }
+  .article-shell { padding: 80px 16px 60px; }
   .article-doc--page { max-width: 100%; }
+}
+
+/* Parchment polish: inline code on cream needs a touch more contrast, the
+   block-pre surface should be tinted toward warm-stone (not bg-deep cream)
+   so it reads as a code zone, and blockquote leans burgundy not violet. */
+html[data-theme="light"] .article-content code {
+  background: color-mix(in oklab, var(--bg-elev) 80%, transparent);
+  color: oklch(0.42 0.18 305);
+  border-color: color-mix(in oklab, var(--line-bright) 55%, transparent);
+}
+html[data-theme="light"] .article-content pre {
+  background: color-mix(in oklab, var(--bg-elev) 70%, transparent);
+  border-color: color-mix(in oklab, var(--line-bright) 55%, transparent);
+}
+html[data-theme="light"] .article-content pre code {
+  color: oklch(0.30 0.04 280);
+}
+html[data-theme="light"] .article-content blockquote {
+  border-left-color: color-mix(in oklab, var(--accent) 55%, transparent);
+  color: oklch(0.38 0.04 280);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1259,6 +1346,13 @@ html[data-vibe="cyberpunk"] .feature h3 em,
 html[data-vibe="cyberpunk"] .contact h2 em,
 html[data-vibe="cyberpunk"] section h2 em {
   text-shadow: 0 0 28px var(--accent-soft), 0 0 10px var(--accent-soft);
+}
+/* Mobile: chromatic aberration on the hero reads as muddy 3D blur at small
+   sizes — drop the directional split, keep a soft single-color halo. */
+@media (max-width: 780px) {
+  html[data-vibe="cyberpunk"] .hero-headline {
+    text-shadow: 0 0 28px oklch(0.82 0.21 195 / 0.22);
+  }
 }
 
 html[data-vibe="cyberpunk"] .nav { background: color-mix(in oklab, var(--bg) 78%, transparent); }
@@ -1468,7 +1562,10 @@ html[data-vibe="cyberpunk"] .section-label .num { color: var(--accent-2); text-s
 .izzet-card {
   position: relative;
   padding: 56px clamp(28px, 4vw, 64px);
-  background: linear-gradient(135deg, #0e0b09 0%, #15120f 100%);
+  background:
+    linear-gradient(135deg,
+      color-mix(in oklab, var(--bg-card) 92%, transparent) 0%,
+      color-mix(in oklab, var(--bg-elev) 92%, transparent) 100%);
   border: 1px solid var(--line-bright);
   border-radius: 8px;
   isolation: isolate;
@@ -1481,6 +1578,24 @@ html[data-vibe="cyberpunk"] .section-label .num { color: var(--accent-2); text-s
     0 0 300px 40px oklch(0.55 0.10 300 / 0.09);
   overflow: visible;
 }
+
+/* Parchment: lighter frame, softer drop, dialed-down aura density so the
+   sapphire/fire blooms read as warm seal-glow against parchment instead of
+   bleeding to a muddy mid-tone. */
+html[data-theme="light"] .izzet-card {
+  background:
+    linear-gradient(135deg,
+      color-mix(in oklab, var(--bg-card) 96%, transparent) 0%,
+      color-mix(in oklab, var(--bg-elev) 88%, transparent) 100%);
+  box-shadow:
+    0 24px 60px -28px rgba(60, 40, 20, 0.28),
+    0 0 140px 10px oklch(0.78 0.12 305 / 0.10),
+    0 0 220px 32px oklch(0.78 0.10 280 / 0.06);
+}
+html[data-theme="light"] .izzet-card.izzet-blue::before,
+html[data-theme="light"] .izzet-card.izzet-red::before { opacity: 0.32; }
+html[data-theme="light"] .izzet-card.izzet-blue::after,
+html[data-theme="light"] .izzet-card.izzet-red::after { opacity: 0.30; }
 @media (max-width: 700px) {
   .izzet-card { padding: 36px 22px; }
   /* Pull the bloom way in on mobile. Stacked About + Skills cards would
