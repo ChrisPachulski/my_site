@@ -200,7 +200,7 @@ export function Projects() {
             <h2 className="reveal section-headline">
               A curated list of the work I'd show you <em>over coffee.</em>
             </h2>
-            <p className="dim reveal" data-delay="1" style={{ fontSize: 15, maxWidth: 520, lineHeight: 1.55 }}>
+            <p className="dim reveal section-lede" data-delay="1" style={{ maxWidth: 520 }}>
               Projects where I've built something that outlasted me, or moved a number that mattered. Click any row for the challenge, the shape of the solution, and the numbers.
             </p>
           </div>
@@ -435,7 +435,7 @@ export function Resume() {
             <h2 className="reveal section-headline tight">
               Seven years of <em>shipping</em>.
             </h2>
-            <p className="dim reveal" data-delay="1" style={{ maxWidth: 520, fontSize: 15, lineHeight: 1.55 }}>
+            <p className="dim reveal section-lede" data-delay="1" style={{ maxWidth: 520 }}>
               A git log of the work. Most recent at top, origin/HEAD marked. Financial services, digital marketing, CPG, tech — plus my own startup since 2017.
             </p>
           </div>
@@ -532,7 +532,7 @@ export function Writing({ onArticleOpen }) {
           <h2 className="reveal section-headline tight">
             Field notes from the <em>warehouse.</em>
           </h2>
-          <p className="dim reveal" data-delay="1" style={{ fontSize: 15, maxWidth: 560, lineHeight: 1.55 }}>
+          <p className="dim reveal section-lede" data-delay="1" style={{ maxWidth: 560 }}>
             Practical write-ups — R, Python, SQL, and the occasional Docker-assisted life hack. I write them as I solve them.
           </p>
         </div>
@@ -578,7 +578,7 @@ export function Contact() {
           <div>
             <div className="section-label reveal" style={{marginBottom:24}}><span className="num">06</span> / contact</div>
             <h2 className="reveal section-headline">Let's <em>go.</em></h2>
-            <p className="dim reveal" data-delay="1" style={{ fontSize: 17, maxWidth: 440, marginBottom: 32 }}>
+            <p className="dim reveal contact-lede" data-delay="1" style={{ maxWidth: 440, marginBottom: 32 }}>
               Hiring for analytics, BI, or data-engineering work? Need help designing a warehouse from scratch, or rescuing one that's on fire? I answer every genuine email.
             </p>
             <div className="fact-list reveal" data-delay="2" style={{ marginTop: 0 }}>
@@ -606,13 +606,13 @@ export function Contact() {
                   {sending ? 'Sending…' : <>Send message <span className="arrow">→</span></>}
                 </button>
                 {error && (
-                  <div className="dim" style={{ color: '#ff6b6b', fontSize: 14 }}>{error}</div>
+                  <div className="contact-error">{error}</div>
                 )}
               </>
             ) : (
               <div style={{ padding:'32px 8px', textAlign:'center' }}>
-                <div style={{ fontSize: 48, marginBottom: 16 }} className="accent">✓</div>
-                <div style={{ fontFamily:'var(--serif)', fontSize: 28, marginBottom: 8 }}>Message received.</div>
+                <div className="accent contact-success-glyph">✓</div>
+                <div className="contact-success-title">Message received.</div>
                 <div className="dim">I'll reply within 48 hours — usually faster.</div>
               </div>
             )}

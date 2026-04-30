@@ -103,7 +103,7 @@ export function Skills() {
                 <em>where</em>
                 <span className="izzet-text-right"> I can help.</span>
               </h2>
-              <p className="dim reveal" data-delay="1" style={{ maxWidth:440, fontSize:15, lineHeight:1.55 }}>
+              <p className="dim reveal section-lede" data-delay="1" style={{ maxWidth: 440 }}>
                 I work in and mentor SQL and Python daily, and hold a strong nostalgia for R — the language I reach for when the problem needs a real statistician. Looker and BigQuery are where I spend most of my warehousing hours.
               </p>
             </div>
@@ -161,7 +161,7 @@ export function Feature() {
                 role="list"
                 aria-label="MTGBAN daily pipeline — hover or focus a step to advance"
               >
-                <div style={{ color:'var(--ink-mute)', fontSize:11, textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:4 }}>
+                <div className="t-eyebrow" style={{ marginBottom: 4 }}>
                   dag: mtgban_daily_pricing · 03:00 UTC
                 </div>
                 {nodes.map((n, i) => (
@@ -179,7 +179,7 @@ export function Feature() {
                         <div className="nm">{n.nm}</div>
                         <div className="ss">{n.ss}</div>
                       </div>
-                      <span style={{ color: active === i ? 'var(--accent)' : 'var(--ink-mute)', fontSize: 11 }}>
+                      <span className="pipe-status" data-active={active === i || undefined}>
                         {active > i ? '✓ ok' : active === i ? '● run' : '○ queued'}
                       </span>
                     </div>
