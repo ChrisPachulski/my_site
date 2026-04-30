@@ -15,13 +15,13 @@ This post is about the technique I ended up using to fix that: decomposing agent
 
 Every second of an agent's logged-in shift lands in one of a small number of states. Genesys Cloud's routing status and presence APIs give you the following categories:
 
-- **Interacting** — on a call, in a chat, handling an email.
-- **Not Responding (NRT)** — routed to but unavailable. The agent was offered an interaction and didn't pick up.
-- **Idle** — available to receive routing, not currently engaged.
-- **On Queue Away / Meeting / Training** — away for a structured reason.
-- **Off Queue / Break** — unavailable by choice (break, lunch, system time).
+- **Interacting**, on a call, in a chat, handling an email.
+- **Not Responding (NRT)**, routed to but unavailable. The agent was offered an interaction and didn't pick up.
+- **Idle**, available to receive routing, not currently engaged.
+- **On Queue Away / Meeting / Training**, away for a structured reason.
+- **Off Queue / Break**, unavailable by choice (break, lunch, system time).
 
-The categorical sum of these over a shift equals total logged-in time. That much is straightforward — the Genesys API makes each component queryable via `/api/v2/analytics/users/aggregates/query` with the right metrics filter.
+The categorical sum of these over a shift equals total logged-in time. That much is straightforward, the Genesys API makes each component queryable via `/api/v2/analytics/users/aggregates/query` with the right metrics filter.
 
 The less obvious move is treating the *ratios* between components as the signal, rather than any absolute duration. A two-hour idle period on a 12-hour shift is 17% idle. A two-hour idle period on a 4-hour shift is 50% idle. Absolute duration is the wrong unit for coaching conversations.
 
@@ -33,9 +33,9 @@ Here's the operational definition of occupancy I use:
 occupancy = interacting / (interacting + idle)
 ```
 
-Notice what's not in that denominator. Not NRT — because NRT is its own red flag, and you don't want to dilute the occupancy signal by mixing it with availability signal. Not meeting, training, or break — because those are scheduled, structured time and shouldn't affect the productivity ratio.
+Notice what's not in that denominator. Not NRT, because NRT is its own red flag, and you don't want to dilute the occupancy signal by mixing it with availability signal. Not meeting, training, or break, because those are scheduled, structured time and shouldn't affect the productivity ratio.
 
-What you're measuring is: of the time this agent was *available for work on the queue*, how much of it was actually spent doing the work. High occupancy can mean two things — the agent is getting a lot of interactions routed to them, or the queue is brutal and the agent is being crushed. Low occupancy can mean the agent is fast and clearing the queue, or the queue is under-provisioned and the agent is waiting. Neither interpretation is automatic from the number alone.
+What you're measuring is: of the time this agent was *available for work on the queue*, how much of it was actually spent doing the work. High occupancy can mean two things, the agent is getting a lot of interactions routed to them, or the queue is brutal and the agent is being crushed. Low occupancy can mean the agent is fast and clearing the queue, or the queue is under-provisioned and the agent is waiting. Neither interpretation is automatic from the number alone.
 
 The coaching value is in the *distribution* of occupancy across agents in the same queue with similar tenure. One agent at 95% occupancy in a queue where the median is 60% is telling you something. One agent at 30% occupancy in the same queue is telling you something else.
 
@@ -79,14 +79,14 @@ That's the backbone. Occupancy and NRT rate per agent, normalized to the compone
 
 Here's the wrinkle you won't find in the Genesys docs. Agents do not all work a single continuous shift per day. In a real operation you will see:
 
-- Agents on split shifts — a morning block and an evening block with a three-hour gap.
-- Agents on rotating timezones — a week of US Eastern hours, a week of US Pacific.
+- Agents on split shifts, a morning block and an evening block with a three-hour gap.
+- Agents on rotating timezones, a week of US Eastern hours, a week of US Pacific.
 - Night-shift coverage handing off to day-shift with a twenty-minute overlap.
 - Agents covering two different sub-queues in the same shift.
 
 A naive "shift = 9 AM to 5 PM" query will miscount every one of these. You need to derive shift boundaries from the data, not from a schedule.
 
-The heuristic I use: pull the agent's routing-status events, sort by timestamp, and split into shifts wherever there's a gap of more than 90 minutes with no `INTERACTING` or `IDLE` activity. Ninety minutes is the tuning parameter — it needs to be long enough to count a real break and short enough to not merge a split shift into one. If your operation has one-hour lunches built into schedules, bump it up. If your operation does fifteen-minute crossovers, bump it down.
+The heuristic I use: pull the agent's routing-status events, sort by timestamp, and split into shifts wherever there's a gap of more than 90 minutes with no `INTERACTING` or `IDLE` activity. Ninety minutes is the tuning parameter: long enough to count a real break and short enough to not merge a split shift into one. If your operation has one-hour lunches built into schedules, bump it up. If your operation does fifteen-minute crossovers, bump it down.
 
 ```python
 def split_into_shifts(df_events: pd.DataFrame, gap_minutes: int = 90) -> pd.DataFrame:
@@ -100,7 +100,7 @@ Then occupancy calculations happen per `(user_id, shift_id)` and roll up to a we
 
 ## Percentile-based bucketing
 
-Here's where the technique actually pays off. Once you have per-agent occupancy and NRT rate across a rolling window, you bucket agents against their peers — not against a fixed threshold.
+Here's where the technique actually pays off. Once you have per-agent occupancy and NRT rate across a rolling window, you bucket agents against their peers, not against a fixed threshold.
 
 ```python
 def bucket_agents(
@@ -134,13 +134,13 @@ def bucket_agents(
 
 Why percentile-based and not absolute? Because absolute thresholds drift with queue volume. A 70% occupancy threshold that was "good" in a quiet quarter becomes "the median" in a peak quarter. If you're trying to have a coaching conversation that says "you're in the bottom quartile of your peers" you want that to mean something relative to the operational reality of that quarter, not relative to a number somebody set eighteen months ago.
 
-The percentile cutoffs (25 / 75 in the example — the actual cutoffs you tune in production are a different conversation) are the stable handle.
+The percentile cutoffs (25 / 75 in the example, the actual cutoffs you tune in production are a different conversation) are the stable handle.
 
 ## Edge cases that matter
 
 Three edge cases will bite you if you don't handle them explicitly.
 
-**New hires and low-sample agents.** An agent with three days of data will have unstable occupancy numbers. Exclude them from the percentile pool until they cross a sample-size threshold — say, 40 hours of on-queue time. Include them in the report, but label them `insufficient_sample` instead of bucketing them.
+**New hires and low-sample agents.** An agent with three days of data will have unstable occupancy numbers. Exclude them from the percentile pool until they cross a sample-size threshold, say, 40 hours of on-queue time. Include them in the report, but label them `insufficient_sample` instead of bucketing them.
 
 **Post-training or return-from-leave agents.** The first two weeks after training or a long leave will look terrible on any occupancy metric. Carve out a cohort label for them, and exclude them from the percentile pool used to compute thresholds. You still report their numbers; you just don't let them pull down the distribution.
 

@@ -25,46 +25,46 @@ function useInView(threshold = 0.2) {
 
 const PROJECTS = [
   {
-    title: 'Wizards of the Coast — MTG Economics & Analytics Platform',
+    title: 'Wizards of the Coast: MTG Economics & Analytics Platform',
     tag: 'Sr Data Scientist · Nov 2025 – present',
     stack: ['Python', 'Snowflake', 'pyfixest', 'statsmodels', 'DuckDB', 'Smartsheet', 'MCP', 'Claude Code'],
-    desc: 'Econometrics and internal tooling for Magic: The Gathering — pricing, cannibalization, POS weighting, and revenue reconciliation across channels and set cycles.',
+    desc: 'Econometrics and internal tooling for Magic: The Gathering, covering pricing, cannibalization, POS weighting, and revenue reconciliation across channels and set cycles.',
     href: null, category: 'ic',
-    challenge: 'MTG spans channels, regions, and set cycles at billion-dollar scale. Decisions about pricing, inventory, mass-market expansion, and product mix need econometric rigor — not dashboards that say "line go up" — and the next analyst needs to reproduce the work.',
-    solution: "Built out an internal Python platform of 10 installable packages — Snowflake with role-based warehouse routing, a Sales Rate Index pipeline (IPF-raked POS weights + velocity/sell-through indices + synthetic control), an MTGJSON wrapper with a DuckDB cache, Smartsheet sync, Microsoft 365 auth, and more — that power the long-running analyses. Shipped a mass-market vs. core-hobby cannibalization study running 28+ identification strategies (TWFE, first-differenced, Bartik IV, distance IV, Oster bounds, synthetic control, causal forest, Bayesian) on a 38-MSA panel and a 200–600 MSA event-tracking panel. Built a price-elasticity model on an international market with clustered standard errors feeding 2026 planning scenarios. Stood up three MCP servers so AI agents can safely query Snowflake, MTGJSON, and project memory. Partners: product strategy, sales, finance, and economists.",
+    challenge: 'MTG spans channels, regions, and set cycles at billion-dollar scale. Decisions about pricing, inventory, mass-market expansion, and product mix need econometric rigor, not dashboards that say "line go up". The next analyst also needs to reproduce the work.',
+    solution: "Built out an internal Python platform of 10 installable packages that power the long-running analyses: Snowflake with role-based warehouse routing, a Sales Rate Index pipeline (IPF-raked POS weights + velocity/sell-through indices + synthetic control), an MTGJSON wrapper with a DuckDB cache, Smartsheet sync, Microsoft 365 auth, and more. Shipped a mass-market vs. core-hobby cannibalization study running 28+ identification strategies (TWFE, first-differenced, Bartik IV, distance IV, Oster bounds, synthetic control, causal forest, Bayesian) on a 38-MSA panel and a 200–600 MSA event-tracking panel. Built a price-elasticity model on an international market with clustered standard errors feeding 2026 planning scenarios. Stood up three MCP servers so AI agents can safely query Snowflake, MTGJSON, and project memory. Partners: product strategy, sales, finance, and economists.",
     metrics: [
       { v: '10', k: 'Internal Python packages' }, { v: '28+', k: 'Econometric strategies' },
       { v: '600', k: 'MSAs in EventLink panel' }, { v: '3', k: 'MCP servers shipped' },
     ],
   },
   {
-    title: 'The Providencia Group — ORR National Call Center Platform',
+    title: 'The Providencia Group: ORR National Call Center Platform',
     tag: 'Sr Data Analyst · Sep 2024 – Nov 2025',
     stack: ['Python', 'R', 'Genesys Cloud', 'Salesforce', 'SharePoint', 'Microsoft 365', 'Unanet', 'SuccessKPI', 'PowerShell'],
-    desc: "Data + reporting platform for a federal children's-safety hotline — trafficking, abuse, runaway, and safety case reporting for the Office of Refugee Resettlement.",
+    desc: "Data + reporting platform for a federal children's-safety hotline: trafficking, abuse, runaway, and safety case reporting for the Office of Refugee Resettlement.",
     href: null, category: 'ic',
-    challenge: 'The ORR National Call Center ran on undocumented scripts and brittle spreadsheets. Trafficking, abuse, and runaway reports — and the staffing decisions behind them — were being made on stale numbers, with no reproducibility and no clean handoff path for the next analyst.',
-    solution: 'Designed and shipped two internal Python packages (tpg_functions + tpg_reporting) plus a parallel R mirror, covering Genesys, Salesforce, SharePoint, Outlook/Teams, and Unanet. Wrote 19 production ETL scripts on 20 scheduled jobs spanning daily, weekly, and monthly cadences. Built agent performance bucketing (occupancy + idle/interacting/not-responding components), cross-system ID validation, and missing-data monitoring. A single PowerShell installer bootstraps the full stack — Python, VS Code, 270+ deps, isolated venv — end-to-end for the next analyst.',
+    challenge: 'The ORR National Call Center ran on undocumented scripts and brittle spreadsheets. Trafficking, abuse, and runaway reports, plus the staffing decisions behind them, were being made on stale numbers, with no reproducibility and no clean handoff path for the next analyst.',
+    solution: 'Designed and shipped two internal Python packages (tpg_functions + tpg_reporting) plus a parallel R mirror, covering Genesys, Salesforce, SharePoint, Outlook/Teams, and Unanet. Wrote 19 production ETL scripts on 20 scheduled jobs spanning daily, weekly, and monthly cadences. Built agent performance bucketing (occupancy + idle/interacting/not-responding components), cross-system ID validation, and missing-data monitoring. A single PowerShell installer bootstraps the full stack end-to-end for the next analyst: Python, VS Code, 270+ deps, isolated venv.',
     metrics: [
       { v: '168', k: 'Utility functions authored' }, { v: '19', k: 'Production ETL scripts' },
       { v: '20', k: 'Scheduled jobs (24/7)' }, { v: '6', k: 'External systems integrated' },
     ],
   },
   {
-    title: 'MTGBAN — Collectibles Pricing & Forecasting Platform',
+    title: 'MTGBAN: Collectibles Pricing & Forecasting Platform',
     tag: 'Co-founder · 2017 – 2025',
     stack: ['R', 'tidyverse', 'BigQuery', 'H2O AutoML', 'Prophet', 'RSelenium', 'Docker', 'Digital Ocean', 'Go'],
     desc: 'Eight years of continuous shipping. 38+ production R scripts (~26K LOC) running a multi-TCG pricing, forecasting, and distribution platform for 500+ paying subscribers.',
     href: 'https://www.mtgban.com/', category: 'founded',
     challenge: 'Collectibles markets fragment across 20+ marketplaces, six different trading-card games, and multiple grading authorities (PSA, Beckett). Pricing data is dirty, latent, and sold piecemeal. Serious traders, stores, and speculators lose spread to information asymmetry.',
-    solution: "Built the full stack from scratch. A BigQuery warehouse (gaeas-cradle) anchors the data layer. RSelenium + httr/rvest scrapers pull every major vendor — TCGplayer, Card Kingdom, Cardsphere, CK Buylist, MTGJSON, Scryfall — across MTG, Pokemon, Yu-Gi-Oh, One Piece, Lorcana, and Flesh and Blood, plus PSA and Beckett for graded cards. Forecasting is an H2O AutoML ensemble (GBM + Deep Learning) alongside Prophet for time-series. Community sentiment on Discord is mined with tidytext + NRC. A Twitter bot auto-distributes signals, MTGBAN's own API feeds paying subscribers, and a Go dashboard surfaces it all. Dockerized and running 24/7 on Digital Ocean since 2017.",
+    solution: "Built the full stack from scratch. A BigQuery warehouse (gaeas-cradle) anchors the data layer. RSelenium + httr/rvest scrapers pull every major vendor: TCGplayer, Card Kingdom, Cardsphere, CK Buylist, MTGJSON, Scryfall. They cover MTG, Pokemon, Yu-Gi-Oh, One Piece, Lorcana, and Flesh and Blood, plus PSA and Beckett for graded cards. Forecasting is an H2O AutoML ensemble (GBM + Deep Learning) alongside Prophet for time-series. Community sentiment on Discord is mined with tidytext + NRC. A Twitter bot auto-distributes signals, MTGBAN's own API feeds paying subscribers, and a Go dashboard surfaces it all. Dockerized and running 24/7 on Digital Ocean since 2017.",
     metrics: [
       { v: '$1.2M', k: 'Annual revenue' }, { v: '500+', k: 'Paying subscribers' },
       { v: '8 yrs', k: 'In continuous production' }, { v: '6', k: 'TCGs covered' },
     ],
   },
   {
-    title: 'Mozilla Firefox — Ad Performance Analytics',
+    title: 'Mozilla Firefox: Ad Performance Analytics',
     tag: 'Consultant · 2024', stack: ['Looker', 'SQL', 'Funnel analysis'],
     desc: 'Real-time ad performance dashboards + funnel analysis for a top-5 browser.',
     href: null, category: 'consulting',
@@ -73,7 +73,7 @@ const PROJECTS = [
     metrics: [{ v: '4 mo', k: 'Engagement' }, { v: '12', k: 'Dashboards shipped' }, { v: '-40%', k: 'Manual effort' }, { v: 'real', k: 'Time ad insights' }],
   },
   {
-    title: 'Ad.Net — Centralized Python Reporting Library',
+    title: 'Ad.Net: Centralized Python Reporting Library',
     tag: 'Sr BI Analyst · 2021–2024',
     stack: ['Python', 'Looker', 'ClickHouse', 'Docker', 'Jira API'],
     desc: 'One Python library replaced dozens of one-off scripts across the BI team.',
@@ -83,51 +83,51 @@ const PROJECTS = [
     metrics: [{ v: '40+', k: 'Looker dashboards' }, { v: '60%', k: 'Reporting time ↓' }, { v: '1', k: 'Source of truth' }, { v: '3 yrs', k: 'In production' }],
   },
   {
-    title: 'card-ops — Credit Card Portfolio AI Agent',
+    title: 'card-ops: Credit Card Portfolio AI Agent',
     tag: 'Open source · 2026',
     stack: ['Claude Code', 'Python', 'Node', 'YAML', 'PDF parsing'],
-    desc: 'Claude Code skill that evaluates card offers, compares cards, scans statements, and optimizes a personal credit-card portfolio — all with personal financial data kept local-only.',
+    desc: 'Claude Code skill that evaluates card offers, compares cards, scans statements, and optimizes a personal credit-card portfolio, all with personal financial data kept local-only.',
     href: 'https://github.com/ChrisPachulski/card-ops', category: 'open',
     challenge: 'Credit-card strategy is expert-level and fragmented across blogs (Doctor of Credit, The Points Guy, Frequent Miler). Every card offer takes 20–30 min to research against shifting issuer rules, and the personal financial data required to evaluate properly should never leave your machine.',
-    solution: 'Five structured modes — evaluate, compare, scan, optimize, tracker — routed automatically by a `/card-ops` skill. Reference docs codify 25+ issuer rules (Chase 5/24, Amex pop-up jail, Citi 48-month, Barclays 6/24, etc.), points valuations, and application timing. Strict .gitignore data contract separates user data (profile, statements, reports, cards.md) from the committed system layer (modes, docs, scripts, templates).',
+    solution: 'Five structured modes routed automatically by a `/card-ops` skill: evaluate, compare, scan, optimize, tracker. Reference docs codify 25+ issuer rules (Chase 5/24, Amex pop-up jail, Citi 48-month, Barclays 6/24, etc.), points valuations, and application timing. Strict .gitignore data contract separates user data (profile, statements, reports, cards.md) from the committed system layer (modes, docs, scripts, templates).',
     metrics: [
       { v: '5', k: 'Routed modes' }, { v: '25+', k: 'Issuer rules codified' },
       { v: '0', k: 'Cloud calls for PII' }, { v: 'MIT', k: 'License' },
     ],
   },
   {
-    title: 'session-sounds — Identity for Parallel AI Sessions',
+    title: 'session-sounds: Identity for Parallel AI Sessions',
     tag: 'Open source · 2026',
     stack: ['Python (stdlib)', 'WAV', 'PowerShell', 'zsh/bash', 'VS Code'],
-    desc: 'Every Claude Code / Codex session gets a named terminal tab + a unique notification sound, deduplicated across concurrent sessions — so you can run five in parallel and always know which one finished.',
+    desc: 'Every Claude Code / Codex session gets a named terminal tab + a unique notification sound, deduplicated across concurrent sessions, so you can run five in parallel and always know which one finished.',
     href: 'https://github.com/ChrisPachulski/session-sounds', category: 'open',
     challenge: 'Terminal tab naming is the #1 UX pain point for Claude Code power users running parallel sessions (tracked in anthropics/claude-code#7229). Generic notification tools focus on gamification rather than the actual problem: telling your sessions apart.',
-    solution: 'Hook-driven session identity — names the terminal tab, plays per-response sounds, deduplicates assignments across concurrent sessions, and ships event-type variants for completion, error, and approval prompts. Zero runtime dependencies (Python stdlib only), one-command installer for Windows, macOS, and Linux, and supports both Claude Code and Codex (including Codex on Windows, which almost no tools do).',
+    solution: 'Hook-driven session identity: names the terminal tab, plays per-response sounds, deduplicates assignments across concurrent sessions, and ships event-type variants for completion, error, and approval prompts. Zero runtime dependencies (Python stdlib only), one-command installer for Windows, macOS, and Linux, and supports both Claude Code and Codex (including Codex on Windows, which almost no tools do).',
     metrics: [
       { v: '0', k: 'Runtime deps' }, { v: '3', k: 'OSes supported' },
       { v: '2', k: 'Agents (CC + Codex)' }, { v: 'MIT', k: 'License' },
     ],
   },
   {
-    title: 'clarity — Plan Maintenance for AI Agents',
+    title: 'clarity: Plan Maintenance for AI Agents',
     tag: 'Open source · 2026',
     stack: ['Claude Code', 'MCP', 'Markdown', 'Mermaid', 'DuckDB'],
     desc: "Scans an agent's plans/ directory, classifies each plan by staleness, extracts the decisions worth keeping into DECISIONS.md + memory, archives or prunes the rest.",
     href: 'https://github.com/ChrisPachulski/clarity', category: 'open',
     challenge: 'AI coding agents generate plan files every session. They pile up into a graveyard and nobody deletes them because the design decisions buried inside might still matter later.',
-    solution: 'Five-step process: inventory → classify (active / completed / stale / dormant) → extract decisions into DECISIONS.md + MCP memory → archive-or-prune into dated folders → report. Active plans (modified today or in the current session) are never touched. Agent-agnostic — Claude Code integration ships, adapting to Codex/Gemini/Copilot means pointing the slash command at that agent\'s plans directory.',
+    solution: 'Five-step process: inventory → classify (active / completed / stale / dormant) → extract decisions into DECISIONS.md + MCP memory → archive-or-prune into dated folders → report. Active plans (modified today or in the current session) are never touched. Agent-agnostic: Claude Code integration ships, adapting to Codex/Gemini/Copilot means pointing the slash command at that agent\'s plans directory.',
     metrics: [
       { v: '5', k: 'Classification steps' }, { v: '4', k: 'Staleness tiers' },
       { v: '2', k: 'Archival destinations' }, { v: 'MIT', k: 'License' },
     ],
   },
   {
-    title: 'dream — Memory Consolidation for AI Agents',
+    title: 'dream: Memory Consolidation for AI Agents',
     tag: 'Open source · 2026',
     stack: ['Python', 'MCP', 'DuckDB', 'YAML frontmatter', 'Claude Code'],
     desc: 'Audits dual-store memory (MCP semantic store + file-based memory/*.md), merges duplicates, decays stale entries, flags sticky memories nobody reinforces, and repairs the MEMORY.md index.',
     href: 'https://github.com/ChrisPachulski/dream', category: 'open',
-    challenge: 'Long-running AI agents accumulate memories in two places — MCP vector stores and file-based markdown — and over months duplicates pile up, orphans drift, and importance rotates. No existing tool audits both stores together.',
+    challenge: 'Long-running AI agents accumulate memories in two places: MCP vector stores and file-based markdown. Over months duplicates pile up, orphans drift, and importance rotates. No existing tool audits both stores together.',
     solution: 'Two-phase audit with 15 discrete steps. Phase 1 scans the MCP store: inventory, dry-run health report, merge near-duplicates, review stale / low-importance / sticky / snoozed entries, execute decay/boost/prune. Phase 2 scans the file store: orphan detection, intra-file + cross-store duplicate detection, path and code-reference validation, MEMORY.md index maintenance. User-type memories are protected throughout.',
     metrics: [
       { v: '15', k: 'Audit steps' }, { v: '2', k: 'Memory stores' },
@@ -135,10 +135,10 @@ const PROJECTS = [
     ],
   },
   {
-    title: 'ghscope — GitHub Repo Intelligence CLI',
+    title: 'ghscope: GitHub Repo Intelligence CLI',
     tag: 'Open source · 2026',
     stack: ['Python 3.12+', 'gh CLI', 'Rich', 'Click'],
-    desc: 'Point it at any GitHub repo, get a signal-dense scorecard — review coverage, reviewer concentration, bus factor, commit velocity, release cadence, first-timer retention, and the odds your PR will merge.',
+    desc: 'Point it at any GitHub repo, get a signal-dense scorecard: review coverage, reviewer concentration, bus factor, commit velocity, release cadence, first-timer retention, and the odds your PR will merge.',
     href: 'https://github.com/ChrisPachulski/ghscope', category: 'open',
     challenge: 'Judging a new GitHub repo by eyeballing PRs and contributors is slow. "Is this repo healthy? Who gatekeeps reviews? What are my odds a PR gets merged?" takes 20+ clicks per repo.',
     solution: 'Single-command scorecard plus five focused sub-commands (triage, review, contribs, health, assess) built on top of the `gh` CLI you already have authenticated. Every signal comes with a value, a read-out, and a human-readable interpretation ("single point of failure", "sole gatekeeper", "very slow triage"). Useful for deciding whether to contribute, whether to depend on, or what maintainer burden you\'re taking on.',
@@ -168,12 +168,12 @@ const PROJECTS = [
     metrics: [{ v: '4', k: 'Integrations' }, { v: '∞', k: 'Reuse' }, { v: 'MIT', k: 'License' }, { v: '1', k: 'import statement' }],
   },
   {
-    title: 'Consumer Edge — Brand / NAICS Auto-Tagging Pipeline',
+    title: 'Consumer Edge: Brand / NAICS Auto-Tagging Pipeline',
     tag: 'Data Analyst · Sep 2019 – Mar 2021',
     stack: ['R', 'tidyverse', 'RSelenium', 'BigQuery', 'Google Sheets API', 'Digital Ocean', 'rvest', 'Looker'],
     desc: 'Automated my own job. 23 R scripts, ~33K LOC, replacing manual brand classification with a scraping + rule-based NLP pipeline feeding a credit-card transaction panel used by banks.',
     href: null, category: 'ic',
-    challenge: "Consumer Edge sold credit-card transaction analytics to financial institutions. The bottleneck was humans — every new brand had to be looked up, NAICS-classified, and channel-assigned by hand before it could enter a client dashboard. Onboarding lagged, accuracy varied by analyst, and I was the constraint.",
+    challenge: "Consumer Edge sold credit-card transaction analytics to financial institutions. The bottleneck was humans. Every new brand had to be looked up, NAICS-classified, and channel-assigned by hand before it could enter a client dashboard. Onboarding lagged, accuracy varied by analyst, and I was the constraint.",
     solution: "Built a full R/tidyverse pipeline: RSelenium on a remote Docker chromedriver farm (Digital Ocean) scrapes Google results and company \"About Us\" pages; a large rule-based NLP classifier runs against the scraped text to assign NAICS codes and channels; Selenium form-fills auto-submit the resulting brand entries back into CEI's internal platform. BigQuery and Google Sheets as the data layer, a Friday publishment bot for weekly deliverables, and an ARIMA model for forward-looking brand demand signals. 48 industry verticals covered. Repo is literally named \"Automating_My_Position.\"",
     metrics: [{ v: '20×', k: 'Brand entries / week' }, { v: '+20%', k: 'Tagging accuracy' }, { v: '33K', k: 'LOC of R authored' }, { v: '48', k: 'Industry verticals' }],
   },
@@ -324,7 +324,7 @@ export function Projects() {
                     id={detailId}
                     className="project-detail"
                     role="region"
-                    aria-label={`${p.title} — details`}
+                    aria-label={`${p.title}: details`}
                   >
                     <div className="block">
                       <h4>Challenge</h4><p>{p.challenge}</p>
@@ -357,42 +357,42 @@ export function Projects() {
 }
 
 const EXPERIENCE = [
-  { hash:'c0ffee1', role:'Senior Data Scientist', company:'Wizards of the Coast', time:'Nov 2025 — present', current: true, bullets:[
+  { hash:'c0ffee1', role:'Senior Data Scientist', company:'Wizards of the Coast', time:'Nov 2025 to present', current: true, bullets:[
     {t:'Partner with product strategy, sales, finance, and economics to support Magic: The Gathering growth'},
     {t:'Build scalable reporting to manage revenue across channels, projects, and set cycles'},
     {t:'Deep-dive profitability analyses around pricing, inventory, and revenue recognition'},
     {t:'Reconcile revenue numbers alongside economists and financial analysts; explain findings with clear visuals'},
   ]},
-  { hash:'b92d81a', role:'Senior Data Analyst', company:'The Providencia Group', time:'Sep 2024 — Nov 2025', bullets:[
+  { hash:'b92d81a', role:'Senior Data Analyst', company:'The Providencia Group', time:'Sep 2024 to Nov 2025', bullets:[
     {t:'End-to-end reporting pipelines for the National Call Center across Genesys, Salesforce, SharePoint, SuccessKPI'},
     {t:'Rebuilt NCC reporting into a modular, version-controlled Python pipeline'},
     {t:'Dynamic staffing models using occupancy, shrinkage, and contact pacing'},
   ]},
-  { hash:'7ec4a09', role:'Senior Business Intelligence Analyst', company:'Ad.Net', time:'Dec 2021 — Sep 2024', bullets:[
+  { hash:'7ec4a09', role:'Senior Business Intelligence Analyst', company:'Ad.Net', time:'Dec 2021 to Sep 2024', bullets:[
     {t:'Looker dashboards for campaign + ad group performance'},
     {t:'Centralized Python library for reporting, querying, and exploration'},
     {t:'Jira API templates and scripts for automated report generation'},
     {t:'Salesforce + SimilarWeb integrated to uncover opportunities'},
     {t:'Docker, Anaconda, ClickHouse, PostgreSQL, R/H2O for forecasting'},
   ]},
-  { hash:'3a1b7d2', role:'Senior BI Reporting Specialist (Consultant)', company:'Mozilla Firefox', time:'Apr 2024 — Aug 2024', bullets:[
+  { hash:'3a1b7d2', role:'Senior BI Reporting Specialist (Consultant)', company:'Mozilla Firefox', time:'Apr 2024 to Aug 2024', bullets:[
     {t:'Looker dashboards for real-time digital ad performance'},
     {t:'Funnel analysis optimizing conversion rates'},
     {t:'Automated reporting, reducing manual effort significantly'},
     {t:'Ad-hoc analyses on audience behavior and ad spend'},
   ]},
-  { hash:'f0c2ec1', role:'Data Engineer', company:'Spins LLC', time:'Mar 2021 — Dec 2021', bullets:[
+  { hash:'f0c2ec1', role:'Data Engineer', company:'Spins LLC', time:'Mar 2021 to Dec 2021', bullets:[
     {t:'Automated testing scripts ensuring data accuracy across platforms'},
     {t:'Optimized data operations, sourcing, and software performance'},
     {t:'Enhanced QA processes through automated test frameworks'},
   ]},
-  { hash:'84e917b', role:'Data Analyst', company:'Consumer Edge Research', time:'Sep 2019 — Mar 2021', bullets:[
-    {t:'Credit card transaction data — automated brand entry from 15→300 / week', k:'20×'},
+  { hash:'84e917b', role:'Data Analyst', company:'Consumer Edge Research', time:'Sep 2019 to Mar 2021', bullets:[
+    {t:'Credit card transaction data: automated brand entry from 15→300 / week', k:'20×'},
     {t:'Daily calls with financial institutions for onboarding and reviews'},
     {t:'Custom Looker dashboards for external client presentations'},
-    {t:'Improved NLP brand tagging — model accuracy up 20%', k:'+20%'},
+    {t:'Improved NLP brand tagging: model accuracy up 20%', k:'+20%'},
   ]},
-  { hash:'a1f3e4c', role:'Co-Founder', company:'MTGBAN', time:'2017 — 2025', bullets:[
+  { hash:'a1f3e4c', role:'Co-Founder', company:'MTGBAN', time:'2017 to 2025', bullets:[
     {t:'Hobby-turned-business: built a Magic: The Gathering arbitrage engine while working day-jobs'},
     {t:'500+ paying customers using aggregated pricing', k:'500+'},
     {t:'Drove over $1.2M annual revenue for Magic: the Gathering products', k:'$1.2M'},
@@ -405,7 +405,7 @@ const EDUCATION = [
   { hash:'edu25a', role:'Google Data Analytics Certification', company:'Google', time:'2025', bullets:[{t:'Foundations of data analysis and BI tooling'}] },
   { hash:'edu22a', role:'Full R Track Certifications', company:'Business Science University', time:'2022', bullets:[{t:'Shiny apps, time-series forecasting, tidymodels'}] },
   { hash:'edu19a', role:'Master of Business Administration (MBA)', company:'Hofstra University', time:'2019', bullets:[] },
-  { hash:'edu17a', role:'BA, Classical Languages & Biology', company:'Creighton University', time:'2017', bullets:[{t:'Yes, really — Latin, Greek, and biochem.'}] },
+  { hash:'edu17a', role:'BA, Classical Languages & Biology', company:'Creighton University', time:'2017', bullets:[{t:'Yes, really: Latin, Greek, and biochem.'}] },
 ];
 
 /* Individual commit card — watches for itself coming into view for the reveal. */
@@ -509,7 +509,7 @@ export function Resume() {
               Seven years of <em>shipping</em>.
             </h2>
             <p className="dim reveal section-lede" data-delay="1">
-              A git log of the work. Most recent at top, origin/HEAD marked. Financial services, digital marketing, CPG, tech — plus my own startup since 2017.
+              A git log of the work. Most recent at top, origin/HEAD marked. Financial services, digital marketing, CPG, tech, plus my own startup since 2017.
             </p>
           </div>
           <div className="reveal" data-delay="2">
@@ -606,7 +606,7 @@ export function Writing({ onArticleOpen }) {
             Field notes from the <em>warehouse.</em>
           </h2>
           <p className="dim reveal section-lede wide" data-delay="1">
-            Practical write-ups — R, Python, SQL, and the occasional Docker-assisted life hack. I write them as I solve them.
+            Practical write-ups: R, Python, SQL, and the occasional Docker-assisted life hack. I write them as I solve them.
           </p>
         </div>
         <div className="writing-grid reveal" data-delay="2">
@@ -686,14 +686,14 @@ export function Contact() {
               <div style={{ padding:'32px 8px', textAlign:'center' }}>
                 <div className="accent contact-success-glyph">✓</div>
                 <div className="contact-success-title">Message received.</div>
-                <div className="dim">I'll reply within 48 hours — usually faster.</div>
+                <div className="dim">I'll reply within 48 hours, usually faster.</div>
               </div>
             )}
           </form>
         </div>
         <footer className="footer">
           <div>© Chris Pachulski 2026 · Built by hand, no frameworks harmed.</div>
-          <div>/* hire me, mentor me, or just chat MTG — same mailbox. */</div>
+          <div>/* hire me, mentor me, or just chat MTG: same mailbox. */</div>
         </footer>
       </div>
     </section>

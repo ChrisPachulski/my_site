@@ -56,7 +56,7 @@ export function About() {
             <div className="reveal" data-delay="2">
               <div className="fact-list">
                 <div className="fact"><span>role</span><span>Sr Data Scientist · Analytics Engineer</span></div>
-                <div className="fact"><span>current</span><span>Wizards of the Coast — Magic: The Gathering</span></div>
+                <div className="fact"><span>current</span><span>Wizards of the Coast, Magic: The Gathering</span></div>
                 <div className="fact"><span>experience</span><span>7+ yrs shipping data systems · 5 industries</span></div>
                 <div className="fact"><span>previously</span><span>The Providencia Group · Ad.Net · Mozilla · Spins LLC · Consumer Edge Research</span></div>
                 <div className="fact"><span>education</span><span>MBA, Hofstra · BA Classics + Biology, Creighton</span></div>
@@ -104,7 +104,7 @@ export function Skills() {
                 <span className="izzet-text-right"> I can help.</span>
               </h2>
               <p className="dim reveal section-lede tight" data-delay="1">
-                I work in and mentor SQL and Python daily, and hold a strong nostalgia for R — the language I reach for when the problem needs a real statistician. Looker and BigQuery are where I spend most of my warehousing hours.
+                I work in and mentor SQL and Python daily, and hold a strong nostalgia for R, the language I reach for when the problem needs a real statistician. Looker and BigQuery are where I spend most of my warehousing hours.
               </p>
             </div>
             <div className="skills-table reveal" data-delay="2" id="skills-table" ref={tableRef}>
@@ -175,7 +175,7 @@ export function Feature() {
           <div className="feature-grid">
             <div>
               <span className="tag">featured</span>
-              <h3>MTGBAN — I co-founded a <em>$1.2M</em> arbitrage engine for Magic: the Gathering.</h3>
+              <h3>MTGBAN. I co-founded a <em>$1.2M</em> arbitrage engine for Magic: the Gathering.</h3>
               <p className="dim">
                 500+ paying customers use our aggregated pricing to buy, sell, and hedge across a fragmented collectibles market. I designed the BigQuery warehouse from scratch, and the entire pipeline runs on Digital Ocean droplets + the R tidyverse.
               </p>
@@ -188,7 +188,7 @@ export function Feature() {
               <div
                 className="pipe"
                 role="list"
-                aria-label="MTGBAN daily pipeline — tap, hover, or focus a step to advance"
+                aria-label="MTGBAN daily pipeline: tap, hover, or focus a step to advance"
                 ref={pipeRef}
               >
                 <div className="t-eyebrow" style={{ marginBottom: 4 }}>

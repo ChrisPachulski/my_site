@@ -6,7 +6,7 @@ featureImage: /st-lukes-hospital_resized.png
 
 ## Automated Baby Appointment Scheduling with R
 
-When expecting our first child, my wife and I quickly realized just how fast appointments for hospital tours filled up—often within minutes of becoming available. My wife had her heart set on one hospital in particular and it was a fun realization that I could help out here. To ensure we didn't miss out (Classic FOMO), I developed an automated solution to ensure the booking process.
+When expecting our first child, my wife and I quickly realized just how fast appointments for hospital tours filled up, often within minutes of becoming available. My wife had her heart set on one hospital in particular and it was a fun realization that I could help out here. To ensure we didn't miss out (Classic FOMO), I developed an automated solution to ensure the booking process.
 
 ### What Does the Script Do?
 

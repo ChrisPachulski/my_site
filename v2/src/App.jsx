@@ -75,7 +75,7 @@ function Nav({ active, onHome, mode, onModeChange }) {
       <a className="skip-link" href="#main-content">Skip to content</a>
       <a href="/" className="brand" onClick={(e) => handleNav(e, '#home')}>
         <span className="dot"/>
-        <span>chris<span className="accent">@</span>wizards</span>
+        <span>chris<span className="accent">@</span>home</span>
       </a>
       <div className="nav-links">
         {NAV.map((n, i) => (

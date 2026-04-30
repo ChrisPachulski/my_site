@@ -15,7 +15,7 @@ Lazy evaluation, also known as deferred execution, is a programming concept wher
 * Expression: An expression is a piece of code that, when executed, returns a value. It could be a simple arithmetic calculation (like 2 + 2), a logical statement (mpg > 20), or a function call (mean(x)).
 * Evaluation: Evaluation simply means running or executing the expression to get its value. For example, evaluating 2 + 2 gives 4.
 
-Lazy evaluation is like writing down a grocery list but only shopping for each item exactly when you need it for cooking—this analogy closely mirrors how lazy evaluation works. Instead of immediately calculating or executing expressions as soon as they're written, the program waits until it specifically needs the value, saving resources and providing flexibility.
+Lazy evaluation is like writing down a grocery list but only shopping for each item exactly when you need it for cooking. This analogy closely mirrors how lazy evaluation works. Instead of immediately calculating or executing expressions as soon as they're written, the program waits until it specifically needs the value, saving resources and providing flexibility.
 
 In R, especially when using tidyverse tools like dplyr, lazy evaluation becomes very powerful. Functions like quo() and enquo() from the rlang package allow you to capture expressions and delay their execution, preserving the context in which they were created until explicitly required.
 
@@ -64,7 +64,7 @@ Understanding these points has significantly improved my coding experience, part
 
 ### Non-Lazy Evaluation in Python: Immediate Execution
 
-In Python, evaluation is immediate—expressions are computed as soon as they're encountered. Unlike R's approach, Python doesn't wait; it quickly processes each expression right when it sees it. This means Python requires you to explicitly define your inputs and cannot dynamically postpone evaluation.
+In Python, evaluation is immediate: expressions are computed as soon as they're encountered. Unlike R's approach, Python doesn't wait; it quickly processes each expression right when it sees it. This means Python requires you to explicitly define your inputs and cannot dynamically postpone evaluation.
 
 Here's an expanded example of how I use non-lazy evaluation in Python:
 

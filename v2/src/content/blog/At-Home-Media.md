@@ -328,22 +328,22 @@ flowchart TD
 
 ### Subscriptions and software
 
-- Eweka Top Plan (annualized): EUR 6.99/mo (~$90/yr) — Annualized top tier; SSL; 50 connections
-- MyBunny.tv: $20.00/mo — Live TV and sports playlist/EPG source
-- IPTVX: $2.42/mo ($28.99/yr) — Apple TV client for M3U and XMLTV
-- SABnzbd: $0 — Open source
-- Sonarr/Radarr: $0 — Open source
-- Plex Pass Lifetime: ~$120 one-time — Lifetime license
-- Tailscale: $0 — Personal tier
-- Indexers: $0 — Free (paid options $5-$20/mo total)
+- Eweka Top Plan (annualized): EUR 6.99/mo (~$90/yr), Annualized top tier; SSL; 50 connections
+- MyBunny.tv: $20.00/mo, Live TV and sports playlist/EPG source
+- IPTVX: $2.42/mo ($28.99/yr), Apple TV client for M3U and XMLTV
+- SABnzbd: $0, Open source
+- Sonarr/Radarr: $0, Open source
+- Plex Pass Lifetime: ~$120 one-time, Lifetime license
+- Tailscale: $0, Personal tier
+- Indexers: $0, Free (paid options $5-$20/mo total)
 
 ### Hardware (typical as of 2025)
 
-- WD Elements 20 TB: $250-$330 — Street price range
-- iMac 27" 2020, i9, 64 GB (current value): $700-$1,200 — Used-market estimate; exceeds needs
-- Viable server alternative: $250-$700 — Used Intel NUC or M1 Mac mini
-- ThunderBay enclosure + disks: TBD — Potential future RAID expansion
-- UPS: $80-$150 — Clean shutdowns
+- WD Elements 20 TB: $250-$330, Street price range
+- iMac 27" 2020, i9, 64 GB (current value): $700-$1,200, Used-market estimate; exceeds needs
+- Viable server alternative: $250-$700, Used Intel NUC or M1 Mac mini
+- ThunderBay enclosure + disks: TBD, Potential future RAID expansion
+- UPS: $80-$150, Clean shutdowns
 
 
 **My Setup**

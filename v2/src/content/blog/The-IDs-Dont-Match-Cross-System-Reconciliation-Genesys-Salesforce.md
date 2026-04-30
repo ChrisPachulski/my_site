@@ -5,7 +5,7 @@ date: 2025-10-28T04:00:00.000Z
 
 # The IDs Don't Match
 
-Here's the setup: agents handle customer conversations in Genesys Cloud. They log outcomes in Salesforce cases. The only thing connecting the two systems is a conversation ID that an agent types — by hand — into a Salesforce field after the call ends.
+Here's the setup: agents handle customer conversations in Genesys Cloud. They log outcomes in Salesforce cases. The only thing connecting the two systems is a conversation ID that an agent types, by hand, into a Salesforce field after the call ends.
 
 You can see where this is going.
 
@@ -21,18 +21,18 @@ This post is about the pattern I settled on, the six failure modes I ended up na
 
 Not every broken ID is broken in the same way. Lumping them together into "bad data" loses the signal. Here's how I categorized them:
 
-1. **Missing linkage** — Salesforce case exists, but the conversation ID field is blank. Most common. Agents in a hurry.
-2. **Orphan conversation** — Genesys conversation exists within the expected time window, but no Salesforce case references it. Second most common. The case was either never opened, or opened under a different customer record.
-3. **Format drift** — The conversation ID field is populated, but it's not a valid UUID. Typos, copy-paste of a partial ID, someone pasted the customer's phone number instead.
-4. **Media-type mismatch** — The conversation ID points to a real Genesys conversation, but the case's channel field says "voice" and the conversation was actually a chat. (Or vice versa. This one reveals routing bugs, not data bugs.)
-5. **Temporal drift** — The conversation exists, the case exists, the IDs match, but the timestamps are off by more than a tolerance window. A call from Tuesday attached to a case opened Thursday is not necessarily wrong — agents do follow-ups — but it's worth looking at.
-6. **Duplicate linkage** — The same conversation ID appears in multiple Salesforce cases. Sometimes legitimate (a single call led to two separate cases for two issues), sometimes a symptom of case-duplication bugs in the automation layer.
+1. **Missing linkage**, Salesforce case exists, but the conversation ID field is blank. Most common. Agents in a hurry.
+2. **Orphan conversation**, Genesys conversation exists within the expected time window, but no Salesforce case references it. Second most common. The case was either never opened, or opened under a different customer record.
+3. **Format drift**, The conversation ID field is populated, but it's not a valid UUID. Typos, copy-paste of a partial ID, someone pasted the customer's phone number instead.
+4. **Media-type mismatch**, The conversation ID points to a real Genesys conversation, but the case's channel field says "voice" and the conversation was actually a chat. (Or vice versa. This one reveals routing bugs, not data bugs.)
+5. **Temporal drift**, The conversation exists, the case exists, the IDs match, but the timestamps are off by more than a tolerance window. A call from Tuesday attached to a case opened Thursday is not necessarily wrong, agents do follow-ups, but it's worth looking at.
+6. **Duplicate linkage**, The same conversation ID appears in multiple Salesforce cases. Sometimes legitimate (a single call led to two separate cases for two issues), sometimes a symptom of case-duplication bugs in the automation layer.
 
 Each of these needs a different response. Missing linkage and format drift are agent-training issues. Media-type mismatches point at routing configuration. Duplicates usually mean the case-creation flow has a race condition somewhere. Building one undifferentiated "data quality report" loses the whole point.
 
 ## Validators as pure functions
 
-The architecture I landed on: every validator is a pure function that takes two DataFrames — one for cases, one for conversations — and returns a DataFrame of failures with a consistent schema.
+The architecture I landed on: every validator is a pure function that takes two DataFrames, one for cases, one for conversations, and returns a DataFrame of failures with a consistent schema.
 
 ```python
 from typing import Callable
@@ -79,7 +79,7 @@ VALIDATORS = [
 report = run_all_validators(VALIDATORS, df_cases, df_convos)
 ```
 
-This is the part I care about. Not the specific rules — the composability. Six months from now when someone hands me a seventh failure mode, I don't want to refactor the reporting logic. I want to add one function.
+This is the part I care about. Not the specific rules: the composability. Six months from now when someone hands me a seventh failure mode, I don't want to refactor the reporting logic. I want to add one function.
 
 ## Three rules, fully implemented
 
@@ -145,7 +145,7 @@ def duplicate_linkage(df_cases: pd.DataFrame, df_convos: pd.DataFrame) -> pd.Dat
     return failures[["case_id", "case_created", "agent_email", "failure_type", "failure_detail"]]
 ```
 
-All three share the same shape: two DataFrames in, failures with consistent schema out. Adding `temporal_drift` and `orphan_conversation` follows the same template — I'll leave them as exercises, because if you've read this far you don't need me walking through two more for-loops.
+All three share the same shape: two DataFrames in, failures with consistent schema out. Adding `temporal_drift` and `orphan_conversation` follows the same template, I'll leave them as exercises, because if you've read this far you don't need me walking through two more for-loops.
 
 ## Running it daily
 

@@ -11,7 +11,7 @@ import {
 } from './match-script.js';
 import './ghostmatch.css';
 
-const COUNTER_TIMER_MS = 20000;
+const COUNTER_TIMER_MS = 40000;
 
 /* ── Reducer ────────────────────────────────────────────────────── */
 function reducer(state, ev) {
@@ -264,39 +264,42 @@ function MulliganStage({ cards, onKeep, onSkip }) {
   );
 }
 
-/* ── Counter prompt (player must click Counterflux; 20s timer) ── */
-function CounterPrompt({ remainingMs, onCounter }) {
+/* ── Counter prompt (player must click Counterflux; calm breath timer) ── */
+function CounterPrompt({ remainingMs, paused, onCounter }) {
   const pct = Math.max(0, Math.min(1, remainingMs / COUNTER_TIMER_MS));
   const seconds = Math.max(0, Math.ceil(remainingMs / 1000));
-  const circumference = 2 * Math.PI * 26;
   const fireRef = useRef(null);
   useEffect(() => {
     fireRef.current?.focus({ preventScroll: true });
   }, []);
+  const ariaLabel = paused
+    ? `Cast Counterflux. Paused at ${seconds} seconds. Engage to resume.`
+    : `Cast Counterflux. ${seconds} seconds remaining.`;
   return (
-    <div className="gm-counter-prompt" role="alert">
-      <div className="gm-counter-headline">
-        Counter their <em>counter</em>.
+    <div className="gm-counter-prompt" role="alert" data-paused={paused ? 'true' : 'false'}>
+      <div className="gm-counter-text">
+        <div className="gm-counter-headline">Your move.</div>
+        <div className="gm-counter-sub">
+          Cast Counterflux. Click or press Enter.
+        </div>
       </div>
-      <div className="gm-counter-sub">
-        Click or press Enter to cast Counterflux. {seconds}s.
-      </div>
-      <button ref={fireRef} type="button" className="gm-counter-fire" onClick={onCounter} aria-label={`Counter Red Tape (${seconds} seconds remaining)`}>
-        <svg className="gm-counter-ring" viewBox="0 0 60 60" aria-hidden="true">
-          <circle cx="30" cy="30" r="26" className="gm-counter-ring-track" />
-          <circle
-            cx="30"
-            cy="30"
-            r="26"
-            className="gm-counter-ring-fill"
-            style={{
-              strokeDasharray: circumference,
-              strokeDashoffset: circumference * (1 - pct),
-            }}
-          />
-        </svg>
+      <button
+        ref={fireRef}
+        type="button"
+        className="gm-counter-fire"
+        onClick={onCounter}
+        aria-label={ariaLabel}
+      >
+        <span className="gm-counter-fire-breath" aria-hidden="true" />
         <span className="gm-counter-fire-num">{seconds}</span>
       </button>
+      <div className="gm-counter-meter" aria-hidden="true">
+        <div className="gm-counter-meter-fill" style={{ transform: `scaleX(${pct})` }} />
+      </div>
+      <div className="gm-counter-paused" aria-live="polite">
+        <span className="gm-counter-paused-dot" aria-hidden="true" />
+        Paused. Focus the match to resume.
+      </div>
     </div>
   );
 }
@@ -472,9 +475,19 @@ export default function GhostMatch({ onComplete }) {
   const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
   const [stage, setStage] = useState('tile'); // tile | mulligan | setup | counter | resolving
   const [expired, setExpired] = useState(false);
-  const [counterStart, setCounterStart] = useState(null);
-  const [now, setNow] = useState(() => performance.now());
+  const [elapsed, setElapsed] = useState(0);
+  const elapsedRef = useRef(0);
   const counterFiredRef = useRef(false);
+
+  /* Engagement state for the counter prompt's pause behavior.
+     The panic only fires for engaged players: timer pauses when the tab
+     is hidden, or when both cursor and focus have left gm-root. */
+  const [cursorInside, setCursorInside] = useState(false);
+  const [focusInside, setFocusInside] = useState(false);
+  const [tabHidden, setTabHidden] = useState(false);
+  const counterPaused = stage === 'counter' && (tabHidden || (!cursorInside && !focusInside));
+  const counterPausedRef = useRef(counterPaused);
+  useEffect(() => { counterPausedRef.current = counterPaused; }, [counterPaused]);
 
   /* Speed control for the setup-events runner.
      1× / 2× re-pace at the next event boundary; 'instant' flushes remaining
@@ -601,18 +614,43 @@ export default function GhostMatch({ onComplete }) {
     }
   }, []);
 
-  /* Counter timer: tick every 100ms, auto-fire on expiry. */
+  /* Counter timer: elapsed-based clock so pause/resume freezes time cleanly.
+     Tick every 100ms, accumulate dt only while not paused, auto-fire on expiry.
+     Reads counterPausedRef each tick so engagement-state changes take effect
+     without restarting the interval. */
   useEffect(() => {
     if (stage !== 'counter') return;
-    setCounterStart(performance.now());
-    setNow(performance.now());
-    const interval = setInterval(() => setNow(performance.now()), 100);
-    const expireTimer = setTimeout(() => fireCounter(true), COUNTER_TIMER_MS);
+    elapsedRef.current = 0;
+    setElapsed(0);
+    let cancelled = false;
+    let lastT = performance.now();
+    const interval = setInterval(() => {
+      if (cancelled) return;
+      const t = performance.now();
+      const dt = t - lastT;
+      lastT = t;
+      if (counterPausedRef.current) return;
+      elapsedRef.current = Math.min(COUNTER_TIMER_MS, elapsedRef.current + dt);
+      setElapsed(elapsedRef.current);
+      if (elapsedRef.current >= COUNTER_TIMER_MS) {
+        fireCounter(true);
+      }
+    }, 100);
     return () => {
+      cancelled = true;
       clearInterval(interval);
-      clearTimeout(expireTimer);
     };
   }, [stage, fireCounter]);
+
+  /* Tab visibility — pause the counter when the tab is hidden.
+     Counter stage is only reached after live interaction, so initial
+     hidden=false is safe; we just listen for changes from here on. */
+  useEffect(() => {
+    if (typeof document === 'undefined') return;
+    const onVis = () => setTabHidden(document.hidden);
+    document.addEventListener('visibilitychange', onVis);
+    return () => document.removeEventListener('visibilitychange', onVis);
+  }, []);
 
   /* Resolution events runner: plays counter or expire path. */
   useEffect(() => {
@@ -642,12 +680,26 @@ export default function GhostMatch({ onComplete }) {
     return <TeaseTile onPlay={openMatch} />;
   }
 
-  const remainingMs = counterStart ? Math.max(0, counterStart + COUNTER_TIMER_MS - now) : COUNTER_TIMER_MS;
+  const remainingMs = stage === 'counter'
+    ? Math.max(0, COUNTER_TIMER_MS - elapsed)
+    : COUNTER_TIMER_MS;
   const showCounterPrompt = stage === 'counter' && state.prompt === 'counter' && !state.ended;
   const interactiveInst = showCounterPrompt ? COUNTER_CARD_INST : null;
 
   return (
-    <section className="gm-root" aria-label="Ghost match" data-stage={stage} data-ended={state.ended ? 'true' : 'false'}>
+    <section
+      className="gm-root"
+      aria-label="Ghost match"
+      data-stage={stage}
+      data-ended={state.ended ? 'true' : 'false'}
+      onMouseEnter={() => setCursorInside(true)}
+      onMouseLeave={() => setCursorInside(false)}
+      onFocus={() => setFocusInside(true)}
+      onBlur={(e) => {
+        if (e.currentTarget.contains(e.relatedTarget)) return;
+        setFocusInside(false);
+      }}
+    >
       <div className="gm-bg" aria-hidden="true" />
 
       <button
@@ -747,7 +799,11 @@ export default function GhostMatch({ onComplete }) {
           </div>
 
           {showCounterPrompt && (
-            <CounterPrompt remainingMs={remainingMs} onCounter={() => fireCounter(false)} />
+            <CounterPrompt
+              remainingMs={remainingMs}
+              paused={counterPaused}
+              onCounter={() => fireCounter(false)}
+            />
           )}
 
           {state.ended && <VictoryScreen onContinue={handleVictoryContinue} expired={expired} />}

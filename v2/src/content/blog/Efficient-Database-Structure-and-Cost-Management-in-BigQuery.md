@@ -4,7 +4,7 @@ date: 2025-03-29T04:00:00.000Z
 featureImage: /communityIcon_5drbzn3stkj21_resized.png
 ---
 
-Efficient database management isn't just about technical proficiency—it's also about optimizing cost, scalability, and performance. As the co-founder of BAN LLC, a data-driven venture specializing in analytics for Magic: the Gathering markets, I've developed a robust database structure in Google BigQuery, specifically tailored for extensive daily analytical insights.
+Efficient database management isn't just about technical proficiency. It's also about optimizing cost, scalability, and performance. As the co-founder of BAN LLC, a data-driven venture specializing in analytics for Magic: the Gathering markets, I've developed a robust database structure in Google BigQuery, specifically tailored for extensive daily analytical insights.
 
 ## Daily Structured Tables Created via R
 

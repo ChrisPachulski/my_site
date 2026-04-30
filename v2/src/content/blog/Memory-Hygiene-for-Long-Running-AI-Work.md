@@ -11,7 +11,7 @@ A Claude Code session would start, and within the first few queries, the same th
 
 This is a known failure mode of naive "retrieve top-K by similarity + boost on access" systems. The feedback loop is: a memory gets surfaced, its access count goes up, its composite score goes up, it gets surfaced more. Once a memory crosses the threshold where its boost dominates its cosine similarity to the query, it becomes permanent furniture. The system stops learning. The memory store becomes a three-item archive of whatever got surfaced first.
 
-This post is about the three-layer system I built to fix that. One layer is the memory substrate itself — a DuckDB-backed vector store with a scoring function that includes an anti-stickiness term. One layer is the consolidation process that runs periodically and prunes, merges, and rebalances. One layer is the plan-directory hygiene that applies the same discipline to markdown files that accumulate the way memories do. Together they've cut my memory store by more than half, the plan directory by more than 80%, and the subjective quality of my agent's recall up considerably.
+This post is about the three-layer system I built to fix that. One layer is the memory substrate itself, a DuckDB-backed vector store with a scoring function that includes an anti-stickiness term. One layer is the consolidation process that runs periodically and prunes, merges, and rebalances. One layer is the plan-directory hygiene that applies the same discipline to markdown files that accumulate the way memories do. Together they've cut my memory store by more than half, the plan directory by more than 80%, and the subjective quality of my agent's recall up considerably.
 
 The argument, short version: for long-running AI-assisted work, pruning is not a cost. It's a feature. You need it the same way gardens need it. Left untended, the weeds win.
 
@@ -29,10 +29,10 @@ The store itself is a single DuckDB file at `~/.agent_memory/memory.duckdb`. Duc
 
 Memories are typed. Four types:
 
-- `user` — stable facts about me. Role, tool preferences, domains I work in.
-- `feedback` — guidance I've given to Claude. "Don't do X, do Y." "When you see pattern P, prefer approach A."
-- `project` — context about specific ongoing work. Which project, what's in flight, who's involved.
-- `reference` — pointers to external resources. "The oncall runbook lives at X." "The design doc is at URL Y."
+- `user`, stable facts about me. Role, tool preferences, domains I work in.
+- `feedback`, guidance I've given to Claude. "Don't do X, do Y." "When you see pattern P, prefer approach A."
+- `project`, context about specific ongoing work. Which project, what's in flight, who's involved.
+- `reference`, pointers to external resources. "The oncall runbook lives at X." "The design doc is at URL Y."
 
 Each memory carries the full record:
 
@@ -53,7 +53,7 @@ class MemoryRecord(TypedDict):
     cooldown_until: str | None # snoozed until this timestamp
 ```
 
-The embedding backend is dual. OpenAI's `text-embedding-3-small` when `OPENAI_API_KEY` is set; a TF-IDF fallback when it isn't. The TF-IDF path lives inside the package and zero-pads to 1536 dimensions (the OpenAI model's output size) so the schema doesn't have to change depending on which backend was used. This matters because I don't always have an API key available — scratch VMs, offline demos, airports — and losing the memory store because my local environment can't embed is a failure mode I refuse to accept.
+The embedding backend is dual. OpenAI's `text-embedding-3-small` when `OPENAI_API_KEY` is set; a TF-IDF fallback when it isn't. The TF-IDF path lives inside the package and zero-pads to 1536 dimensions (the OpenAI model's output size) so the schema doesn't have to change depending on which backend was used. This matters because I don't always have an API key available, scratch VMs, offline demos, airports, and losing the memory store because my local environment can't embed is a failure mode I refuse to accept.
 
 ## The composite score: five factors, one formula
 
@@ -71,7 +71,7 @@ Five multiplicative factors. Each one does a specific job, and each one has a de
 
 **Factor 1: cosine similarity.** The dominant signal. If the memory doesn't embed near the query, nothing else matters. Similarity is clamped to non-negative, so a memory that's orthogonally opposed to the query can't go negative and gain importance through sign flipping.
 
-**Factor 2: importance.** A manual prior in `[0, 1]`. Starts at 0.5 by default. Gets bumped up by the boost-active consolidation and down by the decay-stale one. It's the thumb on the scale for memories that the system should weight more or less than their embedding alone suggests — usually because I know something the embedding doesn't, like "this user-type memory is foundational context that should outweigh any particular project writeup."
+**Factor 2: importance.** A manual prior in `[0, 1]`. Starts at 0.5 by default. Gets bumped up by the boost-active consolidation and down by the decay-stale one. It's the thumb on the scale for memories that the system should weight more or less than their embedding alone suggests, usually because I know something the embedding doesn't, like "this user-type memory is foundational context that should outweigh any particular project writeup."
 
 **Factor 3: age decay.** Exponential, with a λ that varies by memory type:
 
@@ -106,11 +106,11 @@ else:
     unreinforced_decay = 0.95 ** min(penalty, 30.0)
 ```
 
-A memory that has been accessed often but reinforced rarely is sticky. Stickiness is accessed-over-reinforced. If I've surfaced a memory ten times and only confirmed its usefulness twice, the stickiness ratio is 5 — the memory is serving up five times more often than it's useful. The decay kicks in after stickiness passes 3 (a memory can be surfaced 3× per reinforcement and still be useful; at 4+, something's off), and penalizes geometrically (0.95^N) with a cap at 30 penalty units — 0.95^30 ≈ 0.21, a 79% reduction at worst.
+A memory that has been accessed often but reinforced rarely is sticky. Stickiness is accessed-over-reinforced. If I've surfaced a memory ten times and only confirmed its usefulness twice, the stickiness ratio is 5, the memory is serving up five times more often than it's useful. The decay kicks in after stickiness passes 3 (a memory can be surfaced 3× per reinforcement and still be useful; at 4+, something's off), and penalizes geometrically (0.95^N) with a cap at 30 penalty units, 0.95^30 ≈ 0.21, a 79% reduction at worst.
 
-This is the factor that breaks the positive feedback loop. Surfacing no longer gratuitously boosts future surfacing; if the user isn't engaging with the memory, it starts losing score. A memory with cosine similarity 0.7 to a query and importance 0.5 has a raw score of 0.35. If it's been surfaced 20 times but reinforced only twice, its stickiness penalty brings the composite down to roughly 0.07 — it'll still surface if nothing better is available, but it won't dominate.
+This is the factor that breaks the positive feedback loop. Surfacing no longer gratuitously boosts future surfacing; if the user isn't engaging with the memory, it starts losing score. A memory with cosine similarity 0.7 to a query and importance 0.5 has a raw score of 0.35. If it's been surfaced 20 times but reinforced only twice, its stickiness penalty brings the composite down to roughly 0.07, it'll still surface if nothing better is available, but it won't dominate.
 
-The `reinforced_count` field is populated explicitly. When the user confirms a memory was useful — "yes, use that" — the `record_reinforcement` call bumps it. This requires the MCP memory tools to know when reinforcement has happened, which took some work at the integration layer. The payoff is that the score now reflects *useful surfacing*, not just *surfacing*.
+The `reinforced_count` field is populated explicitly. When the user confirms a memory was useful, "yes, use that", the `record_reinforcement` call bumps it. This requires the MCP memory tools to know when reinforcement has happened, which took some work at the integration layer. The payoff is that the score now reflects *useful surfacing*, not just *surfacing*.
 
 ## dream: six operations and a dry-run gate
 
@@ -132,17 +132,17 @@ The six operations, in plain language:
 
 **`find_near_duplicates`.** Pairs of memories with cosine similarity ≥ 0.92 get surfaced for merging. Merging keeps the higher-importance one, transfers access and reinforcement counts from the other, and deletes the loser. The 0.92 threshold is tuned to catch near-duplicates (two phrasings of the same user preference) without catching genuinely-different-but-related memories (two separate feedback notes about testing).
 
-**`decay_stale_memories`.** For non-user types: memories not accessed or reinforced in 90 days have their importance cut by 20%, with a floor of 0.01 so they don't vanish entirely. User-type memories get a gentler treatment: 180 days, 5% cut, floor 0.15. The gentler treatment reflects the lower decay rate — user facts shouldn't be evaluated on the same calendar.
+**`decay_stale_memories`.** For non-user types: memories not accessed or reinforced in 90 days have their importance cut by 20%, with a floor of 0.01 so they don't vanish entirely. User-type memories get a gentler treatment: 180 days, 5% cut, floor 0.15. The gentler treatment reflects the lower decay rate: user facts shouldn't be evaluated on the same calendar.
 
-**`boost_active_memories`.** Memories accessed at least 5 times get a 10% importance bump (capped at 1.0). Memories with stickiness > 5 are skipped — you don't want to boost a stuck memory. This operation makes the importance field reflect actual use, not just the initial prior.
+**`boost_active_memories`.** Memories accessed at least 5 times get a 10% importance bump (capped at 1.0). Memories with stickiness > 5 are skipped: you don't want to boost a stuck memory. This operation makes the importance field reflect actual use, not just the initial prior.
 
 **`prune_irrelevant`.** Memories with importance < 0.05 and age > 30 days are deleted outright. For user-type memories, the threshold is 0.02 and age is 365 days, because losing a user memory you stopped reinforcing is costlier than losing a project memory you forgot about.
 
 **`decay_unreinforced_memories`.** Separate from the scoring-time anti-stickiness factor, this operation persistently reduces the importance of memories with stickiness > 5.0. The scoring-time factor penalizes them at recall; this one makes the penalty stick by lowering the stored importance, so the next consolidation has a smaller baseline to work with.
 
-**`auto_snooze_sticky`.** The nuclear option. Memories with stickiness > 8.0 get hidden from search for 30 days via the `cooldown_until` field. This is for the worst offenders — memories that have proven actively harmful to the recall experience. After 30 days they come back; if they're still sticky after another round of surfacing, they get snoozed again.
+**`auto_snooze_sticky`.** The nuclear option. Memories with stickiness > 8.0 get hidden from search for 30 days via the `cooldown_until` field. This is for the worst offenders: memories that have proven actively harmful to the recall experience. After 30 days they come back; if they're still sticky after another round of surfacing, they get snoozed again.
 
-The command takes an argument. No argument runs in project mode, scoped to the current project's `project_id`. `--all` runs system-wide, across every project, with special attention to cross-project duplicates. `--skip-files` skips a Phase 4 that also syncs file-based markdown memories into the vector store from `~/.claude/projects/{project_id}/memory/` — useful when I want to consolidate the DuckDB store without also re-importing new markdown files.
+The command takes an argument. No argument runs in project mode, scoped to the current project's `project_id`. `--all` runs system-wide, across every project, with special attention to cross-project duplicates. `--skip-files` skips a Phase 4 that also syncs file-based markdown memories into the vector store from `~/.claude/projects/{project_id}/memory/`. Useful when I want to consolidate the DuckDB store without also re-importing new markdown files.
 
 I run `dream` about once a week in project mode, and `dream --all` about once a month. Both take under a minute on a memory store in the low thousands.
 
@@ -152,33 +152,33 @@ Memories aren't the only thing that accumulate in a Claude Code workflow. The pl
 
 `clarity` is an agent that applies the same classification-and-pruning discipline to plan files. Four classifications:
 
-**Active** — modified today, or the current session's plan file. Never touched.
+**Active**: modified today, or the current session's plan file. Never touched.
 
-**Completed** — terminal markers present in restricted positions only. The restriction matters: naive scanning for "Done" or "Complete" anywhere in the file produces false positives everywhere, because those words appear constantly in checklists and progress notes. The restricted detection only checks the H1 line and the last non-empty line for specific terminal phrases: `COMPLETED`, `-- Complete`, `-- Done`, `No further planning`, `No code changes`, `No plan needed`, `finalized`. This single change eliminated about 40% of the mis-archivings I had in the first version.
+**Completed**: terminal markers present in restricted positions only. The restriction matters: naive scanning for "Done" or "Complete" anywhere in the file produces false positives everywhere, because those words appear constantly in checklists and progress notes. The restricted detection only checks the H1 line and the last non-empty line for specific terminal phrases: `COMPLETED`, `-- Complete`, `-- Done`, `No further planning`, `No code changes`, `No plan needed`, `finalized`. This single change eliminated about 40% of the mis-archivings I had in the first version.
 
-**Stale** — beyond a size and time threshold (default 7 days, under 2 KB), not classified as completed. These are abandoned stubs — plans I opened, wrote a title for, and never came back to.
+**Stale**: beyond a size and time threshold (default 7 days, under 2 KB), not classified as completed. These are abandoned stubs: plans I opened, wrote a title for, and never came back to.
 
-**Dormant** — beyond a longer time threshold (default 14 days), any size. These are plans I worked on, but that went cold.
+**Dormant**: beyond a longer time threshold (default 14 days), any size. These are plans I worked on, but that went cold.
 
-Completed plans get archived. Stale stubs get safe-deleted. Dormant plans get reported but not touched — the human makes the call. Active plans are strictly off-limits.
+Completed plans get archived. Stale stubs get safe-deleted. Dormant plans get reported but not touched: the human makes the call. Active plans are strictly off-limits.
 
 There's one more pattern worth mentioning: **agent sub-plan collapsing**. Claude Code agents sometimes spawn their own sub-plans, and those get stored with names like `parent-plan-agent-subtask.md`. When the parent plan is classified as completed, the sub-plans should usually be collapsed into the parent's archive record rather than archived as separate artifacts. `clarity` handles this by checking the parent's classification, then inheriting it for agent-named sub-plans unless the sub-plan is independently active (modified today).
 
-Before `clarity` existed, my `~/.claude/plans/` had 107 files. After the first full run, it had 23. After six months of periodic cleanup, it hovers around 18 — active plans plus a small tail of recent work that'll eventually move through.
+Before `clarity` existed, my `~/.claude/plans/` had 107 files. After the first full run, it had 23. After six months of periodic cleanup, it hovers around 18: active plans plus a small tail of recent work that'll eventually move through.
 
 ## What six months of running this taught me
 
 Three specific lessons worth naming.
 
-**The stickiness penalty is the most valuable single piece.** I didn't fully appreciate this when I designed the system. The age decay does useful work, the access boost does useful work, type-specific decay rates do useful work — but the anti-stickiness factor is the one that catches the class of failure most people with memory stores actually hit. Without it, I had five memories that had accumulated enough access to dominate every query. With it, those five got penalized, their importance was automatically trimmed by the consolidation, and two of them eventually got auto-snoozed. I wouldn't have caught any of them manually, because none of them looked "bad" in isolation — they were just being served too often for what they were worth.
+**The stickiness penalty is the most valuable single piece.** I didn't fully appreciate this when I designed the system. The age decay does useful work, the access boost does useful work, type-specific decay rates do useful work. But the anti-stickiness factor is the one that catches the class of failure most people with memory stores actually hit. Without it, I had five memories that had accumulated enough access to dominate every query. With it, those five got penalized, their importance was automatically trimmed by the consolidation, and two of them eventually got auto-snoozed. I wouldn't have caught any of them manually, because none of them looked "bad" in isolation. They were just being served too often for what they were worth.
 
 **Dry-run-first is non-negotiable for consolidation operations.** Every operation that deletes, decays, or snoozes is destructive. Running them without seeing a preview is asking for lost data. Every consolidation function in `memory_utils.consolidate` takes `dry_run=True` as its default, and the `dream` command does a full dry-run report before asking the user whether to execute. The first time I ran a non-dry consolidation and saw a 30-day cooldown get applied to a memory I actually wanted surfaced, I added the gate. I've never regretted it.
 
-**Pruning is emotional.** This one surprised me. There is a real psychological tug toward keeping things — a "what if I need that memory later?" reflex that's completely at odds with the system's actual utility. Every time I look at a dry-run preview that wants to delete 12 memories, some part of my brain wants to save them. None of them have mattered in ninety days. All of them are crowding out memories that do matter. But the pull to *archive* rather than *delete* is strong, and I've had to deliberately train myself to let pruning happen. If you build a system like this, expect to feel the same pull, and make the defaults aggressive enough that your emotional reaction doesn't undermine the design.
+**Pruning is emotional.** This one surprised me. There is a real psychological tug toward keeping things: a "what if I need that memory later?" reflex that's completely at odds with the system's actual utility. Every time I look at a dry-run preview that wants to delete 12 memories, some part of my brain wants to save them. None of them have mattered in ninety days. All of them are crowding out memories that do matter. But the pull to *archive* rather than *delete* is strong, and I've had to deliberately train myself to let pruning happen. If you build a system like this, expect to feel the same pull, and make the defaults aggressive enough that your emotional reaction doesn't undermine the design.
 
 ## Numbers, for what they're worth
 
-Not a rigorous evaluation — I haven't set up a proper eval harness for memory-recall quality — but directionally:
+Not a rigorous evaluation, I haven't set up a proper eval harness for memory-recall quality, but directionally:
 
 - The memory store went from ~140 entries to ~60 over six months of running `dream` weekly.
 - The plans directory went from 107 files to ~18 after the first `clarity` pass, and has stayed in that neighborhood since.
@@ -189,4 +189,4 @@ That last number is soft and I won't pretend otherwise. The right way to measure
 
 ## The one-line takeaway
 
-Pruning is a feature, not a cost. Every long-running AI workspace needs three layers: a substrate that *can* be pruned (vector store with per-memory scoring, including an anti-stickiness term), a process that *actually does* prune (consolidation with dry-run safety), and a discipline that applies the same thinking to everything else that accumulates (plans, in my case — but also chat logs, scratch files, whatever your particular workflow piles up). Get the substrate right, run the process on a schedule, and trust the defaults to be more aggressive than your archival instinct wants.
+Pruning is a feature, not a cost. Every long-running AI workspace needs three layers: a substrate that *can* be pruned (vector store with per-memory scoring, including an anti-stickiness term), a process that *actually does* prune (consolidation with dry-run safety), and a discipline that applies the same thinking to everything else that accumulates (plans, in my case, but also chat logs, scratch files, whatever your particular workflow piles up). Get the substrate right, run the process on a schedule, and trust the defaults to be more aggressive than your archival instinct wants.

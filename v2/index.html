@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-theme="dark" data-accent="violet" data-vibe="cyberpunk">
+<html lang="en" data-theme="dark" data-accent="violet">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,16 +7,19 @@
       // Reconcile saved display-mode before paint to avoid FOUC, then load the
       // Orbitron display face only when the cyberpunk vibe survives. Office-hours
       // never paints with Orbitron, so its ~30KB request is wasted there.
-      // After-hours is the default; office-hours requires explicit attr swap.
+      // data-vibe is opt-in here (not in static HTML) so office-hours users
+      // never paint cyberpunk styles. Same gate pattern as Orbitron.
       (function () {
         var html = document.documentElement;
+        var mode = 'after-hours';
         try {
-          var stored = localStorage.getItem('display-mode');
-          if (stored === 'office-hours') {
-            html.removeAttribute('data-vibe');
-            html.setAttribute('data-theme', 'light');
-          }
-        } catch (e) { /* localStorage blocked — fall through to defaults */ }
+          if (localStorage.getItem('display-mode') === 'office-hours') mode = 'office-hours';
+        } catch (e) { /* localStorage blocked — fall through to default after-hours */ }
+        if (mode === 'office-hours') {
+          html.setAttribute('data-theme', 'light');
+        } else {
+          html.setAttribute('data-vibe', 'cyberpunk');
+        }
         if (html.getAttribute('data-vibe') === 'cyberpunk' && !document.getElementById('font-orbitron')) {
           var link = document.createElement('link');
           link.id = 'font-orbitron';

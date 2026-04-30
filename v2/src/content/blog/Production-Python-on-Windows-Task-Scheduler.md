@@ -48,7 +48,7 @@ Three things matter here:
 2. **`%ERRORLEVEL%`** and **`exit /b %EXIT_CODE%`** propagate the exit code up to Task Scheduler, so the task history actually shows the right result instead of a cheerful green "success" for every run.
 3. **Framing lines** (`echo Start: ...`, `echo End: ...`) are the difference between "I have no idea what happened" and "I can grep the log and find the run boundaries."
 
-If the Python process crashes catastrophically — segfault, DLL mismatch, venv not activating — the batch log still has the activation line and a failure mode. That was the difference between my first quarter on this stack and my second quarter.
+If the Python process crashes catastrophically (segfault, DLL mismatch, venv not activating), the batch log still has the activation line and a failure mode. That was the difference between my first quarter on this stack and my second quarter.
 
 ## The parallel Python log
 
@@ -100,7 +100,7 @@ except Exception as e:
     raise
 ```
 
-The `raise` at the end is important. You don't want to swallow the exception — you want the exit code non-zero so Task Scheduler marks the run as failed and doesn't try to re-run it based on some conditional logic you forgot about. You just want to make sure, before the exception propagates, that a human gets told and the traceback ends up in your log.
+The `raise` at the end is important. You don't want to swallow the exception. You want the exit code non-zero so Task Scheduler marks the run as failed and doesn't try to re-run it based on some conditional logic you forgot about. You just want to make sure, before the exception propagates, that a human gets told and the traceback ends up in your log.
 
 `send_failure_notification` here is a thin wrapper around the Microsoft Graph API that sends an email with attachments. The key detail: attach both logs. If the batch log and the Python log are in the same email, the on-call engineer has everything they need to diagnose without RDPing into the box.
 
@@ -121,13 +121,13 @@ Get-ChildItem -Path $LogDir -Filter "*.log" |
 
 With the pattern in place, the lifecycle of a failure looks like this:
 
-1. 3:07 AM — a scheduled Python job raises a `requests.Timeout` to the Salesforce bulk API.
+1. 3:07 AM: a scheduled Python job raises a `requests.Timeout` to the Salesforce bulk API.
 2. The `try` / `except` catches it, formats the traceback, logs it to the Python log, emails me with both logs attached, and re-raises.
-3. 3:07 AM — the batch wrapper catches the non-zero exit, logs end-of-run with exit code, propagates `exit 1` to Task Scheduler.
+3. 3:07 AM: the batch wrapper catches the non-zero exit, logs end-of-run with exit code, propagates `exit 1` to Task Scheduler.
 4. Task Scheduler marks the run as failed in its history.
 5. I wake up, read the email on my phone, and know before I open my laptop that (a) it was a transient Salesforce timeout, (b) the retry-on-next-run logic will probably handle it, and (c) if it doesn't, the specific call site and query are already highlighted in the Python log.
 
-That's the win. Not that failures stop happening. Failures don't stop happening. The win is that every failure comes with enough context to decide whether to ignore it, retry it, or fix it — without logging into anything.
+That's the win. Not that failures stop happening. Failures don't stop happening. The win is that every failure comes with enough context to decide whether to ignore it, retry it, or fix it: no logging into anything.
 
 ## The one-line takeaway
 

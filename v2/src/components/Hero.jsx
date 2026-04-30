@@ -25,7 +25,7 @@ function MagicCard() {
   }, []);
 
   return (
-    <div ref={ref} className="mtg-card" role="img" aria-label="Chris Pachulski — a custom Magic-style card">
+    <div ref={ref} className="mtg-card" role="img" aria-label="Chris Pachulski: a custom Magic-style card">
       <div className="mtg-frame">
         <div className="mtg-titlebar mtg-stage" style={{ '--d': '0.10s' }}>
           <div className="mtg-name">Chris Pachulski</div>

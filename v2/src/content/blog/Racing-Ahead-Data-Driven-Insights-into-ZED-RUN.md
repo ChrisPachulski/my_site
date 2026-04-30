@@ -4,11 +4,11 @@ date: 2021-06-20T04:00:00.000Z
 featureImage: /zed_run_resized.png
 ---
 
-As someone passionate about data analytics and good times, I created a series of R scripts designed to transform the way we analyze digital horse racing on the ZED RUN platform. ZED RUN isn't your traditional horse racing game—it's a blockchain-based digital horse racing universe where analytics can mean the difference between winning big or just being another stable.
+As someone passionate about data analytics and good times, I created a series of R scripts designed to transform the way we analyze digital horse racing on the ZED RUN platform. ZED RUN isn't your traditional horse racing game. It's a blockchain-based digital horse racing universe where analytics can mean the difference between winning big or just being another stable.
 
 ### What Do These Scripts Actually Do?
 
-I built two main scripts—zed\_run\_basic.R and new\_zed.R—to handle everything from fetching the latest racing data to advanced statistical analyses.
+I built two main scripts (zed\_run\_basic.R and new\_zed.R) to handle everything from fetching the latest racing data to advanced statistical analyses.
 
 1\. zed\_run\_basic.R: The Workhorse
 
@@ -31,6 +31,6 @@ Taking analytics a step further, this script:
 
 ### A Personal Touch
 
-Creating these scripts was not just about crunching numbers—it was a journey into understanding how data can reveal fascinating stories about virtual horse racing. Each line of code represents a step toward smarter racing decisions, whether you're optimizing your existing stable or scouting your next champion.
+Creating these scripts was not just about crunching numbers. It was a journey into understanding how data can reveal fascinating stories about virtual horse racing. Each line of code represents a step toward smarter racing decisions, whether you're optimizing your existing stable or scouting your next champion.
 
-The blend of my passions—technology, analytics, and horse racing—has culminated in a practical toolset that makes navigating the digital tracks of ZED RUN an exciting and strategic adventure.
+The blend of my passions (technology, analytics, and horse racing) has culminated in a practical toolset that makes navigating the digital tracks of ZED RUN an exciting and strategic adventure.
