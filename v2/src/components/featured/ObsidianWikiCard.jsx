@@ -45,9 +45,13 @@ export default function ObsidianWikiCard({ a, onOpen }) {
   const reduced = usePrefersReducedMotion();
   const [hover, setHover] = useState(false);
   const [count, setCount] = useState(0);
-  const [seed, setSeed] = useState(7);
-  const [nodes, setNodes] = useState(() => initNodes(7));
-  const edgesRef = useRef(initEdges(nodes, 7));
+  const [, setTick] = useState(0); // forces re-render once per simulated frame
+  // Mutable graph held in state so the simulation can update node positions in
+  // place (no per-frame allocations). Re-seeding swaps the whole graph object.
+  const [graph, setGraph] = useState(() => {
+    const nodes = initNodes(7);
+    return { nodes, edges: initEdges(nodes, 7) };
+  });
   const rafRef = useRef(null);
   const cardRef = useRef(null);
   const startedRef = useRef(false);
@@ -77,67 +81,62 @@ export default function ObsidianWikiCard({ a, onOpen }) {
     return () => io.disconnect();
   }, [reduced]);
 
-  // Force-directed simulation
+  // Force-directed simulation. Mutates the graph object in place and signals
+  // React via a single tick state, avoiding N+1 node allocations per frame.
   useEffect(() => {
     if (reduced) return;
     let running = true;
     const tick = () => {
       if (!running) return;
-      setNodes((prev) => {
-        const next = prev.map(n => ({ ...n }));
-        const k = 0.015;  // spring
-        const rep = 600;  // repulsion strength
-        for (const e of edgesRef.current) {
-          const a = next[e.a]; const b = next[e.b];
+      const next = graph.nodes;
+      const k = 0.015;  // spring
+      const rep = 600;  // repulsion strength
+      for (const e of graph.edges) {
+        const a = next[e.a]; const b = next[e.b];
+        const dx = b.x - a.x; const dy = b.y - a.y;
+        const dist = Math.max(Math.hypot(dx, dy), 0.001);
+        const force = (dist - 55) * k;
+        const fx = (dx / dist) * force;
+        const fy = (dy / dist) * force;
+        a.vx += fx; a.vy += fy;
+        b.vx -= fx; b.vy -= fy;
+      }
+      for (let i = 0; i < next.length; i++) {
+        for (let j = i + 1; j < next.length; j++) {
+          const a = next[i]; const b = next[j];
           const dx = b.x - a.x; const dy = b.y - a.y;
           const dist = Math.max(Math.hypot(dx, dy), 0.001);
-          const target = 55;
-          const force = (dist - target) * k;
+          const force = rep / (dist * dist);
           const fx = (dx / dist) * force;
           const fy = (dy / dist) * force;
-          a.vx += fx; a.vy += fy;
-          b.vx -= fx; b.vy -= fy;
+          a.vx -= fx; a.vy -= fy;
+          b.vx += fx; b.vy += fy;
         }
-        for (let i = 0; i < next.length; i++) {
-          for (let j = i + 1; j < next.length; j++) {
-            const a = next[i]; const b = next[j];
-            const dx = b.x - a.x; const dy = b.y - a.y;
-            const dist = Math.max(Math.hypot(dx, dy), 0.001);
-            const force = rep / (dist * dist);
-            const fx = (dx / dist) * force;
-            const fy = (dy / dist) * force;
-            a.vx -= fx; a.vy -= fy;
-            b.vx += fx; b.vy += fy;
-          }
-        }
-        for (const n of next) {
-          n.vx *= 0.82;
-          n.vy *= 0.82;
-          n.x += n.vx * 0.5;
-          n.y += n.vy * 0.5;
-          n.x = Math.max(20, Math.min(WIDTH - 20, n.x));
-          n.y = Math.max(20, Math.min(HEIGHT - 20, n.y));
-        }
-        return next;
-      });
+      }
+      for (const n of next) {
+        n.vx *= 0.82;
+        n.vy *= 0.82;
+        n.x += n.vx * 0.5;
+        n.y += n.vy * 0.5;
+        n.x = Math.max(20, Math.min(WIDTH - 20, n.x));
+        n.y = Math.max(20, Math.min(HEIGHT - 20, n.y));
+      }
+      setTick((t) => (t + 1) | 0);
       rafRef.current = requestAnimationFrame(tick);
     };
     rafRef.current = requestAnimationFrame(tick);
     return () => { running = false; cancelAnimationFrame(rafRef.current); };
-  }, [reduced]);
+  }, [reduced, graph]);
 
   // Hover = re-seed the graph and restart counter
   useEffect(() => {
     if (!hover) return;
     const newSeed = Math.floor(Math.random() * 1000) + 1;
-    setSeed(newSeed);
     const fresh = initNodes(newSeed);
-    edgesRef.current = initEdges(fresh, newSeed);
-    setNodes(fresh);
+    setGraph({ nodes: fresh, edges: initEdges(fresh, newSeed) });
     if (!reduced) {
       setCount(0);
       startedRef.current = false;
-      // re-trigger the counter on next IO check; if still in view, restart manually:
       const start = performance.now();
       const duration = 1100;
       const step = (now) => {
@@ -171,14 +170,14 @@ export default function ObsidianWikiCard({ a, onOpen }) {
     >
       <div className="flair-bg">
         <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} preserveAspectRatio="xMidYMid meet" aria-hidden="true" className="graph-svg">
-          {edgesRef.current.map((e, i) => {
-            const a = nodes[e.a]; const b = nodes[e.b];
+          {graph.edges.map((e, i) => {
+            const a = graph.nodes[e.a]; const b = graph.nodes[e.b];
             if (!a || !b) return null;
             const pulsed = ((performance.now() / 900) + e.pulse) % 1;
             const opacity = 0.2 + 0.55 * Math.abs(Math.sin(pulsed * Math.PI));
             return <line key={i} x1={a.x} y1={a.y} x2={b.x} y2={b.y} className="graph-edge" style={{ opacity }} />;
           })}
-          {nodes.map((n) => (
+          {graph.nodes.map((n) => (
             <circle key={n.id} cx={n.x} cy={n.y} r="3.5" className="graph-node" />
           ))}
         </svg>

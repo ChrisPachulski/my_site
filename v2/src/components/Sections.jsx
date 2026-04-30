@@ -192,7 +192,7 @@ export function Projects() {
   const [expanded, setExpanded] = useState(null);
   const filtered = PROJECTS.filter(CATEGORIES.find(c => c.id === cat).filter);
   return (
-    <section id="portfolio" data-screen-label="03 Portfolio">
+    <section id="portfolio">
       <div className="wrap">
         <div className="section-label reveal"><span className="num">03</span> / case studies &nbsp; <span className="mute">// where I've delivered value</span></div>
         <div className="about-grid" style={{ marginBottom: 40 }}>
@@ -427,7 +427,7 @@ export function Resume() {
   const [mode, setMode] = useState('experience');
   const list = mode === 'experience' ? EXPERIENCE : EDUCATION;
   return (
-    <section id="resume" className="flow" data-screen-label="04 Resume">
+    <section id="resume" className="flow">
       <div className="wrap">
         <div className="section-label reveal"><span className="num">04</span> / resume &nbsp; <span className="mute">// git log --oneline --graph career</span></div>
         <div className="about-grid" style={{ marginBottom: 40 }}>
@@ -525,7 +525,7 @@ export function Writing({ onArticleOpen }) {
     if (onArticleOpen) onArticleOpen(slug);
   };
   return (
-    <section id="writing" className="flow" data-screen-label="05 Writing">
+    <section id="writing" className="flow">
       <div className="wrap">
         <div className="section-label reveal"><span className="num">05</span> / writing &nbsp; <span className="mute">// {POSTS.length} posts</span></div>
         <div style={{ maxWidth: 720, marginBottom: 40 }}>
@@ -572,12 +572,12 @@ export function Contact() {
     }
   };
   return (
-    <section className="contact" id="contact" data-screen-label="06 Contact">
+    <section className="contact" id="contact">
       <div className="wrap">
         <div className="contact-grid">
           <div>
             <div className="section-label reveal" style={{marginBottom:24}}><span className="num">06</span> / contact</div>
-            <h2 className="reveal">Let's <em>go.</em></h2>
+            <h2 className="reveal section-headline">Let's <em>go.</em></h2>
             <p className="dim reveal" data-delay="1" style={{ fontSize: 17, maxWidth: 440, marginBottom: 32 }}>
               Hiring for analytics, BI, or data-engineering work? Need help designing a warehouse from scratch, or rescuing one that's on fire? I answer every genuine email.
             </p>

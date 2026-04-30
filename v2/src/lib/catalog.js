@@ -3,13 +3,15 @@
 //
 // `fileSlug` matches src/content/blog/<fileSlug>.md
 // `slug`     is the public lowercase-kebab URL slug at /writing/<slug>
+// `pivot`    is the single italicized word per the Italic Pivot Rule (DESIGN.md
+//            §3). Optional; falls back to the title's last word if omitted.
 export const CATALOG = [
-  { fileSlug: '208-Survived-Opinionated-Obsidian-Wiki', slug: 'opinionated-obsidian-wiki', cats: 'Obsidian · Claude Code · YouTube', title: 'A Wiki That Earns Its Keep: Five Article Types, a Stop Hook, and a YouTube Intake Pipeline', date: 'Apr 2026', read: '13 min' },
-  { fileSlug: 'Adding-a-Brain-to-a-Fork-career-ops-card-ops', slug: 'adding-a-brain-to-a-fork', cats: 'Claude Code · Personal Tools', title: 'Adding a Brain to a Fork: career-ops, card-ops, and the Compiled-Context Pattern', date: 'Apr 2026', read: '13 min' },
-  { fileSlug: 'At-Home-Media', slug: 'at-home-media', cats: 'Plex · Usenet', title: 'At Home Media Server', date: 'Sep 2025', read: '14 min' },
-  { fileSlug: 'Four-Terminals-Four-Sounds-session-sounds', slug: 'four-terminals-four-sounds', cats: 'Claude Code · Codex · Windows', title: 'Four Terminals, Four Sounds: A Tab-Naming and Notification System for Parallel AI Sessions', date: 'Mar 2026', read: '10 min' },
-  { fileSlug: 'Building-an-Autonomous-Research-Loop', slug: 'autonomous-research-loop', cats: 'Claude Code · Econometrics · AI Tooling', title: 'Building an Autonomous Research Loop: The Stack, The Rationale, and What I Borrowed From Karpathy and Feynman', date: 'Feb 2026', read: '28 min' },
-  { fileSlug: 'Memory-Hygiene-for-Long-Running-AI-Work', slug: 'memory-hygiene-for-ai-work', cats: 'Claude Code · AI Tooling', title: 'Memory Hygiene for Long-Running AI Work: Anti-Stickiness, Dreams, and Plan Clarity', date: 'Jan 2026', read: '17 min' },
+  { fileSlug: '208-Survived-Opinionated-Obsidian-Wiki', slug: 'opinionated-obsidian-wiki', cats: 'Obsidian · Claude Code · YouTube', title: 'A Wiki That Earns Its Keep: Five Article Types, a Stop Hook, and a YouTube Intake Pipeline', date: 'Apr 2026', read: '13 min', pivot: 'Earns' },
+  { fileSlug: 'Adding-a-Brain-to-a-Fork-career-ops-card-ops', slug: 'adding-a-brain-to-a-fork', cats: 'Claude Code · Personal Tools', title: 'Adding a Brain to a Fork: career-ops, card-ops, and the Compiled-Context Pattern', date: 'Apr 2026', read: '13 min', pivot: 'Brain' },
+  { fileSlug: 'At-Home-Media', slug: 'at-home-media', cats: 'Plex · Usenet', title: 'At Home Media Server', date: 'Sep 2025', read: '14 min', pivot: 'Server' },
+  { fileSlug: 'Four-Terminals-Four-Sounds-session-sounds', slug: 'four-terminals-four-sounds', cats: 'Claude Code · Codex · Windows', title: 'Four Terminals, Four Sounds: A Tab-Naming and Notification System for Parallel AI Sessions', date: 'Mar 2026', read: '10 min', pivot: 'Sounds' },
+  { fileSlug: 'Building-an-Autonomous-Research-Loop', slug: 'autonomous-research-loop', cats: 'Claude Code · Econometrics · AI Tooling', title: 'Building an Autonomous Research Loop: The Stack, The Rationale, and What I Borrowed From Karpathy and Feynman', date: 'Feb 2026', read: '28 min', pivot: 'Loop' },
+  { fileSlug: 'Memory-Hygiene-for-Long-Running-AI-Work', slug: 'memory-hygiene-for-ai-work', cats: 'Claude Code · AI Tooling', title: 'Memory Hygiene for Long-Running AI Work: Anti-Stickiness, Dreams, and Plan Clarity', date: 'Jan 2026', read: '17 min', pivot: 'Hygiene' },
   { fileSlug: 'Automating-Microsoft-365-in-Python-Without-an-Azure-App-Registration', slug: 'automating-microsoft-365-without-azure', cats: 'Python · Microsoft 365', title: 'Automating Microsoft 365 in Python Without an Azure App Registration', date: 'Dec 2025', read: '15 min' },
   { fileSlug: 'Streamlining-Smartsheet-with-smartsheet_utils', slug: 'streamlining-smartsheet-with-smartsheet-utils', cats: 'Python · Smartsheet', title: 'Streamlining Smartsheet with smartsheet_utils: A pandas-First Python Wrapper', date: 'Dec 2025', read: '17 min' },
   { fileSlug: 'Production-Python-on-Windows-Task-Scheduler', slug: 'production-python-on-windows-task-scheduler', cats: 'Python · Windows', title: 'Production Python on Windows Task Scheduler: The Dual-Logging Pattern', date: 'Nov 2025', read: '10 min' },

@@ -3,6 +3,20 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      // Reconcile saved display-mode before paint to avoid FOUC.
+      // After-hours is the default; office-hours requires explicit attr swap.
+      (function () {
+        try {
+          var stored = localStorage.getItem('display-mode');
+          if (stored === 'office-hours') {
+            var html = document.documentElement;
+            html.removeAttribute('data-vibe');
+            html.setAttribute('data-theme', 'light');
+          }
+        } catch (e) { /* localStorage blocked — fall through to defaults */ }
+      })();
+    </script>
     <title>Chris Pachulski — Senior Data Scientist</title>
     <meta name="description" content="Chris Pachulski — Senior Data Scientist @ Wizards of the Coast. Analytics engineer with 7+ years shipping data systems for ad-tech, consumer, and gaming." />
     <meta name="author" content="Chris Pachulski" />

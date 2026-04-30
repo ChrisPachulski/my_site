@@ -25,7 +25,7 @@ function useInView(threshold = 0.2) {
 export function About() {
   const [cardRef, inView] = useInView(0.15);
   return (
-    <section className="about" id="about" data-screen-label="01 About">
+    <section className="about" id="about">
       <div className="wrap">
         <div className="section-label reveal"><span className="num">01</span> / about</div>
         <div ref={cardRef} className={`izzet-card izzet-blue${inView ? ' in-view' : ''}`}>
@@ -44,10 +44,10 @@ export function About() {
                 <span className="izzet-text-right"> feels like the lights<br/>finally coming on.</span>
               </h2>
               <p className="reveal" data-delay="1">
-                I make the data layer load-bearing. Pipelines that don't drop, warehouses that still compose six months later, models that survive a production deploy. Seven years shipping that work; SQL and Python daily, R when the problem actually needs a statistician.
+                Seven years keeping data layers honest. Pipelines that don't silently drop rows, warehouses that still compose six months in, models that survive past the second production deploy. SQL and Python daily; R when the problem actually needs a statistician.
               </p>
               <p className="reveal" data-delay="2">
-                Same shape, different domain every time. Government contracting, adtech, browser telemetry, CPG retail panel, equity research, and now collectibles economics at Wizards. The stack changes; the discipline doesn't.
+                Five industries before this: government contracting, adtech, browser telemetry, CPG retail panel, equity research. Now collectibles economics at Wizards. Stack rotates. Discipline doesn't.
               </p>
               <p className="reveal" data-delay="3">
                 Outside of it: my daughter, my son, three dachshunds, the perennial heartbreak of the Toronto Maple Leafs, and tinkering with Magic: the Gathering collections.
@@ -83,7 +83,7 @@ export function Skills() {
   const [tableRef, inView] = useInView(0.2);
   const [cardRef, cardInView] = useInView(0.15);
   return (
-    <section id="skills" data-screen-label="02 Skills">
+    <section id="skills">
       <div className="wrap">
         <div className="section-label reveal">
           <span className="num">02</span> / skills &nbsp; <span className="mute">// SELECT * FROM tools ORDER BY depth DESC;</span>
@@ -140,7 +140,7 @@ export function Feature() {
     { glyph: '✦', nm: 'notify.subscribers',   ss: '500+ paying users' },
   ];
   return (
-    <section id="feature" data-screen-label="02b Feature">
+    <section id="feature">
       <div className="wrap">
         <div className="feature reveal">
           <div className="feature-grid">
@@ -151,11 +151,9 @@ export function Feature() {
                 500+ paying customers use our aggregated pricing to buy, sell, and hedge across a fragmented collectibles market. I designed the BigQuery warehouse from scratch, and the entire pipeline runs on Digital Ocean droplets + the R tidyverse.
               </p>
               <p className="dim">Time-series ML forecasts price movements. A Go dashboard surfaces it all.</p>
-              <div className="kpis">
-                <div className="kpi"><div className="v">$1.2<span className="u">M</span></div><div className="k">Annual revenue</div></div>
-                <div className="kpi"><div className="v">500<span className="u">+</span></div><div className="k">Paying subs</div></div>
-                <div className="kpi"><div className="v">24/7</div><div className="k">Uptime</div></div>
-              </div>
+              <p className="feature-evidence">
+                <strong>$1.2M</strong> ARR <span aria-hidden="true">·</span> <strong>500+</strong> paying subs <span aria-hidden="true">·</span> <strong>24/7</strong> since 2017
+              </p>
             </div>
             <div>
               <div

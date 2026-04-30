@@ -1,37 +1,36 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { getAdjacent } from '../lib/blog.js';
+import { getAdjacent, loadPostBody } from '../lib/blog.js';
 import { articlePath } from '../lib/router.js';
 
 function stripLeadingH1(body) {
   return body.replace(/^[\s\n]*#\s+[^\n]+\n+/, '');
 }
 
-function ItalicTitle({ title }) {
+// Italic Pivot Rule (DESIGN.md): exactly one operative word per headline is
+// italicized and tinted plasma-violet. Each post may declare its `pivot` in
+// catalog.js; if absent, fall back to the last word (still one word, never two).
+function ItalicTitle({ title, pivot }) {
   const trimmed = title.trim();
-  const colonSplit = trimmed.split(/:\s+/);
-  if (colonSplit.length >= 2) {
-    const [head, ...rest] = colonSplit;
-    return (
-      <>
-        {head}: <em>{rest.join(': ')}</em>
-      </>
-    );
+  if (pivot) {
+    const idx = trimmed.indexOf(pivot);
+    if (idx >= 0) {
+      return (
+        <>
+          {trimmed.slice(0, idx)}
+          <em>{pivot}</em>
+          {trimmed.slice(idx + pivot.length)}
+        </>
+      );
+    }
   }
-  const words = trimmed.split(/\s+/);
-  if (words.length <= 3) {
-    const last = words.pop();
-    return (
-      <>
-        {words.join(' ')}{words.length ? ' ' : ''}<em>{last}</em>
-      </>
-    );
-  }
-  const tail = words.slice(-2).join(' ');
+  const match = trimmed.match(/^(.*\s)?(\S+?)(\W*)$/);
+  if (!match) return trimmed;
+  const [, lead = '', last, tail = ''] = match;
   return (
     <>
-      {words.slice(0, -2).join(' ')} <em>{tail}</em>
+      {lead}<em>{last}</em>{tail}
     </>
   );
 }
@@ -39,6 +38,18 @@ function ItalicTitle({ title }) {
 export default function Article({ post, mode = 'page', onNavigate }) {
   const articleRef = useRef(null);
   const adjacent = getAdjacent(post.slug);
+  const [body, setBody] = useState(null); // null = loading, '' = missing
+
+  useEffect(() => {
+    let cancelled = false;
+    setBody(null);
+    loadPostBody(post).then((b) => {
+      if (!cancelled) setBody(b);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [post.slug]);
 
   useEffect(() => {
     if (mode === 'page' && articleRef.current) {
@@ -69,7 +80,7 @@ export default function Article({ post, mode = 'page', onNavigate }) {
         </a>
         <div className="article-eyebrow mono">Field Notes</div>
         <h1 id="article-title" className="article-title">
-          <ItalicTitle title={post.title} />
+          <ItalicTitle title={post.title} pivot={post.pivot} />
         </h1>
         <div className="article-meta">
           <span className="article-chip mono">{post.date}</span>
@@ -78,9 +89,11 @@ export default function Article({ post, mode = 'page', onNavigate }) {
         </div>
       </header>
 
-      <div className="article-content">
-        {post.body ? (
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>{stripLeadingH1(post.body)}</ReactMarkdown>
+      <div className="article-content" aria-busy={body === null || undefined}>
+        {body === null ? (
+          <p className="dim">Loading…</p>
+        ) : body ? (
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>{stripLeadingH1(body)}</ReactMarkdown>
         ) : (
           <p className="dim">Article body not found.</p>
         )}

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 
 /* ───────── MTG Card with cursor-tracking tilt + glow follow ───────── */
 function MagicCard() {
@@ -90,64 +90,33 @@ function useRevealOnScroll() {
   }, []);
 }
 
-/* Global parallax layer: sets --px/--py on <html> from mouse, --scrolly from scroll. */
-function useAmbientParallax() {
+/* Hero ignite tracker: keeps the radial gradient on the headline anchored to
+   the cursor without booting the rest of the custom-cursor stack. */
+function useHeroIgnite(ref) {
   useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reduce) return;
-    const root = document.documentElement;
-    let rafId = 0;
+    let raf = 0;
     let mx = 0, my = 0;
-    const onMove = (e) => {
-      mx = (e.clientX / window.innerWidth) - 0.5;
-      my = (e.clientY / window.innerHeight) - 0.5;
-      if (!rafId) rafId = requestAnimationFrame(flush);
-    };
-    const onScroll = () => {
-      root.style.setProperty('--scrolly', `${window.scrollY}px`);
-    };
     const flush = () => {
-      root.style.setProperty('--px', mx.toFixed(3));
-      root.style.setProperty('--py', my.toFixed(3));
-      rafId = 0;
+      const r = el.getBoundingClientRect();
+      el.style.setProperty('--izzet-cx', `${mx - r.left}px`);
+      el.style.setProperty('--izzet-cy', `${my - r.top}px`);
+      raf = 0;
+    };
+    const onMove = (e) => {
+      mx = e.clientX;
+      my = e.clientY;
+      if (!raf) raf = requestAnimationFrame(flush);
     };
     window.addEventListener('mousemove', onMove, { passive: true });
-    window.addEventListener('scroll', onScroll, { passive: true });
-    onScroll();
     return () => {
       window.removeEventListener('mousemove', onMove);
-      window.removeEventListener('scroll', onScroll);
-      if (rafId) cancelAnimationFrame(rafId);
+      if (raf) cancelAnimationFrame(raf);
     };
-  }, []);
-}
-
-/* Floating particle field, only when vibe=cyberpunk. Cheap: 20 DOM nodes, pure CSS anim. */
-function Particles() {
-  const [on, setOn] = useState(() => typeof document !== 'undefined' && document.documentElement.getAttribute('data-vibe') === 'cyberpunk');
-  useEffect(() => {
-    const obs = new MutationObserver(() => {
-      setOn(document.documentElement.getAttribute('data-vibe') === 'cyberpunk');
-    });
-    obs.observe(document.documentElement, { attributes: true, attributeFilter: ['data-vibe'] });
-    return () => obs.disconnect();
-  }, []);
-  if (!on) return null;
-  const dots = Array.from({ length: 22 }, (_, i) => {
-    const left = (i * 37) % 100;
-    const dx = ((i * 53) % 80) - 40;
-    const dur = 14 + ((i * 7) % 16);
-    const delay = -(i * 1.1) % 20;
-    const size = 1 + ((i * 3) % 3);
-    return (
-      <span key={i} className="p" style={{
-        left: `${left}%`, width: `${size}px`, height: `${size}px`,
-        animationDuration: `${dur}s`, animationDelay: `${delay}s`,
-        '--dx': `${dx}vw`,
-      }} />
-    );
-  });
-  return <div className="particles" aria-hidden="true">{dots}</div>;
+  }, [ref]);
 }
 
 function HeroTerminal({ variant }) {
@@ -157,37 +126,42 @@ function HeroTerminal({ variant }) {
 
 function Hero({ heroVariant }) {
   useRevealOnScroll();
-  useAmbientParallax();
+  const headlineRef = useRef(null);
+  useHeroIgnite(headlineRef);
   return (
-    <>
-      <Particles />
-      <section className="hero" id="home" data-screen-label="00 Hero">
-        <div className="wrap">
-          <div className="hero-grid">
-            <div>
-              <h1 className="hero-headline reveal izzet-ignite">
-                <span className="sub">Sr Data Scientist · Analytics Engineer</span>
-                Turning messy <span className="italic">data</span><br/>
-                into decisions<br/>
-                worth <span className="italic">shipping</span>.
-              </h1>
-              <p className="hero-lede reveal" data-delay="1">
-                I'm <strong>Chris Pachulski</strong> — I turned a hobby into a career. Co-founded <strong>MTGBAN</strong>, a Magic: The Gathering arbitrage engine, and spent 7+ years building analytics pipelines for Ad.Net, Mozilla, SPINS, and Providencia along the way. Now I'm a <strong>Senior Data Scientist at Wizards of the Coast</strong>, working on the game I built a business around.
-              </p>
-              <p className="hero-signature reveal" data-delay="2">
-                7+ yrs<span className="sep" aria-hidden="true">·</span>WotC Sr DS<span className="sep" aria-hidden="true">·</span>500+ MTGBAN subs<span className="sep" aria-hidden="true">·</span>5 industries shipped
-              </p>
-              <div className="hero-actions reveal" data-delay="3">
-                <a href="#contact" className="btn btn-primary mono izzet-magnetic">Let's talk <span className="arrow">→</span></a>
-                <a href="#portfolio" className="btn mono izzet-magnetic">View case studies</a>
-                <a href="https://github.com/ChrisPachulski" target="_blank" rel="noopener noreferrer" className="btn mono izzet-magnetic">GitHub ↗</a>
-              </div>
+    <section className="hero" id="home">
+      <div className="wrap">
+        <div className="hero-grid">
+          <div>
+            <h1 ref={headlineRef} className="hero-headline reveal izzet-ignite">
+              <span className="sub">Sr Data Scientist · Analytics Engineer</span>
+              Turning messy <span className="italic">data</span><br/>
+              into decisions<br/>
+              worth <span className="italic">shipping</span>.
+            </h1>
+            <p className="hero-lede reveal" data-delay="1">
+              I'm <strong>Chris Pachulski</strong> — I turned a hobby into a career. Co-founded <strong>MTGBAN</strong>, a Magic: The Gathering arbitrage engine, and spent 7+ years building analytics pipelines for Ad.Net, Mozilla, SPINS, and Providencia along the way. Now I'm a <strong>Senior Data Scientist at Wizards of the Coast</strong>, working on the game I built a business around.
+            </p>
+            <p className="hero-signature reveal" data-delay="2">
+              7+ yrs<span className="sep" aria-hidden="true">·</span>WotC Sr DS<span className="sep" aria-hidden="true">·</span>500+ MTGBAN subs<span className="sep" aria-hidden="true">·</span>5 industries shipped
+            </p>
+            <p className="hero-availability reveal" data-delay="3">
+              <span className="status-dot" aria-hidden="true" />
+              <span className="status-label">Available</span>
+              <span className="sep" aria-hidden="true">·</span>
+              <span>Selective consulting + mentoring</span>
+            </p>
+            <div className="hero-actions reveal" data-delay="4">
+              <a href="#contact" className="btn btn-primary mono">Let's talk <span className="arrow">→</span></a>
+              <a href="#portfolio" className="btn mono">View case studies</a>
+              <a href="/cv/Chris_Pachulski_Resume.pdf" className="btn mono" download>Download CV <span aria-hidden="true">↓</span></a>
+              <a href="https://github.com/ChrisPachulski" target="_blank" rel="noopener noreferrer" className="btn mono">GitHub ↗</a>
             </div>
-            <div className="reveal" data-delay="1"><HeroTerminal variant={heroVariant} /></div>
           </div>
+          <div className="reveal" data-delay="1"><HeroTerminal variant={heroVariant} /></div>
         </div>
-      </section>
-    </>
+      </div>
+    </section>
   );
 }
 

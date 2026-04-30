@@ -1,8 +1,17 @@
-import { useEffect, useReducer, useRef, useState, useMemo } from 'react';
+import { useEffect, useReducer, useRef, useState, useMemo, useCallback } from 'react';
 import Card from './Card.jsx';
 import { CARDS } from './cards.js';
-import { INITIAL_STATE, OPENING, EVENTS } from './match-script.js';
+import {
+  INITIAL_STATE,
+  MULLIGAN_OPENING,
+  COUNTER_CARD_INST,
+  SETUP_EVENTS,
+  COUNTER_EVENTS,
+  EXPIRE_EVENTS,
+} from './match-script.js';
 import './ghostmatch.css';
+
+const COUNTER_TIMER_MS = 20000;
 
 /* ── Reducer ────────────────────────────────────────────────────── */
 function reducer(state, ev) {
@@ -10,8 +19,8 @@ function reducer(state, ev) {
     case 'DEAL_OPENING':
       return {
         ...state,
-        you: { ...state.you, hand: OPENING.you.map(c => ({ ...c })) },
-        opp: { ...state.opp, hand: OPENING.opp.map(c => ({ ...c })) },
+        you: { ...state.you, hand: ev.opening.you.map(c => ({ ...c })) },
+        opp: { ...state.opp, hand: ev.opening.opp.map(c => ({ ...c })) },
       };
 
     case 'LOG':
@@ -20,17 +29,33 @@ function reducer(state, ev) {
     case 'PHASE':
       return { ...state, turn: ev.turn, activePlayer: ev.player, phase: ev.label };
 
-    case 'DRAW':
-    case 'DRAW_REVEAL': {
+    case 'PROMPT':
+      return { ...state, prompt: ev.prompt };
+
+    case 'CLEAR_PROMPT':
+      return { ...state, prompt: null };
+
+    case 'LAND_DIRECT': {
       const p = ev.player;
       const side = state[p];
-      const reveal = ev.type === 'DRAW_REVEAL';
       return {
         ...state,
-        [p]: { ...side, hand: [...side.hand, { instId: ev.instId, cardId: ev.cardId, _justDrawn: true, _reveal: reveal }] },
-        focus: reveal ? ev.instId : state.focus,
+        [p]: {
+          ...side,
+          battlefield: {
+            ...side.battlefield,
+            lands: [...side.battlefield.lands, { instId: ev.instId, cardId: ev.cardId, tapped: !!ev.tapped }],
+          },
+        },
       };
     }
+
+    case 'CAST_DIRECT':
+      return {
+        ...state,
+        stack: [...state.stack, { instId: ev.instId, cardId: ev.cardId, owner: ev.player, countered: false, targetInstId: null }],
+        focus: ev.instId,
+      };
 
     case 'PLAY_LAND': {
       const p = ev.player;
@@ -62,23 +87,6 @@ function reducer(state, ev) {
             lands: mark(side.battlefield.lands),
             creatures: mark(side.battlefield.creatures),
             other: mark(side.battlefield.other),
-          },
-        },
-      };
-    }
-
-    case 'UNTAP_ALL': {
-      const p = ev.player;
-      const side = state[p];
-      const untap = list => list.map(c => ({ ...c, tapped: false, attacking: false, blocking: null, damageTaken: 0 }));
-      return {
-        ...state,
-        [p]: {
-          ...side,
-          battlefield: {
-            lands: untap(side.battlefield.lands),
-            creatures: untap(side.battlefield.creatures),
-            other: untap(side.battlefield.other),
           },
         },
       };
@@ -129,7 +137,6 @@ function reducer(state, ev) {
         };
       }
       const isCreature = /Creature/.test(def.type);
-      const isEnchant = /Enchantment/.test(def.type);
       if (isCreature) {
         return {
           ...state,
@@ -148,20 +155,6 @@ function reducer(state, ev) {
           focus: item.instId,
         };
       }
-      if (isEnchant) {
-        return {
-          ...state,
-          stack: newStack,
-          [ownerKey]: {
-            ...ownerSide,
-            battlefield: {
-              ...ownerSide.battlefield,
-              other: [...ownerSide.battlefield.other, { instId: item.instId, cardId: item.cardId }],
-            },
-          },
-          focus: item.instId,
-        };
-      }
       return {
         ...state,
         stack: newStack,
@@ -173,105 +166,135 @@ function reducer(state, ev) {
       };
     }
 
-    case 'ETB_DAMAGE': {
-      const t = ev.target;
-      return { ...state, [t]: { ...state[t], life: Math.max(0, state[t].life - ev.amount) } };
-    }
-
-    case 'ATTACK': {
-      const p = ev.player;
-      const side = state[p];
-      return {
-        ...state,
-        [p]: {
-          ...side,
-          battlefield: {
-            ...side.battlefield,
-            creatures: side.battlefield.creatures.map(c => c.instId === ev.instId ? { ...c, tapped: true, attacking: true } : c),
-          },
-        },
-      };
-    }
-
-    case 'BLOCK': {
-      const next = { ...state };
-      for (const p of ['you', 'opp']) {
-        const side = state[p];
-        const has = side.battlefield.creatures.some(c => c.instId === ev.blockerInstId);
-        if (has) {
-          next[p] = {
-            ...side,
-            battlefield: {
-              ...side.battlefield,
-              creatures: side.battlefield.creatures.map(c => c.instId === ev.blockerInstId ? { ...c, blocking: ev.attackerInstId } : c),
-            },
-          };
-        }
-      }
-      return next;
-    }
-
-    case 'COMBAT_DAMAGE': {
-      if (ev.toPlayer) {
-        const t = ev.toPlayer;
-        return { ...state, [t]: { ...state[t], life: Math.max(0, state[t].life - ev.amount) } };
-      }
-      let next = { ...state };
-      for (const p of ['you', 'opp']) {
-        const side = next[p];
-        const cr = side.battlefield.creatures.find(c => c.instId === ev.toInstId);
-        if (!cr) continue;
-        if (ev.dies) {
-          next[p] = {
-            ...side,
-            battlefield: {
-              ...side.battlefield,
-              creatures: side.battlefield.creatures.filter(c => c.instId !== ev.toInstId),
-            },
-            graveyard: [...side.graveyard, { instId: cr.instId, cardId: cr.cardId }],
-          };
-        } else {
-          next[p] = {
-            ...side,
-            battlefield: {
-              ...side.battlefield,
-              creatures: side.battlefield.creatures.map(c => c.instId === ev.toInstId ? { ...c, damageTaken: (c.damageTaken || 0) + ev.amount } : c),
-            },
-          };
-        }
-      }
-      return next;
-    }
-
-    case 'BUFF_CREATURES': {
-      const p = ev.player;
-      const side = state[p];
-      return {
-        ...state,
-        [p]: {
-          ...side,
-          battlefield: {
-            ...side.battlefield,
-            creatures: side.battlefield.creatures.map(c => ({
-              ...c,
-              buffed: { p: (c.buffed?.p || 0) + ev.p, t: (c.buffed?.t || 0) + ev.t },
-              hasHaste: c.hasHaste || ev.grantsHaste,
-              hasTrample: c.hasTrample || ev.grantsTrample,
-            })),
-          },
-        },
-      };
-    }
-
-    case 'END_TURN':
-      return { ...state, focus: null };
+    case 'ETB_DAMAGE':
+      return { ...state, [ev.target]: { ...state[ev.target], life: Math.max(0, state[ev.target].life - ev.amount) } };
 
     case 'VICTORY':
-      return { ...state, ended: true, winner: ev.winner, focus: null };
+      return { ...state, ended: true, winner: ev.winner, focus: null, prompt: null };
 
     default:
       return state;
   }
+}
+
+/* ── Tease tile (default render — lives in document flow) ──────── */
+function TeaseTile({ onPlay }) {
+  return (
+    <section className="gm-tile-wrap" aria-label="Optional ghost match">
+      <button type="button" className="gm-tile" onClick={onPlay}>
+        <div className="gm-tile-card" aria-hidden="true">
+          <Card card="mtgban" size="hand" faceDown deckSide="you" />
+        </div>
+        <div className="gm-tile-meta">
+          <div className="gm-tile-eyebrow">Optional · ~30 seconds</div>
+          <div className="gm-tile-title">Play the opening hand</div>
+          <div className="gm-tile-sub">
+            Mulligan, hold the line against <em>The Deadlines</em>, win on turn 3.
+          </div>
+        </div>
+        <span className="gm-tile-arrow" aria-hidden="true">→</span>
+      </button>
+    </section>
+  );
+}
+
+/* ── Mulligan stage ────────────────────────────────────────────── */
+function MulliganStage({ cards, onKeep, onSkip }) {
+  const [flipped, setFlipped] = useState(() => new Set());
+  const allFlipped = flipped.size === cards.length;
+  const flip = (instId) => setFlipped(prev => {
+    if (prev.has(instId)) return prev;
+    const next = new Set(prev);
+    next.add(instId);
+    return next;
+  });
+
+  return (
+    <div className="gm-mulligan" role="dialog" aria-label="Mulligan">
+      <div className="gm-mulligan-header">
+        <div className="gm-mulligan-eyebrow">Mulligan · 4 cards</div>
+        <h2 className="gm-mulligan-title">
+          Tap each card to <em>reveal</em> your hand.
+        </h2>
+        <p className="gm-mulligan-sub">
+          You'll cast MTGBAN. The Deadlines will try to Red Tape it. Counter their counter.
+        </p>
+      </div>
+      <div className="gm-mulligan-grid">
+        {cards.map((c, i) => {
+          const isFlipped = flipped.has(c.instId);
+          return (
+            <button
+              type="button"
+              key={c.instId}
+              className={`gm-mulligan-slot${isFlipped ? ' is-flipped' : ''}`}
+              style={{ '--n': i }}
+              onClick={() => flip(c.instId)}
+              aria-pressed={isFlipped}
+              aria-label={isFlipped ? CARDS[c.cardId].name : `Card ${i + 1}, face down`}
+            >
+              <div className="gm-mulligan-flipper">
+                <div className="gm-mulligan-back">
+                  <Card card={c.cardId} size="hand" faceDown deckSide="you" />
+                </div>
+                <div className="gm-mulligan-face">
+                  <Card card={c.cardId} size="hand" />
+                </div>
+              </div>
+            </button>
+          );
+        })}
+      </div>
+      <div className="gm-mulligan-actions">
+        <button type="button" className="gm-mulligan-skip" onClick={onSkip}>
+          Skip <span aria-hidden="true">→</span> portfolio
+        </button>
+        <button
+          type="button"
+          className="gm-mulligan-keep"
+          disabled={!allFlipped}
+          onClick={onKeep}
+        >
+          {allFlipped
+            ? <>Keep this hand <span aria-hidden="true">→</span></>
+            : `Reveal ${cards.length - flipped.size} more`}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* ── Counter prompt (player must click Counterflux; 20s timer) ── */
+function CounterPrompt({ remainingMs, onCounter }) {
+  const pct = Math.max(0, Math.min(1, remainingMs / COUNTER_TIMER_MS));
+  const seconds = Math.max(0, Math.ceil(remainingMs / 1000));
+  const circumference = 2 * Math.PI * 26;
+  return (
+    <div className="gm-counter-prompt" role="alert">
+      <div className="gm-counter-headline">
+        Counter their <em>counter</em>.
+      </div>
+      <div className="gm-counter-sub">
+        Click the glowing card to cast Counterflux. {seconds}s.
+      </div>
+      <button type="button" className="gm-counter-fire" onClick={onCounter} aria-label={`Counter Red Tape (${seconds} seconds remaining)`}>
+        <svg className="gm-counter-ring" viewBox="0 0 60 60" aria-hidden="true">
+          <circle cx="30" cy="30" r="26" className="gm-counter-ring-track" />
+          <circle
+            cx="30"
+            cy="30"
+            r="26"
+            className="gm-counter-ring-fill"
+            style={{
+              strokeDasharray: circumference,
+              strokeDashoffset: circumference * (1 - pct),
+            }}
+          />
+        </svg>
+        <span className="gm-counter-fire-num">{seconds}</span>
+      </button>
+    </div>
+  );
 }
 
 /* ── Life total with smooth counter ─────────────────────────────── */
@@ -303,16 +326,19 @@ function LifeTotal({ label, value, side }) {
   );
 }
 
-/* ── Hand row ───────────────────────────────────────────────────── */
-function HandRow({ hand, side, focus }) {
+/* ── Hand row (interactive when prompt='counter') ──────────────── */
+function HandRow({ hand, side, focus, interactiveInst, onInteract }) {
   return (
     <div className={`gm-hand gm-hand-${side}`}>
-      {hand.map((c, i) => (
-        <div
-          key={c.instId}
-          className={`gm-hand-slot${focus === c.instId ? ' gm-hand-focus' : ''}${c._reveal ? ' gm-hand-reveal' : ''}`}
-          style={{ '--n': i, '--total': hand.length }}
-        >
+      {hand.map((c, i) => {
+        const isInteractive = side === 'you' && interactiveInst === c.instId;
+        const className = [
+          'gm-hand-slot',
+          focus === c.instId && 'gm-hand-focus',
+          c._reveal && 'gm-hand-reveal',
+          isInteractive && 'gm-hand-interactive',
+        ].filter(Boolean).join(' ');
+        const inner = (
           <Card
             card={c.cardId}
             size="hand"
@@ -320,14 +346,37 @@ function HandRow({ hand, side, focus }) {
             deckSide={side}
             focused={focus === c.instId}
           />
-        </div>
-      ))}
+        );
+        if (isInteractive) {
+          return (
+            <button
+              type="button"
+              key={c.instId}
+              className={className}
+              style={{ '--n': i, '--total': hand.length }}
+              onClick={onInteract}
+              aria-label={`Cast ${CARDS[c.cardId].name}`}
+            >
+              {inner}
+            </button>
+          );
+        }
+        return (
+          <div
+            key={c.instId}
+            className={className}
+            style={{ '--n': i, '--total': hand.length }}
+          >
+            {inner}
+          </div>
+        );
+      })}
     </div>
   );
 }
 
 /* ── Battlefield row (lands or creatures) ──────────────────────── */
-function BattleRow({ items, side, row, focus, attackingTo }) {
+function BattleRow({ items, side, row, focus }) {
   return (
     <div className={`gm-row gm-row-${row} gm-row-${side}`}>
       {items.map(c => (
@@ -390,14 +439,16 @@ function LogPanel({ log, phase }) {
 }
 
 /* ── Victory screen ────────────────────────────────────────────── */
-function VictoryScreen({ onContinue }) {
+function VictoryScreen({ onContinue, expired }) {
   return (
     <div className="gm-victory" role="dialog" aria-label="Match complete">
       <div className="gm-victory-inner">
-        <div className="gm-victory-label">MATCH COMPLETE</div>
+        <div className="gm-victory-label">{expired ? 'CLOSE CALL' : 'MATCH COMPLETE'}</div>
         <h2 className="gm-victory-title">Izzet · Data-Driven <span>wins.</span></h2>
         <p className="gm-victory-sub">
-          This site was built by the wizard who cast MTGBAN. Scroll down for the rest of the spellbook.
+          {expired
+            ? 'The reflex held. Counter resolved on instinct, six damage stuck. Scroll for the rest of the spellbook.'
+            : 'Counter resolved, six damage stuck. The site below was built by the wizard who cast MTGBAN.'}
         </p>
         <div className="gm-victory-tags">
           <span>WotC Senior Data Scientist</span>
@@ -415,120 +466,220 @@ function VictoryScreen({ onContinue }) {
 /* ── Main component ────────────────────────────────────────────── */
 export default function GhostMatch({ onComplete }) {
   const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
-  const [idx, setIdx] = useState(0);
-  const [skipped, setSkipped] = useState(false);
-  const [speed, setSpeed] = useState(1);
-  const timerRef = useRef(null);
+  const [stage, setStage] = useState('tile'); // tile | mulligan | setup | counter | resolving
+  const [expired, setExpired] = useState(false);
+  const [counterStart, setCounterStart] = useState(null);
+  const [now, setNow] = useState(() => performance.now());
+  const counterFiredRef = useRef(false);
 
   const reduceMotion = useMemo(
     () => typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches,
     []
   );
 
-  // Auto-skip when reduced motion — fire onComplete so parent unmounts cleanly.
-  useEffect(() => {
-    if (reduceMotion) {
-      setSkipped(true);
-      onComplete?.();
+  /* Open the playable overlay. */
+  const openMatch = useCallback(() => {
+    setStage('mulligan');
+  }, []);
+
+  /* Skip / close at any stage. */
+  const handleClose = useCallback(() => {
+    onComplete?.();
+  }, [onComplete]);
+
+  /* Victory continue: scroll to #about so the page picks up where the tile left off. */
+  const handleVictoryContinue = useCallback(() => {
+    const target = document.getElementById('about');
+    onComplete?.();
+    if (target) {
+      requestAnimationFrame(() => {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
     }
+  }, [onComplete]);
 
-  }, [reduceMotion]);
+  /* Mulligan → setup. */
+  const keepHand = useCallback(() => {
+    dispatch({ type: 'DEAL_OPENING', opening: MULLIGAN_OPENING });
+    setStage('setup');
+  }, []);
 
-  // Advance through the script
+  /* Counter trigger (player click or timer expiry). */
+  const fireCounter = useCallback((expiredFlag = false) => {
+    if (counterFiredRef.current) return;
+    counterFiredRef.current = true;
+    setExpired(expiredFlag);
+    setStage('resolving');
+  }, []);
+
+  /* Lock body scroll while overlay is open. */
   useEffect(() => {
-    if (skipped || state.ended) return;
-    if (idx >= EVENTS.length) return;
-    const ev = EVENTS[idx];
-    const delay = Math.max(40, (ev.d || 300) / speed);
-    timerRef.current = setTimeout(() => {
-      dispatch(ev);
-      setIdx(i => i + 1);
-    }, delay);
-    return () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
+    if (stage === 'tile') return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = prev; };
+  }, [stage]);
+
+  /* ESC closes the overlay from any stage. */
+  useEffect(() => {
+    if (stage === 'tile') return;
+    const onKey = (e) => { if (e.key === 'Escape') handleClose(); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [stage, handleClose]);
+
+  /* Setup events runner: on entering 'setup', play through SETUP_EVENTS, then transition to 'counter'. */
+  useEffect(() => {
+    if (stage !== 'setup') return;
+    let cancelled = false;
+    let timer = null;
+    let i = 0;
+    const speed = reduceMotion ? 0.15 : 1;
+    const runNext = () => {
+      if (cancelled) return;
+      if (i >= SETUP_EVENTS.length) {
+        setStage('counter');
+        return;
+      }
+      const ev = SETUP_EVENTS[i++];
+      const delay = Math.max(20, (ev.d || 0) * speed);
+      timer = setTimeout(() => {
+        dispatch(ev);
+        runNext();
+      }, delay);
     };
-  }, [idx, skipped, state.ended, speed]);
+    runNext();
+    return () => {
+      cancelled = true;
+      if (timer) clearTimeout(timer);
+    };
+  }, [stage, reduceMotion]);
 
-  const handleSkip = () => {
-    setSkipped(true);
-    if (timerRef.current) clearTimeout(timerRef.current);
-    onComplete?.();
-  };
+  /* Counter timer: tick every 100ms, auto-fire on expiry. */
+  useEffect(() => {
+    if (stage !== 'counter') return;
+    setCounterStart(performance.now());
+    setNow(performance.now());
+    const interval = setInterval(() => setNow(performance.now()), 100);
+    const expireTimer = setTimeout(() => fireCounter(true), COUNTER_TIMER_MS);
+    return () => {
+      clearInterval(interval);
+      clearTimeout(expireTimer);
+    };
+  }, [stage, fireCounter]);
 
-  const handleContinue = () => {
-    onComplete?.();
-  };
+  /* Resolution events runner: plays counter or expire path. */
+  useEffect(() => {
+    if (stage !== 'resolving') return;
+    const events = expired ? EXPIRE_EVENTS : COUNTER_EVENTS;
+    let cancelled = false;
+    let timer = null;
+    let i = 0;
+    const speed = reduceMotion ? 0.15 : 1;
+    const runNext = () => {
+      if (cancelled || i >= events.length) return;
+      const ev = events[i++];
+      const delay = Math.max(20, (ev.d || 0) * speed);
+      timer = setTimeout(() => {
+        dispatch(ev);
+        runNext();
+      }, delay);
+    };
+    runNext();
+    return () => {
+      cancelled = true;
+      if (timer) clearTimeout(timer);
+    };
+  }, [stage, expired, reduceMotion]);
 
-  if (skipped && !state.ended) {
-    // Instant skip path — no match UI, just invoke onComplete; parent scrolls away.
-    return null;
+  if (stage === 'tile') {
+    return <TeaseTile onPlay={openMatch} />;
   }
 
+  const remainingMs = counterStart ? Math.max(0, counterStart + COUNTER_TIMER_MS - now) : COUNTER_TIMER_MS;
+  const showCounterPrompt = stage === 'counter' && state.prompt === 'counter' && !state.ended;
+  const interactiveInst = showCounterPrompt ? COUNTER_CARD_INST : null;
+
   return (
-    <section className="gm-root" aria-label="Ghost match intro" data-ended={state.ended ? 'true' : 'false'}>
+    <section className="gm-root" aria-label="Ghost match" data-stage={stage} data-ended={state.ended ? 'true' : 'false'}>
       <div className="gm-bg" aria-hidden="true" />
-      <div className="gm-scan" aria-hidden="true" />
 
-      {/* Opponent zone */}
-      <div className="gm-zone gm-zone-opp">
-        <div className="gm-ribbon">
-          <LifeTotal label={state.opp.name} value={state.opp.life} side="opp" />
-          <div className="gm-ribbon-center">
-            <div className="gm-deck-name">{state.opp.deckName}</div>
+      <button
+        type="button"
+        className="gm-close"
+        onClick={handleClose}
+        aria-label="Close match"
+      >
+        <span aria-hidden="true">×</span>
+      </button>
+
+      {stage === 'mulligan' ? (
+        <MulliganStage cards={MULLIGAN_OPENING.you} onKeep={keepHand} onSkip={handleClose} />
+      ) : (
+        <>
+          {/* Opponent zone */}
+          <div className="gm-zone gm-zone-opp">
+            <div className="gm-ribbon">
+              <LifeTotal label={state.opp.name} value={state.opp.life} side="opp" />
+              <div className="gm-ribbon-center">
+                <div className="gm-deck-name">{state.opp.deckName}</div>
+              </div>
+              <div className="gm-pile">
+                <div className="gm-pile-label">Library</div>
+                <div className="gm-pile-count">{60 - state.opp.graveyard.length - state.opp.battlefield.lands.length - state.opp.battlefield.creatures.length - state.opp.battlefield.other.length - state.opp.hand.length}</div>
+              </div>
+            </div>
+            <HandRow hand={state.opp.hand} side="opp" focus={state.focus} />
+            <BattleRow items={state.opp.battlefield.creatures} side="opp" row="creatures" focus={state.focus} />
+            <BattleRow items={state.opp.battlefield.lands} side="opp" row="lands" focus={state.focus} />
           </div>
-          <div className="gm-pile">
-            <div className="gm-pile-label">Library</div>
-            <div className="gm-pile-count">{60 - state.opp.graveyard.length - state.opp.battlefield.lands.length - state.opp.battlefield.creatures.length - state.opp.battlefield.other.length - state.opp.hand.length}</div>
+
+          {/* Center: phase banner + stack */}
+          <div className="gm-center">
+            {state.phase && <div className="gm-phase-banner">{state.phase}</div>}
+            <StackZone stack={state.stack} />
           </div>
-        </div>
-        <HandRow hand={state.opp.hand} side="opp" focus={state.focus} />
-        <BattleRow items={state.opp.battlefield.creatures} side="opp" row="creatures" focus={state.focus} />
-        <BattleRow items={state.opp.battlefield.lands} side="opp" row="lands" focus={state.focus} />
-      </div>
 
-      {/* Center: phase banner + stack */}
-      <div className="gm-center">
-        {state.phase && <div className="gm-phase-banner">{state.phase}</div>}
-        <StackZone stack={state.stack} />
-      </div>
-
-      {/* Your zone */}
-      <div className="gm-zone gm-zone-you">
-        <BattleRow items={state.you.battlefield.lands} side="you" row="lands" focus={state.focus} />
-        <BattleRow items={state.you.battlefield.creatures.concat(state.you.battlefield.other)} side="you" row="creatures" focus={state.focus} />
-        <HandRow hand={state.you.hand} side="you" focus={state.focus} />
-        <div className="gm-ribbon">
-          <LifeTotal label={state.you.name} value={state.you.life} side="you" />
-          <div className="gm-ribbon-center">
-            <div className="gm-deck-name">{state.you.deckName}</div>
+          {/* Your zone */}
+          <div className="gm-zone gm-zone-you">
+            <BattleRow items={state.you.battlefield.lands} side="you" row="lands" focus={state.focus} />
+            <BattleRow items={state.you.battlefield.creatures.concat(state.you.battlefield.other)} side="you" row="creatures" focus={state.focus} />
+            <HandRow
+              hand={state.you.hand}
+              side="you"
+              focus={state.focus}
+              interactiveInst={interactiveInst}
+              onInteract={() => fireCounter(false)}
+            />
+            <div className="gm-ribbon">
+              <LifeTotal label={state.you.name} value={state.you.life} side="you" />
+              <div className="gm-ribbon-center">
+                <div className="gm-deck-name">{state.you.deckName}</div>
+              </div>
+              <div className="gm-pile">
+                <div className="gm-pile-label">Library</div>
+                <div className="gm-pile-count">{60 - state.you.graveyard.length - state.you.battlefield.lands.length - state.you.battlefield.creatures.length - state.you.battlefield.other.length - state.you.hand.length}</div>
+              </div>
+            </div>
           </div>
-          <div className="gm-pile">
-            <div className="gm-pile-label">Library</div>
-            <div className="gm-pile-count">{60 - state.you.graveyard.length - state.you.battlefield.lands.length - state.you.battlefield.creatures.length - state.you.battlefield.other.length - state.you.hand.length}</div>
+
+          {/* HUD: log + skip */}
+          <div className="gm-hud">
+            <LogPanel log={state.log} phase={state.phase} />
+            <div className="gm-controls">
+              <button type="button" className="gm-skip" onClick={handleClose}>
+                Skip <span aria-hidden="true">→</span>
+              </button>
+            </div>
           </div>
-        </div>
-      </div>
 
-      {/* Log + controls (bottom-right) */}
-      <div className="gm-hud">
-        <LogPanel log={state.log} phase={state.phase} />
-        <div className="gm-controls">
-          <button
-            type="button"
-            className={`gm-speed${speed === 1.5 ? ' gm-speed-on' : ''}`}
-            onClick={() => setSpeed(s => (s === 1 ? 1.5 : s === 1.5 ? 2 : 1))}
-            aria-label="Playback speed"
-            title="Playback speed"
-          >
-            {speed}×
-          </button>
-          <button type="button" className="gm-skip" onClick={handleSkip}>
-            Skip match <span aria-hidden="true">→</span>
-          </button>
-        </div>
-      </div>
+          {showCounterPrompt && (
+            <CounterPrompt remainingMs={remainingMs} onCounter={() => fireCounter(false)} />
+          )}
 
-      {state.ended && <VictoryScreen onContinue={handleContinue} />}
+          {state.ended && <VictoryScreen onContinue={handleVictoryContinue} expired={expired} />}
+        </>
+      )}
     </section>
   );
 }

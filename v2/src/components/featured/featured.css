@@ -275,9 +275,12 @@
 }
 .at-home-media-card .progress-fill {
   height: 100%;
+  width: 100%;
   background: var(--accent);
   box-shadow: 0 0 8px var(--accent-soft);
-  transition: width 0.6s linear;
+  transform-origin: left center;
+  transition: transform 0.6s linear;
+  will-change: transform;
 }
 .at-home-media-card .timecode {
   font-family: var(--mono);
@@ -323,7 +326,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .at-home-media-card .progress-fill { transition: none; }
+  .at-home-media-card .progress-fill { transition: none; transform: scaleX(1); }
   .at-home-media-card .play-overlay { transition: opacity 0.15s; }
 }
 

@@ -1,20 +1,41 @@
-import { useState, useEffect, useRef, lazy, Suspense } from 'react';
+import { useState, useEffect, useRef, lazy, Suspense, useCallback } from 'react';
 import Hero from './components/Hero.jsx';
 import { About, Skills, Feature } from './components/AboutSkills.jsx';
 import { Projects, Resume, Writing, Contact } from './components/Sections.jsx';
-import IzzetCursor from './components/izzet-cursor/IzzetCursor.jsx';
 import Article from './components/Article.jsx';
 import NotFound from './components/NotFound.jsx';
+import ThemeSwitch from './components/ThemeSwitch.jsx';
 import { useRoute, articlePath } from './lib/router.js';
 import { getPost } from './lib/blog.js';
-import './components/izzet-cursor/izzet-cursor.css';
 
 const GhostMatch = lazy(() => import('./components/ghostmatch/GhostMatch.jsx'));
 
 const ACCENT = 'violet';
-const THEME = 'dark';
-const VIBE = 'cyberpunk';
 const HERO_VARIANT = 'sql';
+const MODE_STORAGE_KEY = 'display-mode';
+const TRANSITION_MS = 520;
+
+function readStoredMode() {
+  if (typeof window === 'undefined') return 'after-hours';
+  try {
+    return window.localStorage.getItem(MODE_STORAGE_KEY) === 'office-hours'
+      ? 'office-hours'
+      : 'after-hours';
+  } catch (e) {
+    return 'after-hours';
+  }
+}
+
+function applyMode(mode) {
+  const html = document.documentElement;
+  if (mode === 'office-hours') {
+    html.removeAttribute('data-vibe');
+    html.setAttribute('data-theme', 'light');
+  } else {
+    html.setAttribute('data-vibe', 'cyberpunk');
+    html.setAttribute('data-theme', 'dark');
+  }
+}
 
 const NAV = [
   { id: 'home',      label: 'Home' },
@@ -25,7 +46,7 @@ const NAV = [
   { id: 'writing',   label: 'Writing' },
 ];
 
-function Nav({ active, onHome }) {
+function Nav({ active, onHome, mode, onModeChange }) {
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -56,17 +77,23 @@ function Nav({ active, onHome }) {
             <span>{n.label}</span>
           </a>
         ))}
+        <ThemeSwitch mode={mode} onChange={onModeChange} />
         <a href="/#contact" className="cta" onClick={(e) => handleNav(e, '#contact')}>Contact</a>
       </div>
     </nav>
   );
 }
 
-function HomeContent({ active, onHome, onArticleOpen }) {
+function HomeContent({ active, onHome, onArticleOpen, gmDone, onGmComplete, mode, onModeChange }) {
   return (
     <>
-      <Nav active={active} onHome={onHome} />
+      <Nav active={active} onHome={onHome} mode={mode} onModeChange={onModeChange} />
       <Hero heroVariant={HERO_VARIANT} />
+      {!gmDone && mode === 'after-hours' && (
+        <Suspense fallback={null}>
+          <GhostMatch onComplete={onGmComplete} />
+        </Suspense>
+      )}
       <About />
       <Skills />
       <Feature />
@@ -78,14 +105,16 @@ function HomeContent({ active, onHome, onArticleOpen }) {
   );
 }
 
-function ArticlePage({ post, navigate }) {
+function ArticlePage({ post, navigate, mode, onModeChange }) {
   return (
     <>
       <Nav
         active="writing"
         onHome={(hash) => navigate(`/${hash}`)}
+        mode={mode}
+        onModeChange={onModeChange}
       />
-      <main className="article-shell" data-screen-label="Field Notes">
+      <main className="article-shell">
         <Article post={post} mode="page" onNavigate={navigate} />
       </main>
       <Contact />
@@ -93,11 +122,11 @@ function ArticlePage({ post, navigate }) {
   );
 }
 
-function NotFoundPage({ navigate }) {
+function NotFoundPage({ navigate, mode, onModeChange }) {
   return (
     <>
-      <Nav active="writing" onHome={(hash) => navigate(`/${hash}`)} />
-      <main className="article-shell" data-screen-label="Not Found">
+      <Nav active="writing" onHome={(hash) => navigate(`/${hash}`)} mode={mode} onModeChange={onModeChange} />
+      <main className="article-shell">
         <NotFound onNavigate={navigate} />
       </main>
       <Contact />
@@ -157,39 +186,64 @@ export default function App() {
   const { route, flowMode, navigate, back } = useRoute();
   const [active, setActive] = useState('home');
   const [gmDone, setGmDone] = useState(false);
-
-  const gmShowing = !gmDone && route.name === 'home';
+  const [mode, setMode] = useState(readStoredMode);
+  const transitionTimerRef = useRef(0);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-accent', ACCENT);
-    document.documentElement.setAttribute('data-theme', THEME);
-    document.documentElement.setAttribute('data-vibe', VIBE);
   }, []);
 
+  // Cross-tab sync: a switch in another tab updates this one without
+  // re-running the local choreography (the other tab already animated).
   useEffect(() => {
-    if (!gmShowing) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => { document.body.style.overflow = prev; };
-  }, [gmShowing]);
+    const onStorage = (e) => {
+      if (e.key !== MODE_STORAGE_KEY) return;
+      const next = e.newValue === 'office-hours' ? 'office-hours' : 'after-hours';
+      applyMode(next);
+      setMode(next);
+    };
+    window.addEventListener('storage', onStorage);
+    return () => window.removeEventListener('storage', onStorage);
+  }, []);
+
+  const handleModeChange = useCallback((next) => {
+    if (next !== 'after-hours' && next !== 'office-hours') return;
+    setMode((current) => {
+      if (current === next) return current;
+      const html = document.documentElement;
+      html.classList.add('mode-transitioning');
+      applyMode(next);
+      try { window.localStorage.setItem(MODE_STORAGE_KEY, next); } catch (e) { /* ignore */ }
+      if (transitionTimerRef.current) window.clearTimeout(transitionTimerRef.current);
+      transitionTimerRef.current = window.setTimeout(() => {
+        html.classList.remove('mode-transitioning');
+        transitionTimerRef.current = 0;
+      }, TRANSITION_MS + 40);
+      return next;
+    });
+  }, []);
 
   const onHomePage = route.name === 'home' || (route.name === 'article' && flowMode === 'modal');
 
   useEffect(() => {
     if (!onHomePage) return;
     const ids = ['home','about','skills','portfolio','resume','writing','contact'];
-    const onScroll = () => {
-      const y = window.scrollY + 140;
-      let cur = 'home';
-      for (const id of ids) {
-        const el = document.getElementById(id);
-        if (el && el.offsetTop <= y) cur = id;
-      }
-      setActive(cur);
-    };
-    onScroll();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
+    const targets = ids.map((id) => document.getElementById(id)).filter(Boolean);
+    if (!targets.length) return;
+    // The trip-line sits 140px below the viewport top, just under the fixed nav.
+    // A section is "active" when that line is inside it.
+    let lastActive = 'home';
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) lastActive = entry.target.id;
+        }
+        setActive(lastActive);
+      },
+      { rootMargin: '-140px 0px -100% 0px', threshold: 0 }
+    );
+    targets.forEach((el) => io.observe(el));
+    return () => io.disconnect();
   }, [onHomePage]);
 
   useEffect(() => {
@@ -234,18 +288,20 @@ export default function App() {
   if (route.name === 'article') {
     const post = getPost(route.slug);
     if (!post) {
-      return (
-        <>
-          <IzzetCursor />
-          <NotFoundPage navigate={handleHomeNav} />
-        </>
-      );
+      return <NotFoundPage navigate={handleHomeNav} mode={mode} onModeChange={handleModeChange} />;
     }
     if (flowMode === 'modal') {
       return (
         <>
-          <IzzetCursor />
-          <HomeContent active={active} onHome={handleHomeNav} onArticleOpen={handleArticleOpen} />
+          <HomeContent
+            active={active}
+            onHome={handleHomeNav}
+            onArticleOpen={handleArticleOpen}
+            gmDone={gmDone}
+            onGmComplete={() => setGmDone(true)}
+            mode={mode}
+            onModeChange={handleModeChange}
+          />
           <ArticleModal
             post={post}
             onClose={back}
@@ -254,23 +310,18 @@ export default function App() {
         </>
       );
     }
-    return (
-      <>
-        <IzzetCursor />
-        <ArticlePage post={post} navigate={handleHomeNav} />
-      </>
-    );
+    return <ArticlePage post={post} navigate={handleHomeNav} mode={mode} onModeChange={handleModeChange} />;
   }
 
   return (
-    <>
-      <IzzetCursor />
-      <HomeContent active={active} onHome={handleHomeNav} onArticleOpen={handleArticleOpen} />
-      {gmShowing && (
-        <Suspense fallback={null}>
-          <GhostMatch onComplete={() => setGmDone(true)} />
-        </Suspense>
-      )}
-    </>
+    <HomeContent
+      active={active}
+      onHome={handleHomeNav}
+      onArticleOpen={handleArticleOpen}
+      gmDone={gmDone}
+      onGmComplete={() => setGmDone(true)}
+      mode={mode}
+      onModeChange={handleModeChange}
+    />
   );
 }

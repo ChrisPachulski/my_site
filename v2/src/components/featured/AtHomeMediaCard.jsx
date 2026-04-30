@@ -71,7 +71,7 @@ export default function AtHomeMediaCard({ a, onOpen }) {
       </div>
 
       <div className="progress-row" aria-hidden="true">
-        <div className="progress-bar"><div className="progress-fill" style={{ width: `${progress * 100}%` }} /></div>
+        <div className="progress-bar"><div className="progress-fill" style={{ transform: `scaleX(${progress})` }} /></div>
         <span className="timecode">
           {Math.floor(progress * 90)}:{String(Math.floor((progress * 90 * 60) % 60)).padStart(2, '0')}
         </span>

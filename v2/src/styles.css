@@ -1,11 +1,11 @@
 /* Chris Pachulski Portfolio — v2.1 polish pass
    Full replacement for v2/src/styles.css
-   Changes: stronger glow (level 8), scroll-reveal system, parallax bg layers,
-   floating particles, DAG flow pulses, gitlog connector pulse, hover lift,
-   animated skill bars w/ shimmer, reduced-motion respected. */
+   Changes: stronger glow (level 8), scroll-reveal system, DAG flow pulses,
+   gitlog connector pulse, hover lift, animated skill bars w/ shimmer,
+   reduced-motion respected. */
 
 :root {
-  --bg: #12110f;
+  --bg: oklch(0.10 0.04 280);
   --bg-deep: #07060a;
   --bg-elev: #1a1815;
   --bg-card: #1f1c18;
@@ -216,6 +216,164 @@ section.flow { padding: 120px 0 80px; }
 .cta:hover { background: var(--accent); color: var(--accent-ink) !important; border-color: var(--accent); }
 .cta:focus-visible { outline: none; border-color: var(--accent); background: var(--accent-soft); box-shadow: 0 0 0 1px var(--accent), 0 0 16px var(--accent-soft); }
 
+/* ═══════ THEME SWITCH (after hours / office hours) ═══════ */
+/* The act of switching is the brand statement. Pill lives in the nav-links
+   flex group so it wraps with the existing 28px gap. On mobile (<780px)
+   regular nav links collapse via the existing rule; the toggle stays and
+   shrinks to short labels, then to icons-only at <540px. */
+.theme-switch {
+  position: relative;
+  display: inline-flex;
+  align-items: stretch;
+  padding: 3px;
+  border: 1px solid var(--line-bright);
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--bg-elev) 55%, transparent);
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  isolation: isolate;
+}
+.theme-switch-seg {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 12px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink-mute);
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  cursor: pointer;
+  transition: color 0.18s ease, background-color 0.22s cubic-bezier(.2,.7,.2,1), box-shadow 0.22s ease;
+  white-space: nowrap;
+}
+.theme-switch-seg:hover { color: var(--ink-dim); background: color-mix(in oklab, var(--accent-soft) 50%, transparent); }
+.theme-switch-seg.active {
+  color: var(--accent-ink);
+  background: var(--accent);
+  box-shadow: 0 1px 0 color-mix(in oklab, var(--accent) 60%, transparent), 0 6px 18px var(--accent-soft);
+}
+.theme-switch-seg.active:hover { color: var(--accent-ink); background: var(--accent); }
+.theme-switch-seg:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--accent);
+}
+.theme-switch-seg.active:focus-visible {
+  box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--accent), 0 6px 18px var(--accent-soft);
+}
+.theme-switch-icon { display: inline-flex; width: 12px; height: 12px; flex: 0 0 auto; }
+.theme-switch-icon svg { width: 100%; height: 100%; }
+.theme-switch-label { font-weight: 600; }
+.theme-switch-short { display: none; font-weight: 600; }
+.theme-switch-sr {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 780px) {
+  .theme-switch { font-size: 10px; }
+  .theme-switch-seg { padding: 6px 10px; gap: 6px; }
+  .theme-switch-label { display: none; }
+  .theme-switch-short { display: inline; }
+}
+@media (max-width: 540px) {
+  .theme-switch-seg { padding: 6px 9px; gap: 0; }
+  .theme-switch-short { display: none; }
+}
+
+/* Cyberpunk treatment — active segment glows. Mirrors the nav .brand .dot
+   glow vocabulary so the toggle reads as kin to the rest of the chrome. */
+html[data-vibe="cyberpunk"] .theme-switch {
+  background: color-mix(in oklab, var(--bg-deep) 70%, transparent);
+  border-color: oklch(0.82 0.21 195 / 0.42);
+  box-shadow: inset 0 0 0 1px oklch(0.82 0.21 195 / 0.08);
+}
+html[data-vibe="cyberpunk"] .theme-switch-seg { color: var(--ink-mute); }
+html[data-vibe="cyberpunk"] .theme-switch-seg:hover { color: var(--accent-2); text-shadow: 0 0 6px var(--accent-2); background: transparent; }
+html[data-vibe="cyberpunk"] .theme-switch-seg.active {
+  color: var(--accent-ink);
+  background: var(--accent);
+  box-shadow:
+    0 0 0 1px var(--accent),
+    0 0 20px var(--accent),
+    0 0 44px var(--accent-soft);
+  text-shadow: 0 0 4px color-mix(in oklab, var(--accent-ink) 50%, transparent);
+}
+html[data-vibe="cyberpunk"] .theme-switch-seg.active:hover {
+  color: var(--accent-ink);
+  text-shadow: 0 0 4px color-mix(in oklab, var(--accent-ink) 50%, transparent);
+}
+
+/* ═══════ MODE TRANSITION CHOREOGRAPHY ═══════ */
+/* Applied for ~520ms while switching modes. Enables transitions on color
+   tokens for chrome elements so the swap reads as a directorial cut, not a
+   snap. Strictly bg/color/border/shadow — never layout properties. */
+html.mode-transitioning,
+html.mode-transitioning body,
+html.mode-transitioning .nav,
+html.mode-transitioning .nav .brand,
+html.mode-transitioning .nav .brand .dot,
+html.mode-transitioning .nav-links a,
+html.mode-transitioning .cta,
+html.mode-transitioning .izzet-card,
+html.mode-transitioning .izzet-card .izzet-seal,
+html.mode-transitioning .izzet-card .izzet-corner,
+html.mode-transitioning .btn,
+html.mode-transitioning .hero-headline,
+html.mode-transitioning .hero-headline .italic,
+html.mode-transitioning .hero-headline .sub,
+html.mode-transitioning .hero-lede,
+html.mode-transitioning .hero-lede strong,
+html.mode-transitioning .hero-signature,
+html.mode-transitioning .hero-availability,
+html.mode-transitioning .hero-availability .status-label,
+html.mode-transitioning .hero-availability .status-dot,
+html.mode-transitioning .theme-switch,
+html.mode-transitioning .theme-switch-seg,
+html.mode-transitioning .feature-evidence strong,
+html.mode-transitioning .skill-bar,
+html.mode-transitioning .skill-bar-fill,
+html.mode-transitioning .pipe-node,
+html.mode-transitioning .gitlog,
+html.mode-transitioning .commit,
+html.mode-transitioning .commit::before,
+html.mode-transitioning .section-label,
+html.mode-transitioning .tag,
+html.mode-transitioning .accent {
+  transition:
+    background-color 520ms cubic-bezier(0.16, 1, 0.3, 1),
+    background 520ms cubic-bezier(0.16, 1, 0.3, 1),
+    color 520ms cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 520ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 520ms cubic-bezier(0.16, 1, 0.3, 1),
+    text-shadow 520ms cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.mode-transitioning,
+  html.mode-transitioning body,
+  html.mode-transitioning .nav,
+  html.mode-transitioning .izzet-card,
+  html.mode-transitioning .btn,
+  html.mode-transitioning .theme-switch-seg,
+  html.mode-transitioning .hero-availability .status-dot {
+    transition:
+      background-color 120ms linear,
+      color 120ms linear,
+      border-color 120ms linear !important;
+  }
+}
+
 /* ═══════ HERO ═══════ */
 .hero { min-height: 100vh; padding: 110px 0 40px; display: flex; flex-direction: column; justify-content: center; position: relative; isolation: isolate; }
 .hero-grid { display: grid; grid-template-columns: 1.3fr 1fr; gap: 64px; align-items: center; }
@@ -267,11 +425,6 @@ section.flow { padding: 120px 0 80px; }
   background: linear-gradient(135deg, oklch(0.35 0.08 55), oklch(0.18 0.04 30));
   position: relative; min-height: 0;
 }
-.mtg-art::after {
-  content: ""; position: absolute; inset: 0;
-  background: repeating-linear-gradient(90deg, transparent 0 3px, rgba(255,255,255,0.02) 3px 4px);
-  pointer-events: none;
-}
 .mtg-art img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .mtg-typebar { display: flex; justify-content: space-between; align-items: center; background: linear-gradient(90deg, #2a2621, #1a1815); padding: 6px 12px; border-radius: 3px; border: 1px solid var(--line-bright); font-family: var(--mono); font-size: 11px; }
 .mtg-type { color: var(--ink-dim); }
@@ -301,6 +454,42 @@ section.flow { padding: 120px 0 80px; }
 }
 .hero-signature .sep { color: var(--accent); margin: 0 0.55em; opacity: 0.6; }
 @media (max-width: 540px) { .hero-signature { font-size: 11px; line-height: 1.8; } .hero-signature .sep { margin: 0 0.4em; } }
+
+/* ═══════ HERO AVAILABILITY ═══════ */
+/* Surfaces the consulting/mentoring posture in the hero so it isn't gated
+   on scrolling to About. Mirrors the signature line's vocabulary (mono,
+   uppercase, --ink-dim) so it reads as a sibling, not a CTA. */
+.hero-availability {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  margin: 0 0 28px;
+  line-height: 1.7;
+}
+.hero-availability .status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-soft);
+  animation: pulse 2.4s ease-in-out infinite;
+  flex: 0 0 auto;
+}
+.hero-availability .status-label { color: var(--ink); font-weight: 600; }
+.hero-availability .sep { color: var(--accent); margin: 0 0.25em; opacity: 0.6; }
+@media (prefers-reduced-motion: reduce) {
+  .hero-availability .status-dot { animation: none; }
+}
+@media (max-width: 540px) {
+  .hero-availability { font-size: 11px; gap: 8px; margin-bottom: 22px; flex-wrap: wrap; }
+  .hero-availability .sep { margin: 0 0.2em; }
+}
 
 /* ═══════ ABOUT ═══════ */
 .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: start; }
@@ -400,18 +589,17 @@ section.flow { padding: 120px 0 80px; }
 /* ═══════ FEATURE (MTGBAN) ═══════ */
 .feature { margin-top: 0; border: 1px solid color-mix(in oklab, var(--line-bright) 45%, transparent); border-radius: 6px; background: color-mix(in oklab, var(--bg-card) 60%, transparent); backdrop-filter: blur(20px) saturate(140%); -webkit-backdrop-filter: blur(20px) saturate(140%); box-shadow: inset 0 1px 0 rgba(255,255,255,0.05); padding: 36px; position: relative; overflow: hidden; }
 .feature::before { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse 600px 300px at 100% 0%, var(--accent-soft), transparent 60%); pointer-events: none; }
-.feature-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 48px; position: relative; }
-@media (max-width: 900px) { .feature-grid { grid-template-columns: 1fr; gap: 32px; } .feature { padding: 28px; } }
+.feature-grid { display: grid; grid-template-columns: 1fr 1.4fr; gap: 56px; position: relative; align-items: center; }
+@media (max-width: 900px) { .feature-grid { grid-template-columns: 1fr; gap: 32px; align-items: stretch; } .feature { padding: 28px; } }
 .feature .tag { display: inline-flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: 11px; color: var(--accent); text-transform: uppercase; letter-spacing: 0.08em; padding: 4px 10px; background: var(--accent-soft); border-radius: 2px; margin-bottom: 16px; }
 .feature h3 { font-family: var(--serif); font-size: clamp(24px, 2.8vw, 36px); line-height: 1.08; letter-spacing: -0.02em; margin: 0 0 16px; font-weight: 400; }
 .feature h3 em { color: var(--accent); }
 .feature p { color: var(--ink-dim); margin: 0 0 16px; }
-.feature .kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 24px; }
-.feature .kpi .v { font-family: var(--serif); font-size: 32px; color: var(--ink); line-height: 1; }
-.feature .kpi .v .u { font-family: var(--mono); font-size: 15px; color: var(--accent); }
-.feature .kpi .k { font-family: var(--mono); font-size: 10px; color: var(--ink-mute); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 6px; }
+.feature-evidence { font-family: var(--mono); font-size: 12px; line-height: 1.6; color: var(--ink-mute); letter-spacing: 0.04em; margin: 24px 0 0; }
+.feature-evidence strong { color: var(--accent); font-weight: 500; }
+.feature-evidence span[aria-hidden] { color: var(--line-bright); margin: 0 6px; }
 
-.pipe { font-family: var(--mono); font-size: 12px; background: var(--bg); border: 1px solid var(--line); border-radius: 4px; padding: 20px; display: flex; flex-direction: column; gap: 10px; position: relative; }
+.pipe { font-family: var(--mono); font-size: 12px; background: var(--bg); border: 1px solid var(--line-bright); border-radius: 4px; padding: 24px; display: flex; flex-direction: column; gap: 10px; position: relative; box-shadow: 0 0 0 1px color-mix(in oklab, var(--accent-soft) 50%, transparent), 0 24px 60px -30px rgba(0,0,0,0.6); }
 .pipe-node { display: grid; grid-template-columns: 24px 1fr auto; gap: 12px; align-items: center; padding: 10px 14px; background: var(--bg-card); border: 1px solid var(--line); border-radius: 3px; transition: all 0.3s; position: relative; }
 .pipe-node.active { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent-soft), 0 0 24px var(--accent-soft); transform: translateX(4px); }
 .pipe-node.active::after { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--accent); box-shadow: 0 0 8px var(--accent); }
@@ -856,30 +1044,35 @@ html[data-vibe="cyberpunk"] body {
   background-attachment: fixed;
 }
 
-/* Parallax grid layer (driven by JS --px/--py for mouse, --scrolly for scroll) */
-html[data-vibe="cyberpunk"] body::before {
-  content: ""; position: fixed; inset: -10% -10%; pointer-events: none; z-index: 1;
-  background-image:
-    linear-gradient(oklch(0.82 0.21 195 / 0.08) 1px, transparent 1px),
-    linear-gradient(90deg, oklch(0.82 0.21 195 / 0.08) 1px, transparent 1px);
-  background-size: 56px 56px;
-  mask-image: radial-gradient(ellipse at center, black 20%, transparent 80%);
-  -webkit-mask-image: radial-gradient(ellipse at center, black 20%, transparent 80%);
-  transform: translate3d(calc(var(--px, 0) * -12px), calc(var(--py, 0) * -12px + var(--scrolly, 0px) * 0.12), 0);
-  transition: transform 0.6s cubic-bezier(.2,.7,.2,1);
+/* Hero ignite — radial cursor-tracked gradient on the headline.
+   Vars set by useHeroIgnite in Hero.jsx; default offscreen so reduced-motion
+   sessions render the headline as solid ink. */
+.izzet-ignite {
+  --izzet-u:   oklch(0.72 0.18 245);
+  --izzet-r:   oklch(0.68 0.22 25);
+  --izzet-hot: oklch(0.92 0.14 90);
+  --izzet-cx:  -600px;
+  --izzet-cy:  -600px;
+  background-image: radial-gradient(
+    circle 260px at var(--izzet-cx) var(--izzet-cy),
+    var(--izzet-hot) 0%,
+    var(--izzet-u)   22%,
+    var(--izzet-r)   48%,
+    var(--ink)       78%,
+    var(--ink)       100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
 }
-/* Particle field layer */
-.particles { position: fixed; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; }
-.particles .p {
-  position: absolute; width: 2px; height: 2px; border-radius: 50%;
-  background: var(--accent); box-shadow: 0 0 6px var(--accent), 0 0 12px var(--accent-soft);
-  opacity: 0.6; animation: drift linear infinite;
-}
-@keyframes drift {
-  0% { transform: translate3d(0, 100vh, 0); opacity: 0; }
-  8% { opacity: 0.7; }
-  92% { opacity: 0.6; }
-  100% { transform: translate3d(var(--dx, 30px), -10vh, 0); opacity: 0; }
+.izzet-ignite em,
+.izzet-ignite .italic {
+  color: var(--accent);
+  -webkit-text-fill-color: var(--accent);
+  background: none;
+  -webkit-background-clip: initial;
+  background-clip: initial;
 }
 
 html[data-vibe="cyberpunk"] .nav,
@@ -896,27 +1089,17 @@ html[data-vibe="cyberpunk"] .hero-headline .sub {
   font-weight: 500 !important;
   font-size: 0.22em !important;
 }
-html[data-vibe="cyberpunk"] .hero-headline,
-html[data-vibe="cyberpunk"] .about h2,
-html[data-vibe="cyberpunk"] .feature h3,
-html[data-vibe="cyberpunk"] .contact h2,
-html[data-vibe="cyberpunk"] .commit .role,
-html[data-vibe="cyberpunk"] .article h4,
-html[data-vibe="cyberpunk"] section h2 {
-  font-family: var(--display) !important;
-  font-weight: 600; letter-spacing: -0.005em;
-  font-style: normal !important; text-transform: uppercase;
+/* Headlines stay Instrument Serif + italic Plasma Violet pivot in every mode.
+   Orbitron is reserved for label / eyebrow / display roles only. */
+html[data-vibe="cyberpunk"] .hero-headline {
+  text-shadow: -1px 0 0 oklch(0.72 0.28 340 / 0.65), 1px 0 0 oklch(0.82 0.21 195 / 0.65), 0 0 36px oklch(0.82 0.21 195 / 0.3);
 }
 html[data-vibe="cyberpunk"] .hero-headline .italic,
 html[data-vibe="cyberpunk"] .about h2 em,
 html[data-vibe="cyberpunk"] .feature h3 em,
 html[data-vibe="cyberpunk"] .contact h2 em,
 html[data-vibe="cyberpunk"] section h2 em {
-  font-style: normal !important; color: var(--accent);
-  text-shadow: 0 0 28px var(--accent), 0 0 10px var(--accent);
-}
-html[data-vibe="cyberpunk"] .hero-headline {
-  text-shadow: -1px 0 0 oklch(0.72 0.28 340 / 0.65), 1px 0 0 oklch(0.82 0.21 195 / 0.65), 0 0 36px oklch(0.82 0.21 195 / 0.3);
+  text-shadow: 0 0 28px var(--accent-soft), 0 0 10px var(--accent-soft);
 }
 
 html[data-vibe="cyberpunk"] .nav { background: color-mix(in oklab, var(--bg) 78%, transparent); }
@@ -1046,6 +1229,10 @@ html[data-vibe="cyberpunk"] .mtg-pt {
 
 html[data-vibe="cyberpunk"] .hero-signature { color: var(--ink-cool); }
 html[data-vibe="cyberpunk"] .hero-signature .sep { color: var(--accent-2); text-shadow: 0 0 6px var(--accent-2); opacity: 0.85; }
+html[data-vibe="cyberpunk"] .hero-availability { color: var(--ink-cool); }
+html[data-vibe="cyberpunk"] .hero-availability .status-label { color: var(--ink); text-shadow: 0 0 8px var(--accent-soft); }
+html[data-vibe="cyberpunk"] .hero-availability .status-dot { box-shadow: 0 0 0 4px var(--accent-soft), 0 0 14px var(--accent); }
+html[data-vibe="cyberpunk"] .hero-availability .sep { color: var(--accent-2); text-shadow: 0 0 6px var(--accent-2); opacity: 0.85; }
 
 html[data-vibe="cyberpunk"] .skills-table { border-radius: 0; border-color: oklch(0.82 0.21 195 / 0.3); }
 html[data-vibe="cyberpunk"] .skills-head { border-bottom-color: oklch(0.82 0.21 195 / 0.3); }
@@ -1072,7 +1259,6 @@ html[data-vibe="cyberpunk"] .project-list { border-color: oklch(0.82 0.21 195 / 
 html[data-vibe="cyberpunk"] .project-row:hover { background: color-mix(in oklab, var(--accent) 5%, var(--bg)); }
 html[data-vibe="cyberpunk"] .project-row.expanded { background: color-mix(in oklab, var(--accent-2) 7%, var(--bg-elev)); }
 html[data-vibe="cyberpunk"] .project-row::before { background: var(--accent); box-shadow: 0 0 12px var(--accent); }
-html[data-vibe="cyberpunk"] .project-row .ptitle { font-family: var(--display); text-transform: uppercase; font-size: 20px; }
 html[data-vibe="cyberpunk"] .project-row:hover .ptitle { color: var(--accent); text-shadow: 0 0 10px var(--accent-soft); }
 html[data-vibe="cyberpunk"] .project-row .pmeta .tag { border-radius: 0; background: var(--bg-elev); }
 html[data-vibe="cyberpunk"] .project-detail { border-top-color: var(--accent); }
@@ -1378,9 +1564,10 @@ html[data-vibe="cyberpunk"] .izzet-card .skill-bar-fill {
   box-shadow:
     0 0 18px oklch(0.72 0.25 28 / 0.55),
     inset 0 0 8px oklch(0.80 0.22 28 / 0.3);
-  position: relative;
 }
-/* Crest at the leading edge — a brighter tip that lights up on fill */
+/* Crest at the leading edge — a brighter tip that lights up on fill.
+   Override the inherited shimmer keyframes so it stays anchored to the
+   leading edge instead of sliding across. */
 html[data-vibe="cyberpunk"] .izzet-card .skill-bar-fill::after {
   content: "";
   position: absolute;
@@ -1389,6 +1576,8 @@ html[data-vibe="cyberpunk"] .izzet-card .skill-bar-fill::after {
   background: linear-gradient(90deg, transparent 0%, oklch(0.92 0.18 28) 100%);
   box-shadow: 0 0 10px oklch(0.92 0.18 28), 0 0 22px oklch(0.80 0.22 28 / 0.7);
   opacity: 0.85;
+  animation: none;
+  transform: none;
 }
 
 /* Slightly intensify the card's own dominant-side aura when hovered — signals interactivity */
