@@ -499,6 +499,7 @@ function ResumeToggle({ mode, setMode }) {
 export function Resume() {
   const [mode, setMode] = useState('experience');
   const list = mode === 'experience' ? EXPERIENCE : EDUCATION;
+  const [gitlogRef, gitlogInView] = useInView(0.12);
   return (
     <section id="resume" className="flow">
       <div className="wrap">
@@ -517,7 +518,7 @@ export function Resume() {
             <a href="/cv/Chris_Pachulski_Resume.pdf" className="btn mono" download>Download CV (PDF) ↓</a>
           </div>
         </div>
-        <div className="gitlog serpentine">
+        <div ref={gitlogRef} className={`gitlog serpentine${gitlogInView ? ' in-view' : ''}`}>
           {list.map((c, i) => {
             const side = i % 2 === 0 ? 'left' : 'right';
             return (
@@ -664,23 +665,48 @@ export function Contact() {
             {!sent ? (
               <>
                 <div style={{ display:'grid', gap: 4 }}>
-                  <label>Name</label>
-                  <input value={form.name} onChange={e=>setForm({...form, name:e.target.value})} placeholder="Ada Lovelace" required />
+                  <label htmlFor="contact-name">Name</label>
+                  <input
+                    id="contact-name"
+                    name="name"
+                    autoComplete="name"
+                    value={form.name}
+                    onChange={e=>setForm({...form, name:e.target.value})}
+                    placeholder="Ada Lovelace"
+                    required
+                  />
                 </div>
                 <div style={{ display:'grid', gap: 4 }}>
-                  <label>Email</label>
-                  <input type="email" value={form.email} onChange={e=>setForm({...form, email:e.target.value})} placeholder="you@company.com" required />
+                  <label htmlFor="contact-email">Email</label>
+                  <input
+                    id="contact-email"
+                    name="email"
+                    type="email"
+                    autoComplete="email"
+                    value={form.email}
+                    onChange={e=>setForm({...form, email:e.target.value})}
+                    placeholder="you@company.com"
+                    required
+                  />
                 </div>
                 <div style={{ display:'grid', gap: 4 }}>
-                  <label>What's on your mind?</label>
-                  <textarea value={form.msg} onChange={e=>setForm({...form, msg:e.target.value})} placeholder="A warehouse on fire, a dashboard to rescue, a coffee chat..." required />
+                  <label htmlFor="contact-message">What's on your mind?</label>
+                  <textarea
+                    id="contact-message"
+                    name="message"
+                    autoComplete="off"
+                    value={form.msg}
+                    onChange={e=>setForm({...form, msg:e.target.value})}
+                    placeholder="A warehouse on fire, a dashboard to rescue, a coffee chat..."
+                    required
+                  />
                 </div>
                 <button className="btn btn-primary mono" type="submit" disabled={sending}>
                   {sending ? 'Sending…' : <>Send message <span className="arrow">→</span></>}
                 </button>
-                {error && (
-                  <div className="contact-error">{error}</div>
-                )}
+                <div className="contact-error" role="status" aria-live="polite" aria-atomic="true">
+                  {error}
+                </div>
               </>
             ) : (
               <div style={{ padding:'32px 8px', textAlign:'center' }}>

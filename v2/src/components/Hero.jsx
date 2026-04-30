@@ -6,8 +6,7 @@ function MagicCard() {
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reduce) return;
+    const mql = window.matchMedia('(prefers-reduced-motion: reduce)');
     const onMove = (e) => {
       const r = el.getBoundingClientRect();
       const x = (e.clientX - r.left) / r.width;
@@ -19,9 +18,22 @@ function MagicCard() {
       el.style.setProperty('--my', `${y * 100}%`);
     };
     const onLeave = () => { el.style.transform = ''; };
-    el.addEventListener('mousemove', onMove);
-    el.addEventListener('mouseleave', onLeave);
-    return () => { el.removeEventListener('mousemove', onMove); el.removeEventListener('mouseleave', onLeave); };
+    const attach = () => {
+      el.addEventListener('mousemove', onMove);
+      el.addEventListener('mouseleave', onLeave);
+    };
+    const detach = () => {
+      el.removeEventListener('mousemove', onMove);
+      el.removeEventListener('mouseleave', onLeave);
+      el.style.transform = '';
+    };
+    const sync = () => { mql.matches ? detach() : attach(); };
+    sync();
+    mql.addEventListener('change', sync);
+    return () => {
+      mql.removeEventListener('change', sync);
+      detach();
+    };
   }, []);
 
   return (
@@ -42,7 +54,7 @@ function MagicCard() {
 
         <div className="mtg-art mtg-stage" style={{ '--d': '0.25s' }}>
           <img src="hero-portrait.jpg" alt="Chris Pachulski" draggable="false"
-            onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.parentElement.style.background = 'linear-gradient(135deg, oklch(0.35 0.08 55), oklch(0.18 0.04 30))'; }} />
+            onError={(e) => e.currentTarget.parentElement.classList.add('mtg-art-fallback')} />
         </div>
 
         <div className="mtg-typebar mtg-stage" style={{ '--d': '0.95s' }}>
@@ -155,7 +167,6 @@ function Hero({ heroVariant }) {
                 <a href="#contact" className="btn btn-primary mono">Let's talk <span className="arrow">→</span></a>
                 <a href="#portfolio" className="btn mono">View case studies</a>
                 <a href="/cv/Chris_Pachulski_Resume.pdf" className="btn mono" download>Download CV <span aria-hidden="true">↓</span></a>
-                <a href="https://github.com/ChrisPachulski" target="_blank" rel="noopener noreferrer" className="btn mono">GitHub ↗</a>
               </div>
             </div>
           </div>

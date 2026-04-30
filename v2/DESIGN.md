@@ -280,9 +280,8 @@ There are exactly three drop-shadow uses in the system, all on the literal MTG c
 
 ### Navigation
 - **Style:** Fixed top nav, full-width, 18×32px padding. `backdrop-filter: blur(22px) saturate(160%)` over a `color-mix(in oklab, var(--bg) 62%, transparent)` background.
-- **Brand:** `chris@wizards` mono lockup with a 8px Plasma Violet pulse-dot to the left.
-- **Links:** Mono 12px, ink-dim. Active state: ink-cool text + Plasma Violet underline (`scaleX` from 0 to 1 on `transform-origin: left`, 300ms).
-- **Index numerals:** Each link has a leading 2-digit padded index (`00`, `01`...) in ink-mute. Active link's index recolors to Plasma Violet.
+- **Brand:** `chris@home` mono lockup with a 8px Plasma Violet pulse-dot to the left. The brand string deliberately stays employer-agnostic; the portfolio is personal property and must read as separate from any current employer (Wizards of the Coast) or prior venture (MTGBAN). Updating it on a job change would also re-tie the surface to a single role, which the page's three-audience IA explicitly resists.
+- **Links:** Mono 12px, ink-dim. Active state: ink-cool text + Plasma Violet underline (`scaleX` from 0 to 1 on `transform-origin: left`, 300ms). No leading index numeral. The `git log` editorial frame is already carried by section labels, commit hashes on the resume, and the `// SELECT * FROM` taglines, so the nav stays quiet.
 - **Mobile:** Below 780px, all links except the CTA collapse. The CTA stays as the always-present action.
 
 ### Project Row (signature: editorial table-row)

@@ -426,13 +426,18 @@ function StackZone({ stack }) {
 }
 
 /* ── Log panel ─────────────────────────────────────────────────── */
-function LogPanel({ log, phase }) {
+function LogPanel({ log, phase, ended, expired }) {
   const ref = useRef(null);
   useEffect(() => {
     if (ref.current) ref.current.scrollTop = ref.current.scrollHeight;
   }, [log.length]);
+  const summary = ended
+    ? (expired
+        ? 'Match complete. Counter resolved on instinct, six damage stuck.'
+        : 'Match complete. Counter resolved, six damage stuck. Izzet wins.')
+    : '';
   return (
-    <div className="gm-log" aria-live="polite">
+    <div className="gm-log">
       <div className="gm-log-head">
         <span className="gm-log-dot" /> {phase || 'Match start'}
       </div>
@@ -440,6 +445,9 @@ function LogPanel({ log, phase }) {
         {log.slice(-7).map((l, i) => (
           <div key={log.length - 7 + i} className={`gm-log-line gm-log-${l.kind}`}>{l.text}</div>
         ))}
+      </div>
+      <div className="gm-log-sr" aria-live="polite" aria-atomic="true">
+        {summary}
       </div>
     </div>
   );
@@ -763,7 +771,7 @@ export default function GhostMatch({ onComplete }) {
 
           {/* HUD: log + skip */}
           <div className="gm-hud">
-            <LogPanel log={state.log} phase={state.phase} />
+            <LogPanel log={state.log} phase={state.phase} ended={state.ended} expired={expired} />
             <div className="gm-controls">
               {stage === 'setup' && !reduceMotion && (
                 <div className="gm-speeds" role="group" aria-label="Setup playback speed">

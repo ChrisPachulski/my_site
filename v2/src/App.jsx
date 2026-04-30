@@ -78,14 +78,13 @@ function Nav({ active, onHome, mode, onModeChange }) {
         <span>chris<span className="accent">@</span>home</span>
       </a>
       <div className="nav-links">
-        {NAV.map((n, i) => (
+        {NAV.map((n) => (
           <a
             key={n.id}
             href={`/#${n.id}`}
             className={active === n.id ? 'active' : ''}
             onClick={(e) => handleNav(e, `#${n.id}`)}
           >
-            <span className="idx">{String(i + 1).padStart(2,'0')}</span>
             <span>{n.label}</span>
           </a>
         ))}
@@ -244,8 +243,9 @@ export default function App() {
     const ids = ['home','about','skills','portfolio','resume','writing','contact'];
     const targets = ids.map((id) => document.getElementById(id)).filter(Boolean);
     if (!targets.length) return;
-    // The trip-line sits 140px below the viewport top, just under the fixed nav.
-    // A section is "active" when that line is inside it.
+    // The trip-line sits 72px below the viewport top, right under the fixed
+    // nav. A section is "active" when that line is inside it. 140px was
+    // overshooting the actual nav height and made anchors light up late.
     let lastActive = 'home';
     const io = new IntersectionObserver(
       (entries) => {
@@ -254,7 +254,7 @@ export default function App() {
         }
         setActive(lastActive);
       },
-      { rootMargin: '-140px 0px -100% 0px', threshold: 0 }
+      { rootMargin: '-72px 0px -100% 0px', threshold: 0 }
     );
     targets.forEach((el) => io.observe(el));
     return () => io.disconnect();

@@ -16,6 +16,7 @@
   --gm-c-ink:     #f2ebdd;
   --gm-c-ink-dim: #a8a096;
   --gm-c-paper:   oklch(0.18 0.01 250);
+  --gm-c-plasma:  oklch(0.70 0.26 300);
 
   position: fixed;
   inset: 0;
@@ -338,6 +339,15 @@
 .gm-log-beat   { color: var(--gm-c-ink); }
 .gm-log-threat { color: var(--gm-c-izzet-r); }
 .gm-log-pause  { color: var(--gm-c-ink-dim); font-style: italic; }
+.gm-log-sr {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border: 0;
+}
 
 .gm-controls {
   display: flex; gap: 8px; align-items: center;
@@ -427,12 +437,12 @@
   letter-spacing: -0.02em;
   animation: gmFadeUp 0.7s 0.4s both;
 }
+/* Single Plasma Violet pivot. Honors DESIGN.md's gradient-text policy:
+   `background-clip: text` is reserved for the sanctioned Izzet h2-split
+   on the Skills/About headlines. Emphasis here comes from italic + color. */
 .gm-victory-title span {
   font-style: italic;
-  background: linear-gradient(90deg, var(--gm-c-izzet-u), var(--gm-c-izzet-r));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: var(--gm-c-plasma);
 }
 .gm-victory-sub {
   font-family: var(--sans, sans-serif);
