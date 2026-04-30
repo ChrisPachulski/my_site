@@ -5,9 +5,11 @@ import { Projects, Resume, Writing, Contact } from './components/Sections.jsx';
 import IzzetCursor from './components/izzet-cursor/IzzetCursor.jsx';
 import Article from './components/Article.jsx';
 import NotFound from './components/NotFound.jsx';
+import GhostMatch from './components/ghostmatch/GhostMatch.jsx';
 import { useRoute, articlePath } from './lib/router.js';
 import { getPost } from './lib/blog.js';
 import './components/izzet-cursor/izzet-cursor.css';
+import './components/ghostmatch/ghostmatch.css';
 
 const ACCENT = 'violet';
 const THEME = 'dark';
@@ -154,12 +156,22 @@ function ArticleModal({ post, onClose, navigate }) {
 export default function App() {
   const { route, flowMode, navigate, back } = useRoute();
   const [active, setActive] = useState('home');
+  const [gmDone, setGmDone] = useState(false);
+
+  const gmShowing = !gmDone && route.name === 'home';
 
   useEffect(() => {
     document.documentElement.setAttribute('data-accent', ACCENT);
     document.documentElement.setAttribute('data-theme', THEME);
     document.documentElement.setAttribute('data-vibe', VIBE);
   }, []);
+
+  useEffect(() => {
+    if (!gmShowing) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = prev; };
+  }, [gmShowing]);
 
   const onHomePage = route.name === 'home' || (route.name === 'article' && flowMode === 'modal');
 
@@ -254,6 +266,7 @@ export default function App() {
     <>
       <IzzetCursor />
       <HomeContent active={active} onHome={handleHomeNav} onArticleOpen={handleArticleOpen} />
+      {gmShowing && <GhostMatch onComplete={() => setGmDone(true)} />}
     </>
   );
 }
