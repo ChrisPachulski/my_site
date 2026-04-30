@@ -14,6 +14,7 @@
   --ink-mute: #6b655c;
   --line: #2a2621;
   --line-bright: #3a342d;
+  --line-quiet: #221f1a;
   --accent: oklch(0.72 0.13 55);
   --accent-soft: oklch(0.72 0.13 55 / 0.14);
   --accent-ink: #12110f;
@@ -70,7 +71,7 @@
 html[data-theme="light"] {
   --bg: #f4efe4; --bg-deep: #d8ceb6; --bg-elev: #ebe5d6; --bg-card: oklch(0.99 0.005 280);
   --ink: #1a1713; --ink-dim: #5b5347; --ink-mute: #8c8476;
-  --line: #ddd5c3; --line-bright: #c8bfa9; --accent-ink: #f4efe4;
+  --line: #ddd5c3; --line-bright: #c8bfa9; --line-quiet: #e6dfcc; --accent-ink: #f4efe4;
 }
 
 html[data-accent="rust"]   { --accent: oklch(0.64 0.15 35);  --accent-soft: oklch(0.64 0.15 35 / 0.14); }
@@ -129,8 +130,7 @@ code, kbd, pre, samp,
 .btn,
 .nav .brand,
 .nav-links,
-.hero-signature,
-.hero-availability {
+.hero-meta {
   font-feature-settings: "zero", "cv02", "cv11", "ss03", "calt";
   font-variant-ligatures: contextual;
 }
@@ -142,8 +142,7 @@ code, kbd, pre, samp,
 .fact-list,
 .skills-table,
 .skill-row,
-.hero-signature,
-.hero-availability,
+.hero-meta,
 .commit .hash,
 .commit .when,
 .commit .company,
@@ -342,6 +341,32 @@ section.flow { padding: 120px 0 80px; }
   * { animation-duration: 0.001s !important; animation-iteration-count: 1 !important; }
 }
 
+/* ═══════ SKIP LINK ═══════ */
+.skip-link {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 200;
+  padding: 10px 16px;
+  font-family: var(--mono);
+  font-size: var(--text-label);
+  color: var(--accent-ink);
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: 2px;
+  text-decoration: none;
+  transform: translateY(calc(-100% - 24px));
+  transition: transform 200ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.skip-link:focus,
+.skip-link:focus-visible {
+  transform: translateY(0);
+  outline: 2px solid var(--accent-ink);
+  outline-offset: 2px;
+}
+main:focus { outline: none; }
+main:focus-visible { outline: none; }
+
 /* ═══════ NAV ═══════ */
 .nav {
   position: fixed; top: 0; left: 0; right: 0; z-index: 100;
@@ -486,10 +511,10 @@ html.mode-transitioning .hero-headline .italic,
 html.mode-transitioning .hero-headline .sub,
 html.mode-transitioning .hero-lede,
 html.mode-transitioning .hero-lede strong,
-html.mode-transitioning .hero-signature,
-html.mode-transitioning .hero-availability,
-html.mode-transitioning .hero-availability .status-label,
-html.mode-transitioning .hero-availability .status-dot,
+html.mode-transitioning .hero-meta,
+html.mode-transitioning .hero-meta .status-label,
+html.mode-transitioning .hero-meta .status-dot,
+html.mode-transitioning .hero-meta .open-to,
 html.mode-transitioning .theme-switch,
 html.mode-transitioning .theme-switch-seg,
 html.mode-transitioning .feature-evidence strong,
@@ -518,7 +543,7 @@ html.mode-transitioning .accent {
   html.mode-transitioning .izzet-card,
   html.mode-transitioning .btn,
   html.mode-transitioning .theme-switch-seg,
-  html.mode-transitioning .hero-availability .status-dot {
+  html.mode-transitioning .hero-meta .status-dot {
     transition:
       background-color 120ms linear,
       color 120ms linear,
@@ -606,39 +631,33 @@ html.mode-transitioning .accent {
 .mtg-stage { opacity: 0; transform: translateY(8px); animation: mtgIn 0.9s cubic-bezier(.2,.7,.2,1) forwards; animation-delay: var(--d, 0s); }
 @keyframes mtgIn { to { opacity: 1; transform: none; } }
 
-/* ═══════ HERO SIGNATURE ═══════ */
-.hero-signature {
-  font-family: var(--mono);
-  font-size: var(--text-label);
-  font-weight: 500;
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
-  color: var(--ink-dim);
-  margin: 0 0 28px;
-  max-width: 560px;
-  line-height: var(--leading-relaxed);
-}
-.hero-signature .sep { color: var(--accent); margin: 0 0.55em; opacity: 0.6; }
-@media (max-width: 540px) { .hero-signature { font-size: var(--text-label-sm); line-height: 1.8; } .hero-signature .sep { margin: 0 0.4em; } }
+/* ═══════ HERO CTA CLUSTER ═══════ */
+/* The third (and final) hero block. Tight-groups the engagement signal —
+   availability + hiring-manager intent + consulting posture — directly above
+   the action buttons so they read as one unit. Generous separation above
+   (from the lede); tight separation between meta row and buttons. */
+.hero-cta { margin-top: 36px; display: flex; flex-direction: column; gap: 14px; }
+@media (max-width: 540px) { .hero-cta { margin-top: 28px; gap: 12px; } }
 
-/* ═══════ HERO AVAILABILITY ═══════ */
-/* Surfaces the consulting/mentoring posture in the hero so it isn't gated
-   on scrolling to About. Mirrors the signature line's vocabulary (mono,
-   uppercase, --ink-dim) so it reads as a sibling, not a CTA. */
-.hero-availability {
-  display: inline-flex;
+/* Single mono row carrying status, open-to signal, and consulting posture.
+   Replaces the old .hero-signature + .hero-availability stack — the
+   quantitative callouts (7+ yrs, 500+ subs, 5 industries) were inlined into
+   the lede instead of repeated as a tag list. */
+.hero-meta {
+  display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 10px;
+  margin: 0;
   font-family: var(--mono);
   font-size: var(--text-label);
   font-weight: 500;
   letter-spacing: var(--tracking-label);
   text-transform: uppercase;
   color: var(--ink-dim);
-  margin: 0 0 28px;
   line-height: var(--leading-relaxed);
 }
-.hero-availability .status-dot {
+.hero-meta .status-dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
@@ -647,14 +666,14 @@ html.mode-transitioning .accent {
   animation: pulse 2.4s ease-in-out infinite;
   flex: 0 0 auto;
 }
-.hero-availability .status-label { color: var(--ink); font-weight: 600; }
-.hero-availability .sep { color: var(--accent); margin: 0 0.25em; opacity: 0.6; }
+.hero-meta .status-label { color: var(--ink); font-weight: 600; }
+.hero-meta .sep { color: var(--accent); opacity: 0.6; }
+.hero-meta .open-to { color: var(--ink); font-style: normal; font-weight: 600; }
 @media (prefers-reduced-motion: reduce) {
-  .hero-availability .status-dot { animation: none; }
+  .hero-meta .status-dot { animation: none; }
 }
 @media (max-width: 540px) {
-  .hero-availability { font-size: var(--text-label-sm); gap: 8px; margin-bottom: 22px; flex-wrap: wrap; }
-  .hero-availability .sep { margin: 0 0.2em; }
+  .hero-meta { font-size: var(--text-label-sm); gap: 8px; }
 }
 
 /* ═══════ ABOUT ═══════ */
@@ -680,7 +699,7 @@ html.mode-transitioning .accent {
 .skills-grid { display: grid; grid-template-columns: 1fr 1.6fr; gap: 64px; align-items: start; }
 .skills-grid > * { min-width: 0; }
 @media (max-width: 1040px) { .skills-grid { grid-template-columns: minmax(0, 1fr); gap: 32px; } }
-.skills-table { border: 1px solid color-mix(in oklab, var(--line-bright) 45%, transparent); border-radius: 4px; overflow: hidden; background: color-mix(in oklab, var(--bg-card) 55%, transparent); backdrop-filter: blur(18px) saturate(140%); -webkit-backdrop-filter: blur(18px) saturate(140%); box-shadow: inset 0 1px 0 rgba(255,255,255,0.05); font-family: var(--mono); font-size: var(--text-body-xs); }
+.skills-table { border: 1px solid color-mix(in oklab, var(--line-bright) 45%, transparent); border-radius: 4px; overflow: hidden; background: color-mix(in oklab, var(--bg-card) 92%, transparent); box-shadow: inset 0 1px 0 rgba(255,255,255,0.05); font-family: var(--mono); font-size: var(--text-body-xs); }
 .skills-head { display: grid; grid-template-columns: 60px 1.2fr 1fr 80px 100px; padding: 12px 20px; background: color-mix(in oklab, var(--bg-elev) 65%, transparent); color: var(--ink-mute); font-size: var(--text-label-sm); letter-spacing: var(--tracking-label); text-transform: uppercase; border-bottom: 1px solid color-mix(in oklab, var(--line) 60%, transparent); }
 .skill-row { display: grid; grid-template-columns: 60px 1.2fr 1fr 80px 100px; padding: 16px 20px; border-bottom: 1px solid var(--line); align-items: center; transition: background 0.2s; position: relative; }
 .skill-row:last-child { border-bottom: none; }
@@ -748,7 +767,7 @@ html.mode-transitioning .accent {
 .projects-tabs .count { color: var(--ink-mute); margin-left: 6px; font-size: var(--text-mini); }
 
 .project-list { display: grid; gap: 1px; background: color-mix(in oklab, var(--line) 50%, transparent); border: 1px solid color-mix(in oklab, var(--line-bright) 45%, transparent); border-radius: 6px; overflow: hidden; backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px); }
-.project-row { background: color-mix(in oklab, var(--bg-card) 55%, transparent); backdrop-filter: blur(18px) saturate(140%); -webkit-backdrop-filter: blur(18px) saturate(140%); padding: 20px 28px; cursor: pointer; transition: background 0.25s, transform 0.25s, box-shadow 0.25s; display: grid; grid-template-columns: 48px 1fr auto; gap: 24px; align-items: center; position: relative; }
+.project-row { background: color-mix(in oklab, var(--bg-card) 92%, transparent); padding: 20px 28px; cursor: pointer; transition: background 0.25s, transform 0.25s, box-shadow 0.25s; display: grid; grid-template-columns: 48px 1fr auto; gap: 24px; align-items: center; position: relative; }
 .project-row::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: var(--accent); transform: scaleY(0); transform-origin: top; transition: transform 0.3s cubic-bezier(.2,.7,.2,1); }
 .project-row:hover::before, .project-row.expanded::before, .project-row:focus-visible::before { transform: scaleY(1); }
 .project-row:focus-visible { outline: 1px solid var(--accent); outline-offset: -1px; box-shadow: 0 0 0 1px var(--accent-soft), 0 0 24px var(--accent-soft); }
@@ -783,7 +802,7 @@ html.mode-transitioning .accent {
 }
 
 /* ═══════ FEATURE (MTGBAN) ═══════ */
-.feature { margin-top: 0; border: 1px solid color-mix(in oklab, var(--line-bright) 45%, transparent); border-radius: 6px; background: color-mix(in oklab, var(--bg-card) 60%, transparent); backdrop-filter: blur(20px) saturate(140%); -webkit-backdrop-filter: blur(20px) saturate(140%); box-shadow: inset 0 1px 0 rgba(255,255,255,0.05); padding: 36px; position: relative; overflow: hidden; }
+.feature { margin-top: 0; border: 1px solid color-mix(in oklab, var(--line-bright) 45%, transparent); border-radius: 6px; background: color-mix(in oklab, var(--bg-card) 60%, transparent); backdrop-filter: blur(20px) saturate(140%); -webkit-backdrop-filter: blur(20px) saturate(140%); padding: 36px; position: relative; overflow: hidden; }
 .feature::before { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse 600px 300px at 100% 0%, var(--accent-soft), transparent 60%); pointer-events: none; }
 .feature-grid { display: grid; grid-template-columns: 1fr 1.4fr; gap: 56px; position: relative; align-items: center; }
 @media (max-width: 900px) { .feature-grid { grid-template-columns: 1fr; gap: 32px; align-items: stretch; } .feature { padding: 28px; } }
@@ -815,7 +834,7 @@ html.mode-transitioning .accent {
 .gitlog { display: flex; flex-direction: column; width: 100%; position: relative; --commit-h: 200px; --connector-h: 180px; --commit-overlap: calc(var(--connector-h) + 70px); }
 .gitlog.serpentine { gap: 0; }
 .gitlog.serpentine .commit:nth-child(n+2) { margin-top: calc(-1 * var(--commit-overlap)); }
-.commit { position: relative; padding: 18px 22px; background: color-mix(in oklab, var(--bg-card) 55%, transparent); backdrop-filter: blur(18px) saturate(140%); -webkit-backdrop-filter: blur(18px) saturate(140%); border: 1px solid color-mix(in oklab, var(--line-bright) 40%, transparent); border-radius: 4px; max-width: 500px; width: 100%; min-height: var(--commit-h); box-sizing: border-box; z-index: 1; box-shadow: inset 0 1px 0 rgba(255,255,255,0.05); transition: border-color 0.3s, box-shadow 0.3s, background 0.3s; }
+.commit { position: relative; padding: 18px 22px; background: color-mix(in oklab, var(--bg-card) 92%, transparent); border: 1px solid color-mix(in oklab, var(--line-bright) 40%, transparent); border-radius: 4px; max-width: 500px; width: 100%; min-height: var(--commit-h); box-sizing: border-box; z-index: 1; box-shadow: inset 0 1px 0 rgba(255,255,255,0.05); transition: border-color 0.3s, box-shadow 0.3s, background 0.3s; }
 .commit:hover { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent-soft), 0 0 40px var(--accent-soft); }
 .commit.side-left { align-self: flex-start; }
 .commit.side-right { align-self: flex-end; }
@@ -1251,7 +1270,7 @@ html[data-theme="light"] .article-content blockquote {
 @media (max-width: 900px) { .contact-grid { grid-template-columns: 1fr; gap: 40px; } }
 .contact h2 { font-family: var(--serif); font-size: var(--text-h2); line-height: var(--leading-tight); letter-spacing: var(--tracking-tighter); margin: 0 0 20px; font-weight: 400; text-wrap: balance; }
 .contact h2 em { color: var(--accent); }
-.contact-form { display: grid; gap: 12px; background: color-mix(in oklab, var(--bg-card) 58%, transparent); backdrop-filter: blur(20px) saturate(140%); -webkit-backdrop-filter: blur(20px) saturate(140%); padding: 28px; border: 1px solid color-mix(in oklab, var(--line-bright) 45%, transparent); border-radius: 6px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.05); position: relative; transition: border-color 0.3s, box-shadow 0.3s; }
+.contact-form { display: grid; gap: 12px; background: color-mix(in oklab, var(--bg-card) 92%, transparent); padding: 28px; border: 1px solid color-mix(in oklab, var(--line-bright) 45%, transparent); border-radius: 6px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.05); position: relative; transition: border-color 0.3s, box-shadow 0.3s; }
 .contact-form:focus-within { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent), 0 0 40px var(--accent-soft); }
 .contact-form label { font-family: var(--mono); font-size: var(--text-label-sm); color: var(--ink-mute); text-transform: uppercase; letter-spacing: var(--tracking-label); }
 /* font-size: 1rem (var(--text-body)) prevents iOS Safari from auto-zooming
@@ -1267,7 +1286,7 @@ html[data-theme="light"] .article-content blockquote {
 html[data-vibe="cyberpunk"] {
   --bg: #07060d; --bg-elev: #0d0b18; --bg-card: #0f0d1f;
   --ink: #e8ecff; --ink-dim: #8b95c4; --ink-mute: #4a5178;
-  --line: #1a1832; --line-bright: #2a2852;
+  --line: #1a1832; --line-bright: #2a2852; --line-quiet: #141128;
   --accent: oklch(0.82 0.21 195);
   --accent-soft: oklch(0.82 0.21 195 / 0.22);
   --accent-ink: #07060d;
@@ -1480,12 +1499,11 @@ html[data-vibe="cyberpunk"] .mtg-pt {
   box-shadow: inset 0 0 0 1px oklch(0.70 0.14 300 / 0.2), 0 0 14px -4px oklch(0.70 0.14 300 / 0.35);
 }
 
-html[data-vibe="cyberpunk"] .hero-signature { color: var(--ink-cool); }
-html[data-vibe="cyberpunk"] .hero-signature .sep { color: var(--accent-2); text-shadow: 0 0 6px var(--accent-2); opacity: 0.85; }
-html[data-vibe="cyberpunk"] .hero-availability { color: var(--ink-cool); }
-html[data-vibe="cyberpunk"] .hero-availability .status-label { color: var(--ink); text-shadow: 0 0 8px var(--accent-soft); }
-html[data-vibe="cyberpunk"] .hero-availability .status-dot { box-shadow: 0 0 0 4px var(--accent-soft), 0 0 14px var(--accent); }
-html[data-vibe="cyberpunk"] .hero-availability .sep { color: var(--accent-2); text-shadow: 0 0 6px var(--accent-2); opacity: 0.85; }
+html[data-vibe="cyberpunk"] .hero-meta { color: var(--ink-cool); }
+html[data-vibe="cyberpunk"] .hero-meta .status-label { color: var(--ink); text-shadow: 0 0 8px var(--accent-soft); }
+html[data-vibe="cyberpunk"] .hero-meta .status-dot { box-shadow: 0 0 0 4px var(--accent-soft), 0 0 14px var(--accent); }
+html[data-vibe="cyberpunk"] .hero-meta .sep { color: var(--accent-2); text-shadow: 0 0 6px var(--accent-2); opacity: 0.85; }
+html[data-vibe="cyberpunk"] .hero-meta .open-to { color: var(--ink); text-shadow: 0 0 6px var(--accent-soft); }
 
 html[data-vibe="cyberpunk"] .skills-table { border-radius: 0; border-color: oklch(0.82 0.21 195 / 0.3); }
 html[data-vibe="cyberpunk"] .skills-head { border-bottom-color: oklch(0.82 0.21 195 / 0.3); }
@@ -1571,9 +1589,9 @@ html[data-vibe="cyberpunk"] .section-label .num { color: var(--accent-2); text-s
   isolation: isolate;
   /* Wide violet outer halo bridges the izzet blue/red bloom into the
      site's default violet aurora, so the two palettes no longer meet
-     abruptly at the card edge. */
+     abruptly at the card edge. Halos only — no Y-offset drop shadow,
+     so the card sits in the page rather than floating above it. */
   box-shadow:
-    0 40px 80px -20px rgba(0,0,0,0.6),
     0 0 180px 12px oklch(0.60 0.14 305 / 0.18),
     0 0 300px 40px oklch(0.55 0.10 300 / 0.09);
   overflow: visible;
@@ -1588,7 +1606,6 @@ html[data-theme="light"] .izzet-card {
       color-mix(in oklab, var(--bg-card) 96%, transparent) 0%,
       color-mix(in oklab, var(--bg-elev) 88%, transparent) 100%);
   box-shadow:
-    0 24px 60px -28px rgba(60, 40, 20, 0.28),
     0 0 140px 10px oklch(0.78 0.12 305 / 0.10),
     0 0 220px 32px oklch(0.78 0.10 280 / 0.06);
 }
@@ -1601,9 +1618,7 @@ html[data-theme="light"] .izzet-card.izzet-red::after { opacity: 0.30; }
   /* Pull the bloom way in on mobile. Stacked About + Skills cards would
      otherwise flood the whole column with violet from their desktop halos. */
   .izzet-card {
-    box-shadow:
-      0 24px 50px -18px rgba(0,0,0,0.55),
-      0 0 60px 0 oklch(0.60 0.14 305 / 0.18);
+    box-shadow: 0 0 60px 0 oklch(0.60 0.14 305 / 0.18);
   }
   .izzet-card::before,
   .izzet-card::after {

@@ -140,22 +140,23 @@ function Hero({ heroVariant }) {
               worth <span className="italic">shipping</span>.
             </h1>
             <p className="hero-lede reveal" data-delay="1">
-              I'm <strong>Chris Pachulski</strong> — I turned a hobby into a career. Co-founded <strong>MTGBAN</strong>, a Magic: The Gathering arbitrage engine, and spent 7+ years building analytics pipelines for Ad.Net, Mozilla, SPINS, and Providencia along the way. Now I'm a <strong>Senior Data Scientist at Wizards of the Coast</strong>, working on the game I built a business around.
+              I'm <strong>Chris Pachulski</strong>: I turned a hobby into a career. Co-founded <strong>MTGBAN</strong>, a Magic: The Gathering arbitrage engine that grew to <strong>500+ subscribers</strong>, while spending <strong>7+ years</strong> shipping analytics pipelines across <strong>5 industries</strong> for Ad.Net, Mozilla, SPINS, and Providencia. Now I'm a <strong>Senior Data Scientist at Wizards of the Coast</strong>, working on the game I built a business around.
             </p>
-            <p className="hero-signature reveal" data-delay="2">
-              7+ yrs<span className="sep" aria-hidden="true">·</span>WotC Sr DS<span className="sep" aria-hidden="true">·</span>500+ MTGBAN subs<span className="sep" aria-hidden="true">·</span>5 industries shipped
-            </p>
-            <p className="hero-availability reveal" data-delay="3">
-              <span className="status-dot" aria-hidden="true" />
-              <span className="status-label">Available</span>
-              <span className="sep" aria-hidden="true">·</span>
-              <span>Selective consulting + mentoring</span>
-            </p>
-            <div className="hero-actions reveal" data-delay="4">
-              <a href="#contact" className="btn btn-primary mono">Let's talk <span className="arrow">→</span></a>
-              <a href="#portfolio" className="btn mono">View case studies</a>
-              <a href="/cv/Chris_Pachulski_Resume.pdf" className="btn mono" download>Download CV <span aria-hidden="true">↓</span></a>
-              <a href="https://github.com/ChrisPachulski" target="_blank" rel="noopener noreferrer" className="btn mono">GitHub ↗</a>
+            <div className="hero-cta reveal" data-delay="2">
+              <p className="hero-meta">
+                <span className="status-dot" aria-hidden="true" />
+                <span className="status-label">Available</span>
+                <span className="sep" aria-hidden="true">·</span>
+                <span>Open to <em className="open-to">principal-track DS roles</em></span>
+                <span className="sep" aria-hidden="true">·</span>
+                <span>Selective consulting + mentoring</span>
+              </p>
+              <div className="hero-actions">
+                <a href="#contact" className="btn btn-primary mono">Let's talk <span className="arrow">→</span></a>
+                <a href="#portfolio" className="btn mono">View case studies</a>
+                <a href="/cv/Chris_Pachulski_Resume.pdf" className="btn mono" download>Download CV <span aria-hidden="true">↓</span></a>
+                <a href="https://github.com/ChrisPachulski" target="_blank" rel="noopener noreferrer" className="btn mono">GitHub ↗</a>
+              </div>
             </div>
           </div>
           <div className="reveal" data-delay="1"><HeroTerminal variant={heroVariant} /></div>

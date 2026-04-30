@@ -193,6 +193,27 @@ export function Projects() {
   const filtered = PROJECTS.filter(CATEGORIES.find(c => c.id === cat).filter);
   const tabsRef = useRef(null);
   const wrapRef = useRef(null);
+
+  const selectTab = (id, { focus = false } = {}) => {
+    setCat(id);
+    setExpanded(null);
+    if (focus && tabsRef.current) {
+      const btn = tabsRef.current.querySelector(`#tab-${id}`);
+      if (btn) btn.focus();
+    }
+  };
+
+  const onTabKeyDown = (e) => {
+    const idx = CATEGORIES.findIndex(c => c.id === cat);
+    let next = null;
+    if (e.key === 'ArrowRight') next = (idx + 1) % CATEGORIES.length;
+    else if (e.key === 'ArrowLeft') next = (idx - 1 + CATEGORIES.length) % CATEGORIES.length;
+    else if (e.key === 'Home') next = 0;
+    else if (e.key === 'End') next = CATEGORIES.length - 1;
+    else return;
+    e.preventDefault();
+    selectTab(CATEGORIES[next].id, { focus: true });
+  };
   useEffect(() => {
     const el = tabsRef.current;
     const wrap = wrapRef.current;
@@ -232,11 +253,29 @@ export function Projects() {
           </div>
           <div className="reveal" data-delay="2">
             <div className="projects-tabs-wrap" ref={wrapRef}>
-              <div className="projects-tabs" role="tablist" ref={tabsRef}>
+              <div
+                className="projects-tabs"
+                role="tablist"
+                aria-label="Filter projects by category"
+                aria-orientation="horizontal"
+                ref={tabsRef}
+              >
                 {CATEGORIES.map(c => {
                   const count = PROJECTS.filter(c.filter).length;
+                  const selected = cat === c.id;
                   return (
-                    <button key={c.id} className={cat === c.id ? 'active' : ''} onClick={() => { setCat(c.id); setExpanded(null); }}>
+                    <button
+                      key={c.id}
+                      id={`tab-${c.id}`}
+                      role="tab"
+                      type="button"
+                      aria-selected={selected}
+                      aria-controls="projects-panel"
+                      tabIndex={selected ? 0 : -1}
+                      className={selected ? 'active' : ''}
+                      onClick={() => selectTab(c.id)}
+                      onKeyDown={onTabKeyDown}
+                    >
                       {c.label} <span className="count">({count})</span>
                     </button>
                   );
@@ -245,7 +284,13 @@ export function Projects() {
             </div>
           </div>
         </div>
-        <div className="project-list reveal" data-delay="2">
+        <div
+          id="projects-panel"
+          role="tabpanel"
+          aria-labelledby={`tab-${cat}`}
+          className="project-list reveal"
+          data-delay="2"
+        >
           {filtered.map((p, i) => {
             const isOpen = expanded === i;
             const detailId = `project-${i}-detail`;

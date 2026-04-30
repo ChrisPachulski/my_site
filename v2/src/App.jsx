@@ -26,6 +26,16 @@ function readStoredMode() {
   }
 }
 
+function ensureOrbitronLoaded() {
+  if (typeof document === 'undefined') return;
+  if (document.getElementById('font-orbitron')) return;
+  const link = document.createElement('link');
+  link.id = 'font-orbitron';
+  link.rel = 'stylesheet';
+  link.href = 'https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap';
+  document.head.appendChild(link);
+}
+
 function applyMode(mode) {
   const html = document.documentElement;
   if (mode === 'office-hours') {
@@ -34,6 +44,7 @@ function applyMode(mode) {
   } else {
     html.setAttribute('data-vibe', 'cyberpunk');
     html.setAttribute('data-theme', 'dark');
+    ensureOrbitronLoaded();
   }
 }
 
@@ -61,6 +72,7 @@ function Nav({ active, onHome, mode, onModeChange }) {
   };
   return (
     <nav className={`nav${scrolled ? ' scrolled' : ''}`}>
+      <a className="skip-link" href="#main-content">Skip to content</a>
       <a href="/" className="brand" onClick={(e) => handleNav(e, '#home')}>
         <span className="dot"/>
         <span>chris<span className="accent">@</span>wizards</span>
@@ -73,7 +85,7 @@ function Nav({ active, onHome, mode, onModeChange }) {
             className={active === n.id ? 'active' : ''}
             onClick={(e) => handleNav(e, `#${n.id}`)}
           >
-            <span className="idx">{String(i).padStart(2,'0')}</span>
+            <span className="idx">{String(i + 1).padStart(2,'0')}</span>
             <span>{n.label}</span>
           </a>
         ))}
@@ -88,19 +100,21 @@ function HomeContent({ active, onHome, onArticleOpen, gmDone, onGmComplete, mode
   return (
     <>
       <Nav active={active} onHome={onHome} mode={mode} onModeChange={onModeChange} />
-      <Hero heroVariant={HERO_VARIANT} />
-      {!gmDone && mode === 'after-hours' && (
-        <Suspense fallback={null}>
-          <GhostMatch onComplete={onGmComplete} />
-        </Suspense>
-      )}
-      <About />
-      <Skills />
-      <Feature />
-      <Projects />
-      <Resume />
-      <Writing onArticleOpen={onArticleOpen} />
-      <Contact />
+      <main id="main-content" tabIndex={-1}>
+        <Hero heroVariant={HERO_VARIANT} />
+        {!gmDone && mode === 'after-hours' && (
+          <Suspense fallback={null}>
+            <GhostMatch onComplete={onGmComplete} />
+          </Suspense>
+        )}
+        <About />
+        <Skills />
+        <Feature />
+        <Projects />
+        <Resume />
+        <Writing onArticleOpen={onArticleOpen} />
+        <Contact />
+      </main>
     </>
   );
 }
@@ -114,7 +128,7 @@ function ArticlePage({ post, navigate, mode, onModeChange }) {
         mode={mode}
         onModeChange={onModeChange}
       />
-      <main className="article-shell">
+      <main id="main-content" tabIndex={-1} className="article-shell">
         <Article post={post} mode="page" onNavigate={navigate} />
       </main>
       <Contact />
@@ -126,7 +140,7 @@ function NotFoundPage({ navigate, mode, onModeChange }) {
   return (
     <>
       <Nav active="writing" onHome={(hash) => navigate(`/${hash}`)} mode={mode} onModeChange={onModeChange} />
-      <main className="article-shell">
+      <main id="main-content" tabIndex={-1} className="article-shell">
         <NotFound onNavigate={navigate} />
       </main>
       <Contact />

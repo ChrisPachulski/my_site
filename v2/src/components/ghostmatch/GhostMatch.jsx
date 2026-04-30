@@ -269,15 +269,19 @@ function CounterPrompt({ remainingMs, onCounter }) {
   const pct = Math.max(0, Math.min(1, remainingMs / COUNTER_TIMER_MS));
   const seconds = Math.max(0, Math.ceil(remainingMs / 1000));
   const circumference = 2 * Math.PI * 26;
+  const fireRef = useRef(null);
+  useEffect(() => {
+    fireRef.current?.focus({ preventScroll: true });
+  }, []);
   return (
     <div className="gm-counter-prompt" role="alert">
       <div className="gm-counter-headline">
         Counter their <em>counter</em>.
       </div>
       <div className="gm-counter-sub">
-        Click the glowing card to cast Counterflux. {seconds}s.
+        Click or press Enter to cast Counterflux. {seconds}s.
       </div>
-      <button type="button" className="gm-counter-fire" onClick={onCounter} aria-label={`Counter Red Tape (${seconds} seconds remaining)`}>
+      <button ref={fireRef} type="button" className="gm-counter-fire" onClick={onCounter} aria-label={`Counter Red Tape (${seconds} seconds remaining)`}>
         <svg className="gm-counter-ring" viewBox="0 0 60 60" aria-hidden="true">
           <circle cx="30" cy="30" r="26" className="gm-counter-ring-track" />
           <circle
@@ -472,6 +476,15 @@ export default function GhostMatch({ onComplete }) {
   const [now, setNow] = useState(() => performance.now());
   const counterFiredRef = useRef(false);
 
+  /* Speed control for the setup-events runner.
+     1× / 2× re-pace at the next event boundary; 'instant' flushes remaining
+     events synchronously and advances the stage. The runner reads speedRef
+     each tick so toggles take effect mid-stream without restarting. */
+  const speedRef = useRef(1);
+  const [setupSpeed, setSetupSpeed] = useState(1);
+  const setupIndexRef = useRef(0);
+  const setupTimerRef = useRef(null);
+
   const reduceMotion = useMemo(
     () => typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches,
     []
@@ -528,22 +541,34 @@ export default function GhostMatch({ onComplete }) {
     return () => window.removeEventListener('keydown', onKey);
   }, [stage, handleClose]);
 
-  /* Setup events runner: on entering 'setup', play through SETUP_EVENTS, then transition to 'counter'. */
+  /* Setup events runner: on entering 'setup', play through SETUP_EVENTS, then transition to 'counter'.
+     Reads speedRef each tick so 1× ↔ 2× toggles re-pace at the next event boundary.
+     Index and timer live in refs so claimSpeed('instant') can cancel the pending tick
+     and flush remaining events synchronously. */
   useEffect(() => {
     if (stage !== 'setup') return;
+    setupIndexRef.current = 0;
+    speedRef.current = 1;
+    setSetupSpeed(1);
     let cancelled = false;
-    let timer = null;
-    let i = 0;
-    const speed = reduceMotion ? 0.15 : 1;
+    const baseFactor = reduceMotion ? 0.15 : 1;
     const runNext = () => {
       if (cancelled) return;
-      if (i >= SETUP_EVENTS.length) {
+      if (speedRef.current === 'instant') {
+        while (setupIndexRef.current < SETUP_EVENTS.length) {
+          dispatch(SETUP_EVENTS[setupIndexRef.current++]);
+        }
         setStage('counter');
         return;
       }
-      const ev = SETUP_EVENTS[i++];
-      const delay = Math.max(20, (ev.d || 0) * speed);
-      timer = setTimeout(() => {
+      if (setupIndexRef.current >= SETUP_EVENTS.length) {
+        setStage('counter');
+        return;
+      }
+      const ev = SETUP_EVENTS[setupIndexRef.current++];
+      const userSpeed = typeof speedRef.current === 'number' ? speedRef.current : 1;
+      const delay = Math.max(20, ((ev.d || 0) * baseFactor) / userSpeed);
+      setupTimerRef.current = setTimeout(() => {
         dispatch(ev);
         runNext();
       }, delay);
@@ -551,9 +576,30 @@ export default function GhostMatch({ onComplete }) {
     runNext();
     return () => {
       cancelled = true;
-      if (timer) clearTimeout(timer);
+      if (setupTimerRef.current) {
+        clearTimeout(setupTimerRef.current);
+        setupTimerRef.current = null;
+      }
     };
   }, [stage, reduceMotion]);
+
+  /* User claims the pace. Mirrors AboutSkills' "user took over" pattern:
+     ref drives the in-flight runner; state drives the UI. 'instant' clears
+     the pending timer and flushes remaining events in one render. */
+  const claimSpeed = useCallback((s) => {
+    speedRef.current = s;
+    setSetupSpeed(s);
+    if (s === 'instant') {
+      if (setupTimerRef.current) {
+        clearTimeout(setupTimerRef.current);
+        setupTimerRef.current = null;
+      }
+      while (setupIndexRef.current < SETUP_EVENTS.length) {
+        dispatch(SETUP_EVENTS[setupIndexRef.current++]);
+      }
+      setStage('counter');
+    }
+  }, []);
 
   /* Counter timer: tick every 100ms, auto-fire on expiry. */
   useEffect(() => {
@@ -667,6 +713,33 @@ export default function GhostMatch({ onComplete }) {
           <div className="gm-hud">
             <LogPanel log={state.log} phase={state.phase} />
             <div className="gm-controls">
+              {stage === 'setup' && !reduceMotion && (
+                <div className="gm-speeds" role="group" aria-label="Setup playback speed">
+                  <button
+                    type="button"
+                    className={`gm-speed${setupSpeed === 1 ? ' gm-speed-on' : ''}`}
+                    onClick={() => claimSpeed(1)}
+                    aria-pressed={setupSpeed === 1}
+                  >
+                    1×
+                  </button>
+                  <button
+                    type="button"
+                    className={`gm-speed${setupSpeed === 2 ? ' gm-speed-on' : ''}`}
+                    onClick={() => claimSpeed(2)}
+                    aria-pressed={setupSpeed === 2}
+                  >
+                    2×
+                  </button>
+                  <button
+                    type="button"
+                    className="gm-speed gm-speed-instant"
+                    onClick={() => claimSpeed('instant')}
+                  >
+                    Instant <span aria-hidden="true">↦</span>
+                  </button>
+                </div>
+              )}
               <button type="button" className="gm-skip" onClick={handleClose}>
                 Skip <span aria-hidden="true">→</span>
               </button>

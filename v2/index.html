@@ -4,17 +4,26 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script>
-      // Reconcile saved display-mode before paint to avoid FOUC.
+      // Reconcile saved display-mode before paint to avoid FOUC, then load the
+      // Orbitron display face only when the cyberpunk vibe survives. Office-hours
+      // never paints with Orbitron, so its ~30KB request is wasted there.
       // After-hours is the default; office-hours requires explicit attr swap.
       (function () {
+        var html = document.documentElement;
         try {
           var stored = localStorage.getItem('display-mode');
           if (stored === 'office-hours') {
-            var html = document.documentElement;
             html.removeAttribute('data-vibe');
             html.setAttribute('data-theme', 'light');
           }
         } catch (e) { /* localStorage blocked — fall through to defaults */ }
+        if (html.getAttribute('data-vibe') === 'cyberpunk' && !document.getElementById('font-orbitron')) {
+          var link = document.createElement('link');
+          link.id = 'font-orbitron';
+          link.rel = 'stylesheet';
+          link.href = 'https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap';
+          document.head.appendChild(link);
+        }
       })();
     </script>
     <title>Chris Pachulski — Senior Data Scientist</title>
@@ -59,7 +68,7 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&family=Orbitron:wght@600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
   </head>
   <body>
     <div id="root"></div>

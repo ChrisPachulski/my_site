@@ -341,25 +341,52 @@
 
 .gm-controls {
   display: flex; gap: 8px; align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+.gm-speeds {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding-right: 10px;
+  border-right: 1px solid rgba(255,255,255,0.12);
 }
 .gm-speed, .gm-skip {
   font-family: var(--mono, monospace);
   font-size: 12px;
-  padding: 8px 14px;
+  padding: 8px 12px;
   background: rgba(255,255,255,0.05);
   color: var(--gm-c-ink);
   border: 1px solid rgba(255,255,255,0.12);
   border-radius: 6px;
   cursor: pointer;
-  transition: background 0.2s, transform 0.15s, border-color 0.2s;
+  transition: background 0.2s, transform 0.15s, border-color 0.2s, color 0.2s, box-shadow 0.2s;
   letter-spacing: 0.02em;
 }
+.gm-speed { padding: 6px 10px; min-width: 38px; }
 .gm-speed:hover, .gm-skip:hover {
   background: rgba(255,255,255,0.1);
   border-color: var(--gm-c-izzet-u);
   transform: translateY(-1px);
 }
-.gm-speed-on { border-color: var(--gm-c-izzet-u); color: var(--gm-c-izzet-u); }
+.gm-speed:focus-visible, .gm-skip:focus-visible {
+  outline: 2px solid var(--gm-c-izzet-u);
+  outline-offset: 2px;
+}
+.gm-speed-on {
+  border-color: var(--gm-c-izzet-u);
+  color: var(--gm-c-izzet-u);
+  box-shadow: inset 0 0 0 1px var(--gm-c-izzet-u), 0 0 12px oklch(0.68 0.16 245 / 0.25);
+}
+.gm-speed-instant {
+  padding: 6px 12px;
+  color: var(--gm-c-izzet-r);
+  border-color: oklch(0.66 0.19 30 / 0.45);
+}
+.gm-speed-instant:hover {
+  border-color: var(--gm-c-izzet-r);
+  background: oklch(0.66 0.19 30 / 0.08);
+}
 .gm-skip { font-weight: 600; }
 
 /* Victory */
