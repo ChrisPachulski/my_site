@@ -269,17 +269,20 @@ section.flow { justify-content: flex-start; padding: 120px 0 80px; }
 .mtg-stage { opacity: 0; transform: translateY(8px); animation: mtgIn 0.9s cubic-bezier(.2,.7,.2,1) forwards; animation-delay: var(--d, 0s); }
 @keyframes mtgIn { to { opacity: 1; transform: none; } }
 
-/* ═══════ STATS ═══════ */
-.stats { margin-top: 40px; display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
-@media (max-width: 780px) { .stats { grid-template-columns: repeat(2, 1fr); } }
-.stat { padding: 18px 20px; border-right: 1px solid var(--line); position: relative; overflow: hidden; }
-.stat::before { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse at center, var(--accent-soft), transparent 70%); opacity: 0; transition: opacity 0.3s; pointer-events: none; }
-.stat:hover::before { opacity: 1; }
-.stat:last-child { border-right: none; }
-@media (max-width: 780px) { .stat:nth-child(2) { border-right: none; } }
-.stat .num { font-family: var(--serif); font-size: 32px; line-height: 1; letter-spacing: -0.02em; color: var(--ink); position: relative; }
-.stat .num .unit { font-family: var(--mono); font-size: 15px; color: var(--accent); }
-.stat .label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: var(--ink-mute); text-transform: uppercase; margin-top: 6px; position: relative; }
+/* ═══════ HERO SIGNATURE ═══════ */
+.hero-signature {
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  margin: 0 0 28px;
+  max-width: 560px;
+  line-height: 1.7;
+}
+.hero-signature .sep { color: var(--accent); margin: 0 0.55em; opacity: 0.6; }
+@media (max-width: 540px) { .hero-signature { font-size: 11px; line-height: 1.8; } .hero-signature .sep { margin: 0 0.4em; } }
 
 /* ═══════ ABOUT ═══════ */
 .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: start; }
@@ -717,11 +720,6 @@ html[data-vibe="cyberpunk"] .mtg-pt {
   border-color: oklch(0.70 0.14 300 / 0.55);
   box-shadow: inset 0 0 0 1px oklch(0.70 0.14 300 / 0.2), 0 0 14px -4px oklch(0.70 0.14 300 / 0.35);
 }
-
-html[data-vibe="cyberpunk"] .stats { border-color: oklch(0.82 0.21 195 / 0.25); }
-html[data-vibe="cyberpunk"] .stat { border-right-color: oklch(0.82 0.21 195 / 0.25); }
-html[data-vibe="cyberpunk"] .stat .num { font-family: var(--display); color: var(--accent); text-shadow: 0 0 18px var(--accent-soft); }
-html[data-vibe="cyberpunk"] .stat .num .unit { color: var(--accent-2); text-shadow: 0 0 10px var(--accent-2); }
 
 html[data-vibe="cyberpunk"] .skills-table { border-radius: 0; border-color: oklch(0.82 0.21 195 / 0.3); }
 html[data-vibe="cyberpunk"] .skills-head { border-bottom-color: oklch(0.82 0.21 195 / 0.3); }

@@ -69,50 +69,6 @@ function MagicCard() {
   );
 }
 
-/* ───────── Stat with counter-on-view animation ─────────
-   Parses the number prefix out of `num` so e.g. "7" counts 0→7, "WotC" stays as-is. */
-function Stat({ num, unit, label, delay = 0 }) {
-  const ref = useRef(null);
-  const [display, setDisplay] = useState(() => {
-    const m = String(num).match(/^(\d+)/);
-    return m ? '0' : num;
-  });
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const target = String(num);
-    const m = target.match(/^(\d+)/);
-    if (!m) { setDisplay(target); return; }
-    const n = parseInt(m[1], 10);
-    const suffix = target.slice(m[1].length);
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reduce) { setDisplay(target); return; }
-    const io = new IntersectionObserver(([entry]) => {
-      if (!entry.isIntersecting) return;
-      io.disconnect();
-      const duration = 1200;
-      const start = performance.now() + delay;
-      const tick = (now) => {
-        if (now < start) { requestAnimationFrame(tick); return; }
-        const t = Math.min(1, (now - start) / duration);
-        const eased = 1 - Math.pow(1 - t, 3);
-        setDisplay(Math.round(n * eased) + suffix);
-        if (t < 1) requestAnimationFrame(tick);
-      };
-      requestAnimationFrame(tick);
-    }, { threshold: 0.4 });
-    io.observe(el);
-    return () => io.disconnect();
-  }, [num, delay]);
-
-  return (
-    <div className="stat" ref={ref}>
-      <div className="num">{display}{unit ? <span className="unit">{unit}</span> : null}</div>
-      <div className="label">{label}</div>
-    </div>
-  );
-}
-
 /* Hook up scroll reveals for any element with `.reveal` in the tree. */
 function useRevealOnScroll() {
   useEffect(() => {
@@ -218,20 +174,16 @@ function Hero({ heroVariant }) {
               <p className="hero-lede reveal" data-delay="1">
                 I'm <strong>Chris Pachulski</strong> — I turned a hobby into a career. Co-founded <strong>MTGBAN</strong>, a Magic: The Gathering arbitrage engine, and spent 7+ years building analytics pipelines for Ad.Net, Mozilla, SPINS, and Providencia along the way. Now I'm a <strong>Senior Data Scientist at Wizards of the Coast</strong>, working on the game I built a business around.
               </p>
-              <div className="hero-actions reveal" data-delay="2">
+              <p className="hero-signature reveal" data-delay="2">
+                7+ yrs<span className="sep" aria-hidden="true">·</span>WotC Sr DS<span className="sep" aria-hidden="true">·</span>500+ MTGBAN subs<span className="sep" aria-hidden="true">·</span>5 industries shipped
+              </p>
+              <div className="hero-actions reveal" data-delay="3">
                 <a href="#contact" className="btn btn-primary mono izzet-magnetic">Let's talk <span className="arrow">→</span></a>
                 <a href="#portfolio" className="btn mono izzet-magnetic">View case studies</a>
                 <a href="https://github.com/ChrisPachulski" target="_blank" rel="noopener noreferrer" className="btn mono izzet-magnetic">GitHub ↗</a>
               </div>
             </div>
             <div className="reveal" data-delay="1"><HeroTerminal variant={heroVariant} /></div>
-          </div>
-
-          <div className="stats reveal" data-delay="3">
-            <Stat num="7"    unit="+ yrs" label="Shipping data systems" delay={0} />
-            <Stat num="WotC" unit="."     label="Sr Data Scientist, MTG" delay={120} />
-            <Stat num="500"  unit="+"     label="Customers served @ MTGBAN" delay={240} />
-            <Stat num="5"    unit="x"     label="Industries shipped into" delay={360} />
           </div>
         </div>
       </section>
