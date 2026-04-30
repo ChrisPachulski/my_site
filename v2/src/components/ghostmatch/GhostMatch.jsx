@@ -2,6 +2,7 @@ import { useEffect, useReducer, useRef, useState, useMemo } from 'react';
 import Card from './Card.jsx';
 import { CARDS } from './cards.js';
 import { INITIAL_STATE, OPENING, EVENTS } from './match-script.js';
+import './ghostmatch.css';
 
 /* ── Reducer ────────────────────────────────────────────────────── */
 function reducer(state, ev) {
@@ -399,7 +400,7 @@ function VictoryScreen({ onContinue }) {
           This site was built by the wizard who cast MTGBAN. Scroll down for the rest of the spellbook.
         </p>
         <div className="gm-victory-tags">
-          <span>WotC Senior Economic Analyst</span>
+          <span>WotC Senior Data Scientist</span>
           <span>MTGBAN co-founder · $1.2M ARR</span>
           <span>8 yrs shipping data systems</span>
         </div>

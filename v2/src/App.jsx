@@ -1,15 +1,15 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import Hero from './components/Hero.jsx';
 import { About, Skills, Feature } from './components/AboutSkills.jsx';
 import { Projects, Resume, Writing, Contact } from './components/Sections.jsx';
 import IzzetCursor from './components/izzet-cursor/IzzetCursor.jsx';
 import Article from './components/Article.jsx';
 import NotFound from './components/NotFound.jsx';
-import GhostMatch from './components/ghostmatch/GhostMatch.jsx';
 import { useRoute, articlePath } from './lib/router.js';
 import { getPost } from './lib/blog.js';
 import './components/izzet-cursor/izzet-cursor.css';
-import './components/ghostmatch/ghostmatch.css';
+
+const GhostMatch = lazy(() => import('./components/ghostmatch/GhostMatch.jsx'));
 
 const ACCENT = 'violet';
 const THEME = 'dark';
@@ -205,7 +205,7 @@ export default function App() {
     const post = getPost(route.slug);
     if (post) document.title = `${post.title} — Chris Pachulski`;
     else document.title = 'Not Found — Chris Pachulski';
-    return () => { document.title = 'Chris Pachulski — Analytics Engineer'; };
+    return () => { document.title = 'Chris Pachulski — Senior Data Scientist'; };
   }, [route.name, route.slug]);
 
   const handleArticleOpen = (slug) => {
@@ -266,7 +266,11 @@ export default function App() {
     <>
       <IzzetCursor />
       <HomeContent active={active} onHome={handleHomeNav} onArticleOpen={handleArticleOpen} />
-      {gmShowing && <GhostMatch onComplete={() => setGmDone(true)} />}
+      {gmShowing && (
+        <Suspense fallback={null}>
+          <GhostMatch onComplete={() => setGmDone(true)} />
+        </Suspense>
+      )}
     </>
   );
 }
