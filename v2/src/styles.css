@@ -1370,23 +1370,16 @@ html[data-vibe="cyberpunk"] .hero-headline .sub {
   font-size: 0.22em !important;
 }
 /* Headlines stay Instrument Serif + italic Plasma Violet pivot in every mode.
-   Orbitron is reserved for label / eyebrow / display roles only. */
-html[data-vibe="cyberpunk"] .hero-headline {
-  text-shadow: -1px 0 0 oklch(0.72 0.28 340 / 0.65), 1px 0 0 oklch(0.82 0.21 195 / 0.65), 0 0 36px oklch(0.82 0.21 195 / 0.3);
-}
+   Orbitron is reserved for label / eyebrow / display roles only. The headline
+   body carries no text-shadow: the izzet-ignite cursor-tracked gradient and
+   the italic pivot do the work. Chromatic aberration on serif text reads as
+   3D anaglyph blur, which is the costume DESIGN.md §1 contracts to refuse. */
 html[data-vibe="cyberpunk"] .hero-headline .italic,
 html[data-vibe="cyberpunk"] .about h2 em,
 html[data-vibe="cyberpunk"] .feature h3 em,
 html[data-vibe="cyberpunk"] .contact h2 em,
 html[data-vibe="cyberpunk"] section h2 em {
   text-shadow: 0 0 28px var(--accent-soft), 0 0 10px var(--accent-soft);
-}
-/* Mobile: chromatic aberration on the hero reads as muddy 3D blur at small
-   sizes — drop the directional split, keep a soft single-color halo. */
-@media (max-width: 780px) {
-  html[data-vibe="cyberpunk"] .hero-headline {
-    text-shadow: 0 0 28px oklch(0.82 0.21 195 / 0.22);
-  }
 }
 
 html[data-vibe="cyberpunk"] .nav { background: color-mix(in oklab, var(--bg) 78%, transparent); }
