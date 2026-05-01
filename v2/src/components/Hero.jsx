@@ -102,35 +102,6 @@ function useRevealOnScroll() {
   }, []);
 }
 
-/* Hero ignite tracker: keeps the radial gradient on the headline anchored to
-   the cursor without booting the rest of the custom-cursor stack. */
-function useHeroIgnite(ref) {
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reduce) return;
-    let raf = 0;
-    let mx = 0, my = 0;
-    const flush = () => {
-      const r = el.getBoundingClientRect();
-      el.style.setProperty('--izzet-cx', `${mx - r.left}px`);
-      el.style.setProperty('--izzet-cy', `${my - r.top}px`);
-      raf = 0;
-    };
-    const onMove = (e) => {
-      mx = e.clientX;
-      my = e.clientY;
-      if (!raf) raf = requestAnimationFrame(flush);
-    };
-    window.addEventListener('mousemove', onMove, { passive: true });
-    return () => {
-      window.removeEventListener('mousemove', onMove);
-      if (raf) cancelAnimationFrame(raf);
-    };
-  }, [ref]);
-}
-
 function HeroTerminal({ variant }) {
   // Only the MTG card — terminals removed; v2 default is 'sql' which fell through to card anyway.
   return <MagicCard />;
@@ -138,14 +109,12 @@ function HeroTerminal({ variant }) {
 
 function Hero({ heroVariant }) {
   useRevealOnScroll();
-  const headlineRef = useRef(null);
-  useHeroIgnite(headlineRef);
   return (
     <section className="hero" id="home">
       <div className="wrap">
         <div className="hero-grid">
           <div>
-            <h1 ref={headlineRef} className="hero-headline reveal izzet-ignite">
+            <h1 className="hero-headline reveal">
               <span className="sub">Sr Data Scientist · Analytics Engineer</span>
               Turning messy <span className="italic">data</span><br/>
               into decisions<br/>
