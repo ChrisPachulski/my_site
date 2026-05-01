@@ -152,7 +152,7 @@ function Hero({ heroVariant }) {
               worth <span className="italic">shipping</span>.
             </h1>
             <p className="hero-lede reveal" data-delay="1">
-              I'm <strong>Chris Pachulski</strong>: I turned a hobby into a career. Co-founded <strong>MTGBAN</strong>, a Magic: The Gathering arbitrage engine that grew to <strong>500+ subscribers</strong>, while spending <strong>7+ years</strong> shipping analytics pipelines across <strong>5 industries</strong> for Ad.Net, Mozilla, SPINS, and Providencia. Now I'm a <strong>Senior Data Scientist at Wizards of the Coast</strong>, working on the game I built a business around.
+              I'm <strong>Chris Pachulski</strong>: I turned a hobby into a career. Co-founded MTGBAN, a Magic: The Gathering arbitrage engine that grew to 500+ subscribers, while spending 7+ years shipping analytics pipelines across 5 industries for Ad.Net, Mozilla, SPINS, and Providencia. Now I'm a <strong>Senior Data Scientist at Wizards of the Coast</strong>, working on the game I built a business around.
             </p>
             <div className="hero-cta reveal" data-delay="2">
               <p className="hero-meta">

@@ -1510,10 +1510,10 @@ html[data-vibe="cyberpunk"] .mtg-pt {
 }
 
 html[data-vibe="cyberpunk"] .hero-meta { color: var(--ink-cool); }
-html[data-vibe="cyberpunk"] .hero-meta .status-label { color: var(--ink); text-shadow: 0 0 8px var(--accent-soft); }
+html[data-vibe="cyberpunk"] .hero-meta .status-label { color: var(--ink); }
 html[data-vibe="cyberpunk"] .hero-meta .status-dot { box-shadow: 0 0 0 4px var(--accent-soft), 0 0 14px var(--accent); }
-html[data-vibe="cyberpunk"] .hero-meta .sep { color: var(--accent-2); text-shadow: 0 0 6px var(--accent-2); opacity: 0.85; }
-html[data-vibe="cyberpunk"] .hero-meta .open-to { color: var(--ink); text-shadow: 0 0 6px var(--accent-soft); }
+html[data-vibe="cyberpunk"] .hero-meta .sep { color: var(--accent-2); opacity: 0.85; }
+html[data-vibe="cyberpunk"] .hero-meta .open-to { color: var(--ink); }
 
 html[data-vibe="cyberpunk"] .skills-table { border-radius: 0; border-color: oklch(0.82 0.21 195 / 0.3); }
 html[data-vibe="cyberpunk"] .skills-head { border-bottom-color: oklch(0.82 0.21 195 / 0.3); }
@@ -1521,26 +1521,26 @@ html[data-vibe="cyberpunk"] .skill-row { border-bottom-color: oklch(0.82 0.21 19
 html[data-vibe="cyberpunk"] .skill-row:hover { background: color-mix(in oklab, var(--accent) 6%, var(--bg-card)); }
 html[data-vibe="cyberpunk"] .skill-bar { background: oklch(0.82 0.21 195 / 0.1); }
 html[data-vibe="cyberpunk"] .skill-bar-fill { background: linear-gradient(90deg, var(--accent-2), var(--accent)); box-shadow: 0 0 12px var(--accent), 0 0 24px var(--accent-soft); }
-html[data-vibe="cyberpunk"] .skill-row .yrs { color: var(--accent); text-shadow: 0 0 8px var(--accent-soft); }
+html[data-vibe="cyberpunk"] .skill-row .yrs { color: var(--accent); }
 
 html[data-vibe="cyberpunk"] .feature { border-radius: 0; border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent), 0 0 80px oklch(0.82 0.21 195 / 0.25); }
 html[data-vibe="cyberpunk"] .feature::before { background: radial-gradient(ellipse 700px 350px at 100% 0%, oklch(0.72 0.28 340 / 0.28), transparent 60%), radial-gradient(ellipse 500px 250px at 0% 100%, oklch(0.82 0.21 195 / 0.22), transparent 60%); }
 html[data-vibe="cyberpunk"] .feature .tag { color: var(--accent-3); background: color-mix(in oklab, var(--accent-3) 14%, transparent); border-radius: 0; box-shadow: inset 0 0 0 1px var(--accent-3); }
 html[data-vibe="cyberpunk"] .feature .tag::before { background: var(--accent-3); box-shadow: 0 0 10px var(--accent-3); }
 html[data-vibe="cyberpunk"] .feature .kpi .v { color: var(--accent); text-shadow: 0 0 14px var(--accent-soft); font-family: var(--display); font-weight: 600; letter-spacing: var(--tracking-snug); }
-html[data-vibe="cyberpunk"] .feature .kpi .v .u { color: var(--accent-2); text-shadow: 0 0 10px var(--accent-2); }
+html[data-vibe="cyberpunk"] .feature .kpi .v .u { color: var(--accent-2); }
 html[data-vibe="cyberpunk"] .pipe { background: var(--bg); border-radius: 0; }
 html[data-vibe="cyberpunk"] .pipe-node { background: var(--bg-elev); border-radius: 0; }
 html[data-vibe="cyberpunk"] .pipe-node.active { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent), 0 0 28px var(--accent-soft); }
 html[data-vibe="cyberpunk"] .pipe-node .glyph { color: var(--accent); text-shadow: 0 0 10px var(--accent); }
 
 html[data-vibe="cyberpunk"] .projects-tabs { border-bottom-color: oklch(0.82 0.21 195 / 0.25); }
-html[data-vibe="cyberpunk"] .projects-tabs button.active { color: var(--accent); border-bottom-color: var(--accent); text-shadow: 0 0 8px var(--accent-soft); }
+html[data-vibe="cyberpunk"] .projects-tabs button.active { color: var(--accent); border-bottom-color: var(--accent); }
 html[data-vibe="cyberpunk"] .project-list { border-color: oklch(0.82 0.21 195 / 0.25); background: oklch(0.82 0.21 195 / 0.18); border-radius: 0; }
 html[data-vibe="cyberpunk"] .project-row:hover { background: color-mix(in oklab, var(--accent) 5%, var(--bg)); }
 html[data-vibe="cyberpunk"] .project-row.expanded { background: color-mix(in oklab, var(--accent-2) 7%, var(--bg-elev)); }
 html[data-vibe="cyberpunk"] .project-row::before { background: var(--accent); box-shadow: 0 0 12px var(--accent); }
-html[data-vibe="cyberpunk"] .project-row:hover .ptitle { color: var(--accent); text-shadow: 0 0 10px var(--accent-soft); }
+html[data-vibe="cyberpunk"] .project-row:hover .ptitle { color: var(--accent); }
 html[data-vibe="cyberpunk"] .project-row .pmeta .tag { border-radius: 0; background: var(--bg-elev); }
 html[data-vibe="cyberpunk"] .project-detail { border-top-color: var(--accent); }
 html[data-vibe="cyberpunk"] .project-detail .stack span { border-radius: 0; }
@@ -1553,15 +1553,15 @@ html[data-vibe="cyberpunk"] .commit:hover { border-color: var(--accent); box-sha
 html[data-vibe="cyberpunk"] .commit::before { border-color: var(--accent); box-shadow: 0 0 10px var(--accent); }
 html[data-vibe="cyberpunk"] .commit.current::before { background: var(--accent-2); border-color: var(--accent-2); box-shadow: 0 0 14px var(--accent-2), 0 0 0 4px oklch(0.72 0.28 340 / 0.28); }
 html[data-vibe="cyberpunk"] .commit .role { font-size: var(--text-subtitle); }
-html[data-vibe="cyberpunk"] .commit .company { color: var(--accent); text-shadow: 0 0 8px var(--accent-soft); }
-html[data-vibe="cyberpunk"] .commit ul li::before { color: var(--accent-3); text-shadow: 0 0 8px var(--accent-3); }
-html[data-vibe="cyberpunk"] .commit ul li strong { color: var(--accent-2); text-shadow: 0 0 8px var(--accent-2); }
+html[data-vibe="cyberpunk"] .commit .company { color: var(--accent); }
+html[data-vibe="cyberpunk"] .commit ul li::before { color: var(--accent-3); }
+html[data-vibe="cyberpunk"] .commit ul li strong { color: var(--accent-2); }
 html[data-vibe="cyberpunk"] .resume-toggle { border-radius: 0; }
 html[data-vibe="cyberpunk"] .resume-toggle button.active { background: var(--accent); color: var(--accent-ink); box-shadow: 0 0 16px var(--accent-soft); }
 
 html[data-vibe="cyberpunk"] .writing-grid { border-color: oklch(0.82 0.21 195 / 0.25); background: oklch(0.82 0.21 195 / 0.14); border-radius: 0; }
 html[data-vibe="cyberpunk"] .article:hover { background: color-mix(in oklab, var(--accent) 6%, var(--bg)); }
-html[data-vibe="cyberpunk"] .article .cats { color: var(--accent-3); text-shadow: 0 0 8px var(--accent-3); }
+html[data-vibe="cyberpunk"] .article .cats { color: var(--accent-3); }
 html[data-vibe="cyberpunk"] .article h4 { font-size: var(--text-body); letter-spacing: var(--tracking-normal); }
 
 html[data-vibe="cyberpunk"] .contact { border-top-color: var(--accent); box-shadow: 0 -1px 0 var(--accent); }
