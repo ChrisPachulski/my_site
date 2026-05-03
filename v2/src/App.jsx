@@ -273,7 +273,7 @@ export default function App() {
     const post = getPost(route.slug);
     if (post) document.title = `${post.title} — Chris Pachulski`;
     else document.title = 'Not Found — Chris Pachulski';
-    return () => { document.title = 'Chris Pachulski — Senior Data Scientist'; };
+    return () => { document.title = 'Chris Pachulski — Senior Economic Analyst'; };
   }, [route.name, route.slug]);
 
   const handleArticleOpen = (slug) => {

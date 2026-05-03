@@ -115,13 +115,13 @@ function Hero({ heroVariant }) {
         <div className="hero-grid">
           <div>
             <h1 className="hero-headline reveal">
-              <span className="sub">Sr Data Scientist · Analytics Engineer</span>
+              <span className="sub">Sr Economic Analyst · Analytics Engineer</span>
               Turning messy <span className="italic">data</span><br/>
               into decisions<br/>
               worth <span className="italic">shipping</span>.
             </h1>
             <p className="hero-lede reveal" data-delay="1">
-              I'm <strong>Chris Pachulski</strong>: I turned a hobby into a career. Co-founded MTGBAN, a Magic: The Gathering arbitrage engine that grew to 500+ subscribers, while spending 7+ years shipping analytics pipelines across 5 industries for Ad.Net, Mozilla, SPINS, and Providencia. Now I'm a <strong>Senior Data Scientist at Wizards of the Coast</strong>, working on the game I built a business around.
+              I'm <strong>Chris Pachulski</strong>: I turned a hobby into a career. Co-founded MTGBAN, a Magic: The Gathering arbitrage engine that grew to 500+ subscribers, while spending 7+ years shipping analytics pipelines across 5 industries for Ad.Net, Mozilla, SPINS, and Providencia. Now I'm a <strong>Senior Economic Analyst at Wizards of the Coast</strong>, working on the game I built a business around.
             </p>
             <div className="hero-cta reveal" data-delay="2">
               <p className="hero-meta">

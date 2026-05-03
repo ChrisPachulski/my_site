@@ -107,7 +107,7 @@ export const CARDS = {
     type: 'Legendary Enchantment — Guild',
     colors: ['U', 'R'],
     text: 'Creatures you control get +3/+3 and gain haste and trample.',
-    flavor: '"Senior Data Scientist. November 2025."',
+    flavor: '"Senior Economic Analyst. November 2025."',
     art: 'guild',
     legendary: true,
   },

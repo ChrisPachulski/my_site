@@ -124,13 +124,13 @@ function homePageHtml(posts) {
   return `
 <main class="prerender-home" data-prerender="home">
   <header class="prerender-hero">
-    <p class="prerender-eyebrow">Senior Data Scientist · Wizards of the Coast</p>
+    <p class="prerender-eyebrow">Senior Economic Analyst · Wizards of the Coast</p>
     <h1>Chris Pachulski</h1>
     <p class="prerender-lede">
       I'm Chris Pachulski. I turned a hobby into a career: co-founded MTGBAN,
       a Magic: The Gathering arbitrage engine that grew to 500+ subscribers,
       while spending 7+ years shipping analytics pipelines across five industries
-      for Ad.Net, Mozilla, SPINS, and Providencia. Now I'm a Senior Data Scientist
+      for Ad.Net, Mozilla, SPINS, and Providencia. Now I'm a Senior Economic Analyst
       at Wizards of the Coast, working on the game I built a business around.
     </p>
     <p class="prerender-links">

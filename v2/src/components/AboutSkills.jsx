@@ -55,7 +55,7 @@ export function About() {
             </div>
             <div className="reveal" data-delay="2">
               <div className="fact-list">
-                <div className="fact"><span>role</span><span>Sr Data Scientist · Analytics Engineer</span></div>
+                <div className="fact"><span>role</span><span>Sr Economic Analyst · Analytics Engineer</span></div>
                 <div className="fact"><span>current</span><span>Wizards of the Coast, Magic: The Gathering</span></div>
                 <div className="fact"><span>experience</span><span>7+ yrs shipping data systems · 5 industries</span></div>
                 <div className="fact"><span>previously</span><span>The Providencia Group · Ad.Net · Mozilla · Spins LLC · Consumer Edge Research</span></div>

@@ -1,6 +1,6 @@
 ---
 name: Chris Pachulski Portfolio
-description: A senior data scientist's portfolio that signals taste, range, and craft — staged as a grimoire and a git log.
+description: A senior economic analyst's portfolio that signals taste, range, and craft — staged as a grimoire and a git log.
 colors:
   bg-deep: "oklch(0.10 0.04 280)"
   bg-elev: "oklch(0.16 0.05 280)"
@@ -150,7 +150,7 @@ components:
 
 **Creative North Star: "The Grimoire and the Git Log."**
 
-This is a senior data scientist's portfolio staged as two registers in one frame: the arcane (Magic: The Gathering, Izzet guild colors, summoning seals, "Legendary Creature, Human Wizard") and the version-controlled (git log resume, commit hashes, DAG flow, hand-coded everything). Every page element answers to one of those two registers, often both. The MTG card in the hero IS the resume. The git-log layout IS the career timeline. The Izzet aura around the About card IS the visual signature for "intellect plus impulse, applied to data."
+This is a senior economic analyst's portfolio staged as two registers in one frame: the arcane (Magic: The Gathering, Izzet guild colors, summoning seals, "Legendary Creature, Human Wizard") and the version-controlled (git log resume, commit hashes, DAG flow, hand-coded everything). Every page element answers to one of those two registers, often both. The MTG card in the hero IS the resume. The git-log layout IS the career timeline. The Izzet aura around the About card IS the visual signature for "intellect plus impulse, applied to data."
 
 The system is dark, cool, and wide-spaced. The base layer is a deep aurora-painted purple; content panels float in front, lit from underneath by violet halos that breathe on a 7-second cycle. Surfaces are quiet at rest. Color, glow, and motion arrive on cue, when the user does something to earn them. Nothing performs on its own. Cyberpunk is an undertone, not a costume — the data-attribute is `data-vibe="cyberpunk"`, the display font is Orbitron, the violet accent is electric — but there are no scanlines pretending to be a CRT, no neon green-on-black, no synthwave gradients. The mood is *sorcerer's workshop at 2am*, not Tron.
 

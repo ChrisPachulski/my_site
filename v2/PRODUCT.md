@@ -8,7 +8,7 @@ brand
 
 Three audiences arrive here roughly equally — and the design has to land all three without picking a favorite.
 
-1. **Hiring managers and data leads at top-tier orgs.** Reading peer-to-peer, looking for a Senior Data Scientist / Analytics Engineer who has actually shipped at scale. They scan the resume git-log, click case studies for evidence, and judge taste from the way the page is built.
+1. **Hiring managers and data leads at top-tier orgs.** Reading peer-to-peer, looking for a Senior Economic Analyst / Analytics Engineer who has actually shipped at scale. They scan the resume git-log, click case studies for evidence, and judge taste from the way the page is built.
 2. **Consulting and mentoring prospects.** Founders and ops leaders with a warehouse on fire or a reporting layer that won't compose. They look for the "available" line, scan the case studies for proof of repair work, and want a low-friction way to start a conversation.
 3. **Technical peers and the open-source community.** Builders who landed here from a blog post or a GitHub repo. They want the writing, the code, and the metaphors that actually hold (MTG, git, cyberpunk) to be load-bearing, not decorative.
 
@@ -16,7 +16,7 @@ The job-to-be-done is the same across all three: *decide whether this person is 
 
 ## Product Purpose
 
-A senior data scientist's portfolio that signals taste, range, and craft simultaneously, without resorting to the templates the category collapses to (centered hero, gradient text, three-feature grid).
+A senior economic analyst's portfolio that signals taste, range, and craft simultaneously, without resorting to the templates the category collapses to (centered hero, gradient text, three-feature grid).
 
 It exists to start three kinds of conversations: hiring, consulting, and peer collaboration. It succeeds when readers in any of those three audiences walk away with a specific sentence they can repeat about Chris Pachulski: *"the MTG arbitrage guy who works at Wizards now," "the analytics engineer who builds his own Python platforms," "the writer who actually ships what he writes about."*
 
@@ -43,7 +43,7 @@ What this should explicitly NOT look or feel like. These stay verbatim in DESIGN
 
 ## Design Principles
 
-1. **Commit to the metaphor.** MTG, git, cyberpunk, Izzet color identity. These aren't garnish. The whole page reads as "what would this look like if a Senior Data Scientist who cares about MTG actually built their portfolio?" Don't water them down. A single committed metaphor beats five hedged ones.
+1. **Commit to the metaphor.** MTG, git, cyberpunk, Izzet color identity. These aren't garnish. The whole page reads as "what would this look like if a Senior Economic Analyst who cares about MTG actually built their portfolio?" Don't water them down. A single committed metaphor beats five hedged ones.
 
 2. **Show, don't tell.** The hand-built site is the proof-of-craft. The git-log resume is the proof-of-history. The case studies' challenge/solution/numbers are the proof-of-impact. Every claim has visible evidence within one scroll.
 

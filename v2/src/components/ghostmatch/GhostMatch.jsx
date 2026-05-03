@@ -466,7 +466,7 @@ function VictoryScreen({ onContinue, expired }) {
             : 'Counter resolved, six damage stuck. The site below was built by the wizard who cast MTGBAN.'}
         </p>
         <div className="gm-victory-tags">
-          <span>WotC Senior Data Scientist</span>
+          <span>WotC Senior Economic Analyst</span>
           <span>MTGBAN co-founder · $1.2M ARR</span>
           <span>8 yrs shipping data systems</span>
         </div>

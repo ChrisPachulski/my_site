@@ -26,7 +26,7 @@ function useInView(threshold = 0.2) {
 const PROJECTS = [
   {
     title: 'Wizards of the Coast: MTG Economics & Analytics Platform',
-    tag: 'Sr Data Scientist · Nov 2025 – present',
+    tag: 'Sr Economic Analyst · Nov 2025 – present',
     stack: ['Python', 'Snowflake', 'pyfixest', 'statsmodels', 'DuckDB', 'Smartsheet', 'MCP', 'Claude Code'],
     desc: 'Econometrics and internal tooling for Magic: The Gathering, covering pricing, cannibalization, POS weighting, and revenue reconciliation across channels and set cycles.',
     href: null, category: 'ic',
@@ -357,7 +357,7 @@ export function Projects() {
 }
 
 const EXPERIENCE = [
-  { hash:'c0ffee1', role:'Senior Data Scientist', company:'Wizards of the Coast', time:'Nov 2025 to present', current: true, bullets:[
+  { hash:'c0ffee1', role:'Senior Economic Analyst', company:'Wizards of the Coast', time:'Nov 2025 to present', current: true, bullets:[
     {t:'Partner with product strategy, sales, finance, and economics to support Magic: The Gathering growth'},
     {t:'Build scalable reporting to manage revenue across channels, projects, and set cycles'},
     {t:'Deep-dive profitability analyses around pricing, inventory, and revenue recognition'},
