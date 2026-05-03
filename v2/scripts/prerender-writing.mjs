@@ -112,6 +112,61 @@ function articleHtml(post, bodyHtml) {
 </main>`;
 }
 
+function homePageHtml(posts) {
+  // Static SEO body for the homepage. React's createRoot().render() replaces
+  // #root children on mount, so users never see this — but Googlebot reads
+  // it as the initial HTML response, which is what fixes "empty SPA shell"
+  // indexing. Copy mirrors what the live React UI shows; no cloaking.
+  const writingItems = posts.map(p =>
+    `<li><a href="/writing/${p.slug}">${escapeHtml(p.title)}</a> <span class="prerender-meta">${escapeHtml(p.date)} · ${escapeHtml(p.read)} · ${escapeHtml(p.cats)}</span></li>`
+  ).join('\n        ');
+
+  return `
+<main class="prerender-home" data-prerender="home">
+  <header class="prerender-hero">
+    <p class="prerender-eyebrow">Senior Data Scientist · Wizards of the Coast</p>
+    <h1>Chris Pachulski</h1>
+    <p class="prerender-lede">
+      I'm Chris Pachulski. I turned a hobby into a career: co-founded MTGBAN,
+      a Magic: The Gathering arbitrage engine that grew to 500+ subscribers,
+      while spending 7+ years shipping analytics pipelines across five industries
+      for Ad.Net, Mozilla, SPINS, and Providencia. Now I'm a Senior Data Scientist
+      at Wizards of the Coast, working on the game I built a business around.
+    </p>
+    <p class="prerender-links">
+      <a href="mailto:pachun95@gmail.com">pachun95@gmail.com</a> ·
+      <a href="https://github.com/ChrisPachulski" rel="me">GitHub</a> ·
+      <a href="https://www.linkedin.com/in/chris-pachulski/" rel="me">LinkedIn</a>
+    </p>
+  </header>
+  <section id="portfolio-static">
+    <h2>Case studies</h2>
+    <p>A curated list of the work I'd show you over coffee — analytics platforms,
+    revenue models, and the data systems behind them.</p>
+  </section>
+  <section id="resume-static">
+    <h2>Seven years of shipping</h2>
+    <p>Analytics, BI, and data engineering across ad-tech, consumer, gaming,
+    and CPG: Ad.Net, Mozilla, SPINS, Providencia, and Wizards of the Coast.
+    Python, SQL, R, BigQuery, dbt, Airflow.</p>
+  </section>
+  <section id="writing-static">
+    <h2>Field notes from the warehouse</h2>
+    <p>${posts.length} posts on Python, R, SQL, BigQuery, Claude Code, and
+    applied analytics.</p>
+    <ul class="prerender-writing-list">
+        ${writingItems}
+    </ul>
+  </section>
+  <section id="contact-static">
+    <h2>Let's go.</h2>
+    <p>Hiring for analytics, BI, or data-engineering work? Need help designing a
+    warehouse from scratch, or rescuing one that's on fire? I answer every
+    genuine email at <a href="mailto:pachun95@gmail.com">pachun95@gmail.com</a>.</p>
+  </section>
+</main>`;
+}
+
 function notFoundHtml(featured) {
   const rows = featured.map(p => `
     <a href="/writing/${p.slug}" class="notfound-row">
@@ -297,7 +352,13 @@ export function writingPrerender() {
       // Sitemap
       await fs.writeFile(path.join(dist, 'sitemap.xml'), buildSitemap(posts));
 
-      console.log(`[prerender] wrote ${posts.length} article pages + 404 + sitemap`);
+      // Homepage: rewrite dist/index.html with real body content inside #root
+      // so the initial HTML response is no longer an empty SPA shell. Must run
+      // last — earlier steps use the unmodified template captured above.
+      const homeHtml = injectRoot(template, homePageHtml(posts));
+      await fs.writeFile(indexPath, homeHtml);
+
+      console.log(`[prerender] wrote ${posts.length} article pages + 404 + sitemap + home`);
     },
   };
 }

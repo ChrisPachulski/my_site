@@ -1885,3 +1885,8 @@ html[data-vibe="cyberpunk"] .izzet-card.izzet-blue .fact-list .fact .accent {
   color: oklch(0.82 0.18 250);
   text-shadow: 0 0 10px oklch(0.72 0.22 250 / 0.5);
 }
+
+/* Prerendered SEO body. createRoot().render() replaces #root children on
+   mount, so users never see this. The first-pass HTML crawler reads it for
+   indexing; the second-pass render sees the React UI instead. */
+.prerender-home { display: none; }
