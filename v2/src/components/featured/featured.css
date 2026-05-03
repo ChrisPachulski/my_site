@@ -354,11 +354,11 @@
 .obsidian-wiki-card .graph-counter {
   position: absolute;
   left: 28px;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 2;
+  bottom: 56px;
+  z-index: 1;
   pointer-events: none;
 }
+.obsidian-wiki-card h4 { position: relative; z-index: 3; }
 .obsidian-wiki-card .count-num {
   font-family: var(--display, var(--mono));
   font-size: clamp(56px, 8vw, 96px);
