@@ -384,6 +384,155 @@
   .obsidian-wiki-card .graph-edge { opacity: 0.4 !important; }
 }
 
+/* ═══ Emerald Exchange (kraken wraps a faceted emerald, accent → emerald) ═══ */
+
+/* Scope the accent to the product's emerald so the card actually reads emerald
+   inside an otherwise violet-accented page, the same trick at-home-media uses
+   for amber. */
+.emerald-exchange-card {
+  --accent: oklch(0.62 0.180 158);
+  --accent-soft: oklch(0.62 0.180 158 / 0.16);
+  --gem-rim: oklch(0.94 0.008 158);
+}
+
+.emerald-exchange-card .kraken-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transition: filter 0.3s;
+}
+.emerald-exchange-card.is-hover .kraken-svg {
+  filter: drop-shadow(0 0 6px var(--accent-soft));
+}
+
+/* Tentacles draw on by animating stroke-dashoffset from 1 → 0 on a unit
+   pathLength. Per-path --delay staggers the reveal so the kraken seems to
+   uncurl from behind the gem instead of snapping into place. */
+.emerald-exchange-card .kraken-tentacle {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  opacity: 0;
+  filter: drop-shadow(0 0 3px var(--accent-soft));
+}
+.emerald-exchange-card.in-view .kraken-tentacle {
+  opacity: 0.92;
+  animation: kraken-draw 1.2s cubic-bezier(0.16, 1, 0.3, 1) var(--delay, 0s) forwards;
+}
+.emerald-exchange-card .kraken-tentacle--front {
+  stroke-width: 1.7;
+}
+@keyframes kraken-draw {
+  from { stroke-dashoffset: 1; }
+  to   { stroke-dashoffset: 0; }
+}
+
+/* Hover ripple: each tentacle sways once after the draw completes.
+   Same --delay so the wave looks like it travels around the body. */
+.emerald-exchange-card.in-view.is-hover .kraken-tentacle {
+  animation:
+    kraken-draw   1.2s cubic-bezier(0.16, 1, 0.3, 1) var(--delay, 0s) forwards,
+    kraken-ripple 0.65s ease-in-out calc(var(--delay, 0s) + 1.0s) 1;
+}
+@keyframes kraken-ripple {
+  0%   { transform: translate3d(0, 0, 0)    rotate(0); }
+  50%  { transform: translate3d(0.8px, -0.6px, 0) rotate(0.6deg); }
+  100% { transform: translate3d(0, 0, 0)    rotate(0); }
+}
+
+/* Faint body suggestion behind the gem. */
+.emerald-exchange-card .kraken-body {
+  fill: var(--accent);
+  opacity: 0;
+  transition: opacity 0.6s ease-out 0.6s;
+}
+.emerald-exchange-card.in-view .kraken-body { opacity: 0.10; }
+
+/* Gem fill + outline + facets. Fill arrives mid-sequence so the gem
+   reads as "claimed" by the tentacles that finish around it. */
+.emerald-exchange-card .kraken-gem-fill {
+  fill: var(--accent);
+  opacity: 0;
+  transition: opacity 0.5s ease-out 0.45s, filter 0.4s;
+}
+.emerald-exchange-card.in-view .kraken-gem-fill {
+  opacity: 1;
+  filter: drop-shadow(0 0 12px var(--accent-soft));
+}
+.emerald-exchange-card.is-hover .kraken-gem-fill {
+  filter: drop-shadow(0 0 18px var(--accent));
+}
+
+.emerald-exchange-card .kraken-gem-stroke {
+  fill: none;
+  stroke: var(--gem-rim);
+  stroke-width: 0.6;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  opacity: 0.75;
+}
+.emerald-exchange-card.in-view .kraken-gem-stroke {
+  animation: kraken-draw 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.35s forwards;
+}
+.emerald-exchange-card .kraken-gem-facet {
+  fill: none;
+  stroke: var(--gem-rim);
+  stroke-width: 0.4;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  opacity: 0.55;
+}
+.emerald-exchange-card.in-view .kraken-gem-facet {
+  animation: kraken-draw 0.55s cubic-bezier(0.16, 1, 0.3, 1) var(--delay, 0.4s) forwards;
+}
+
+/* ASCII-bracketed counter + subcopy, bottom-right. The kraken is the
+   centerpiece, so this stays small. */
+.emerald-exchange-card .exchange-marker {
+  position: absolute;
+  right: 28px;
+  bottom: 56px;
+  z-index: 1;
+  pointer-events: none;
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+.emerald-exchange-card h4 { position: relative; z-index: 3; max-width: 64%; }
+.emerald-exchange-card .exchange-marker__bracket {
+  font-family: var(--mono);
+  font-size: clamp(13px, 1.4vw, 17px);
+  color: var(--accent);
+  letter-spacing: 0.10em;
+  text-shadow: 0 0 8px var(--accent-soft);
+}
+.emerald-exchange-card .exchange-marker__label {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--ink-mute);
+  letter-spacing: 0.12em;
+  max-width: 180px;
+  text-transform: uppercase;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .emerald-exchange-card .kraken-tentacle,
+  .emerald-exchange-card .kraken-gem-stroke,
+  .emerald-exchange-card .kraken-gem-facet {
+    animation: none !important;
+    stroke-dashoffset: 0 !important;
+    opacity: 0.85 !important;
+  }
+  .emerald-exchange-card .kraken-gem-fill { opacity: 1 !important; transition: none; }
+  .emerald-exchange-card .kraken-body { opacity: 0.12 !important; transition: none; }
+}
+
 /* Mobile: featured-tile flair was designed for a 2x2 grid cell. Compressed
    into a 1-col 240-tall mobile cell, the SVG labels crash into the title
    and meta and the whole thing reads as overlapping noise. Pull the flair
@@ -429,6 +578,21 @@
   }
   .obsidian-wiki-card .count-num { font-size: 40px; text-shadow: none; }
   .obsidian-wiki-card .count-sub { font-size: 9px; margin-top: 2px; max-width: none; }
+
+  /* Mobile: the kraken's elaborate stroke work crashes into the title at the
+     compressed grid cell; pull it back to a quiet ambient mark and dock the
+     marker copy into the flow under the meta row. */
+  .emerald-exchange-card .kraken-svg { opacity: 0.32; }
+  .emerald-exchange-card .exchange-marker {
+    position: relative;
+    right: auto;
+    bottom: auto;
+    margin-top: 8px;
+    text-align: left;
+    align-items: flex-start;
+  }
+  .emerald-exchange-card .exchange-marker__bracket { font-size: 14px; text-shadow: none; }
+  .emerald-exchange-card .exchange-marker__label { font-size: 9px; max-width: none; }
 }
 
 /* Parchment: the dark vignette and dark-mode neutrals on flair were tuned
@@ -440,3 +604,8 @@ html[data-theme="light"] .at-home-media-card .vignette {
 html[data-theme="light"] .research-loop-card .loop-svg { opacity: 0.4; }
 html[data-theme="light"] .obsidian-wiki-card .graph-svg { opacity: 0.4; }
 html[data-theme="light"] .obsidian-wiki-card .count-num { text-shadow: 0 0 18px var(--accent-soft); }
+html[data-theme="light"] .emerald-exchange-card .kraken-svg { filter: none; }
+html[data-theme="light"] .emerald-exchange-card .kraken-tentacle { filter: none; }
+html[data-theme="light"] .emerald-exchange-card .kraken-gem-stroke,
+html[data-theme="light"] .emerald-exchange-card .kraken-gem-facet { stroke: oklch(0.25 0.06 158); }
+html[data-theme="light"] .emerald-exchange-card .exchange-marker__bracket { text-shadow: 0 0 14px var(--accent-soft); }

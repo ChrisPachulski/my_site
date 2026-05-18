@@ -4,7 +4,7 @@ import { articlePath } from '../lib/router.js';
 import usePrefersReducedMotion from './featured/usePrefersReducedMotion.js';
 import ResearchLoopCard from './featured/ResearchLoopCard.jsx';
 import AtHomeMediaCard from './featured/AtHomeMediaCard.jsx';
-import ObsidianWikiCard from './featured/ObsidianWikiCard.jsx';
+import EmeraldExchangeCard from './featured/EmeraldExchangeCard.jsx';
 
 function useInView(threshold = 0.2) {
   const reduced = usePrefersReducedMotion();
@@ -589,9 +589,9 @@ function ArticleCard({ a, onOpen }) {
 }
 
 const FEATURED = {
-  'autonomous-research-loop':  ResearchLoopCard,
-  'at-home-media':             AtHomeMediaCard,
-  'opinionated-obsidian-wiki': ObsidianWikiCard,
+  'autonomous-research-loop':       ResearchLoopCard,
+  'at-home-media':                  AtHomeMediaCard,
+  'emerald-exchange-household':     EmeraldExchangeCard,
 };
 
 export function Writing({ onArticleOpen }) {
