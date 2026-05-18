@@ -6,6 +6,7 @@
 // `pivot`    is the single italicized word per the Italic Pivot Rule (DESIGN.md
 //            §3). Optional; falls back to the title's last word if omitted.
 export const CATALOG = [
+  { fileSlug: 'Math-Correctness-First-Mortgage-Ops', slug: 'math-correctness-first-mortgage-ops', cats: 'Python · Mortgage Math · Claude Code', title: 'Math Correctness First: How Mortgage-Ops Forbids the LLM from Owning a Number', date: 'May 2026', read: '26 min', pivot: 'Number' },
   { fileSlug: 'The-Emerald-Exchange-Household-of-One', slug: 'emerald-exchange-household', cats: 'React · Plex · Claude Code', title: 'The Emerald Exchange: One Household, One Bookmark, and the Specialists I Got to Stop Being', date: 'May 2026', read: '20 min', pivot: 'Household' },
   { fileSlug: '208-Survived-Opinionated-Obsidian-Wiki', slug: 'opinionated-obsidian-wiki', cats: 'Obsidian · Claude Code · YouTube', title: 'A Wiki That Earns Its Keep: Five Article Types, a Stop Hook, and a YouTube Intake Pipeline', date: 'Apr 2026', read: '13 min', pivot: 'Earns' },
   { fileSlug: 'Adding-a-Brain-to-a-Fork-career-ops-card-ops', slug: 'adding-a-brain-to-a-fork', cats: 'Claude Code · Personal Tools', title: 'Adding a Brain to a Fork: career-ops, card-ops, and the Compiled-Context Pattern', date: 'Apr 2026', read: '13 min', pivot: 'Brain' },
