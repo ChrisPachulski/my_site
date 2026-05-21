@@ -1281,8 +1281,18 @@ html[data-theme="light"] .article-content blockquote {
 
 /* ═══════ CONTACT ═══════ */
 .contact { border-top: 1px solid var(--line); padding: 120px 0 40px; }
-.contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start; }
-@media (max-width: 900px) { .contact-grid { grid-template-columns: 1fr; gap: 40px; } }
+.contact-grid { display: grid; grid-template-columns: 1fr auto 1fr; gap: 56px; align-items: start; }
+@media (max-width: 1100px) { .contact-grid { grid-template-columns: 1fr; gap: 40px; } }
+.contact-card-slot {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  /* Nudge down so the card visually aligns with the text block + form top */
+  padding-top: 28px;
+}
+@media (max-width: 1100px) {
+  .contact-card-slot { padding-top: 0; }
+}
 .contact h2 { font-family: var(--serif); font-size: var(--text-h2); line-height: var(--leading-tight); letter-spacing: var(--tracking-tighter); margin: 0 0 20px; font-weight: 400; text-wrap: balance; }
 .contact h2 em { color: var(--accent); }
 .contact-form { display: grid; gap: 12px; background: color-mix(in oklab, var(--bg-card) 92%, transparent); padding: 28px; border: 1px solid color-mix(in oklab, var(--line-bright) 45%, transparent); border-radius: 6px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.05); position: relative; transition: border-color 0.3s, box-shadow 0.3s; }
@@ -1427,6 +1437,90 @@ html[data-vibe="cyberpunk"] .mtg-card:hover {
 @media (prefers-reduced-motion: reduce) {
   html[data-vibe="cyberpunk"] .mtg-card { animation: none; }
 }
+
+/* ─────────────────────────────────────────────────────────────────────
+   HERO MTG CARD — foil sweep + corner gleam on hover.
+   Cyberpunk vibe only. Two new pseudo-elements live on .mtg-frame
+   (the .mtg-card's ::before/::after are already used by the dual aura
+   layers), and overflow:hidden on the frame keeps the sweep inside
+   the inner content rectangle so it doesn't bleed past the black border.
+   Triggered by :hover — single sweep + corner gleam, no auto-loop.
+   ───────────────────────────────────────────────────────────────────── */
+html[data-vibe="cyberpunk"] .mtg-frame {
+  position: relative;
+  overflow: hidden;
+}
+html[data-vibe="cyberpunk"] .mtg-frame::before,
+html[data-vibe="cyberpunk"] .mtg-frame::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  opacity: 0;
+  z-index: 4; /* above all inner card panels */
+}
+/* Diagonal foil band — bands at 45° (perpendicular to the BL→TR motion
+   vector) so the highlight visibly sweeps along the diagonal. */
+html[data-vibe="cyberpunk"] .mtg-frame::before {
+  inset: -25%;
+  mix-blend-mode: screen;
+  background: linear-gradient(
+    45deg,
+    transparent 32%,
+    rgba(255, 255, 255, 0.04) 38%,
+    oklch(0.70 0.22 250 / 0.40) 42%,
+    oklch(0.82 0.21 195 / 0.55) 46%,
+    rgba(255, 240, 200, 0.55) 50%,
+    oklch(0.72 0.28 340 / 0.45) 54%,
+    oklch(0.70 0.14 300 / 0.40) 58%,
+    rgba(255, 255, 255, 0.04) 62%,
+    transparent 68%);
+  transform: translate3d(-70%, 70%, 0);
+  filter: blur(0.4px);
+}
+/* Corner gleam — top-right, where the sweep exits. */
+html[data-vibe="cyberpunk"] .mtg-frame::after {
+  top: -6px;
+  right: -6px;
+  width: 110px;
+  height: 110px;
+  mix-blend-mode: screen;
+  background: radial-gradient(
+    circle at center,
+    rgba(255, 255, 255, 1) 0%,
+    rgba(255, 250, 210, 0.85) 8%,
+    oklch(0.72 0.28 340 / 0.45) 22%,
+    oklch(0.82 0.21 195 / 0.22) 45%,
+    transparent 70%);
+  filter: blur(1px);
+  transform: scale(0.2);
+}
+
+html[data-vibe="cyberpunk"] .mtg-card:hover .mtg-frame::before {
+  animation: heroFoilSweep 1.8s cubic-bezier(0.42, 0, 0.18, 1) forwards;
+}
+html[data-vibe="cyberpunk"] .mtg-card:hover .mtg-frame::after {
+  animation: heroGleamPulse 0.65s cubic-bezier(0.2, 0.7, 0.3, 1) 1.55s forwards;
+}
+
+@keyframes heroFoilSweep {
+  0%   { transform: translate3d(-70%, 70%, 0); opacity: 0; }
+  12%  { opacity: 1; }
+  85%  { opacity: 1; }
+  100% { transform: translate3d(70%, -70%, 0); opacity: 0; }
+}
+@keyframes heroGleamPulse {
+  0%   { opacity: 0; transform: scale(0.2); }
+  35%  { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.5); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-vibe="cyberpunk"] .mtg-card:hover .mtg-frame::before,
+  html[data-vibe="cyberpunk"] .mtg-card:hover .mtg-frame::after {
+    animation: none;
+  }
+}
+
 /* Blue→red Izzet gradient applied to every text element on the card. */
 html[data-vibe="cyberpunk"] .mtg-type,
 html[data-vibe="cyberpunk"] .mtg-setsymbol,

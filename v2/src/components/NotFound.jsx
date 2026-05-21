@@ -1,5 +1,6 @@
 import { POSTS } from '../lib/blog.js';
 import { articlePath } from '../lib/router.js';
+import MagicShowcaseCard from './MagicShowcaseCard.jsx';
 
 export default function NotFound({ onNavigate }) {
   const featured = POSTS.slice(0, 3);
@@ -27,6 +28,12 @@ export default function NotFound({ onNavigate }) {
           Try one of these instead.
         </p>
       </header>
+      {/* Showcase card — empty-outline magic card stands in for the missing
+          "field note". Auto-plays the full foil-sweep + flip + gem-pulse
+          sequence once when scrolled into view; click to replay. */}
+      <div style={{ display: 'flex', justifyContent: 'center', margin: '8px 0 32px' }}>
+        <MagicShowcaseCard />
+      </div>
       <div className="notfound-suggest">
         {featured.map(p => (
           <a

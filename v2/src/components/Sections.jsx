@@ -5,6 +5,7 @@ import usePrefersReducedMotion from './featured/usePrefersReducedMotion.js';
 import ResearchLoopCard from './featured/ResearchLoopCard.jsx';
 import AtHomeMediaCard from './featured/AtHomeMediaCard.jsx';
 import EmeraldExchangeCard from './featured/EmeraldExchangeCard.jsx';
+import MagicShowcaseCard from './MagicShowcaseCard.jsx';
 
 function useInView(threshold = 0.2) {
   const reduced = usePrefersReducedMotion();
@@ -660,6 +661,10 @@ export function Contact() {
               <div className="fact"><span>linkedin</span><a href="https://www.linkedin.com/in/chris-pachulski/" target="_blank" rel="noopener noreferrer">in/chris-pachulski</a></div>
               <div className="fact"><span>github</span><a href="https://github.com/ChrisPachulski" target="_blank" rel="noopener noreferrer">github.com/ChrisPachulski</a></div>
             </div>
+          </div>
+          {/* Signature card — sits between the text block and the form. */}
+          <div className="contact-card-slot">
+            <MagicShowcaseCard compact />
           </div>
           <form className="contact-form reveal" data-delay="2" onSubmit={submit}>
             {!sent ? (
