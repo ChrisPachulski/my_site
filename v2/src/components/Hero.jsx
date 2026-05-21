@@ -124,14 +124,6 @@ function Hero({ heroVariant }) {
               I'm <strong>Chris Pachulski</strong>: I turned a hobby into a career. Co-founded MTGBAN, a Magic: The Gathering arbitrage engine that grew to 500+ subscribers, while spending 7+ years shipping analytics pipelines across 5 industries for Ad.Net, Mozilla, SPINS, and Providencia. Now I'm a <strong>Senior Economic Analyst at Wizards of the Coast</strong>, working on the game I built a business around.
             </p>
             <div className="hero-cta reveal" data-delay="2">
-              <p className="hero-meta">
-                <span className="status-dot" aria-hidden="true" />
-                <span className="status-label">Available</span>
-                <span className="sep" aria-hidden="true">·</span>
-                <span>Open to <em className="open-to">principal-track DS roles</em></span>
-                <span className="sep" aria-hidden="true">·</span>
-                <span>Selective consulting + mentoring</span>
-              </p>
               <div className="hero-actions">
                 <a href="#contact" className="btn btn-primary mono">Let's talk <span className="arrow">→</span></a>
                 <a href="#portfolio" className="btn mono">View case studies</a>

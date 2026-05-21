@@ -61,7 +61,6 @@ export function About() {
                 <div className="fact"><span>previously</span><span>The Providencia Group · Ad.Net · Mozilla · Spins LLC · Consumer Edge Research</span></div>
                 <div className="fact"><span>education</span><span>MBA, Hofstra · BA Classics + Biology, Creighton</span></div>
                 <div className="fact"><span>location</span><span>Seattle, WA · Remote</span></div>
-                <div className="fact"><span>available</span><span className="accent">Selective consulting + mentoring</span></div>
               </div>
             </div>
           </div>
