@@ -111,19 +111,20 @@ function Hero({ heroVariant }) {
   useRevealOnScroll();
   return (
     <section className="hero" id="home">
+      <div className="hero-ignite" aria-hidden="true" />
       <div className="wrap">
         <div className="hero-grid">
           <div>
-            <h1 className="hero-headline reveal">
+            <h1 className="hero-headline hl">
               <span className="sub">Sr Economic Analyst · Analytics Engineer</span>
-              Turning messy <span className="italic">data</span><br/>
-              into decisions<br/>
-              worth <span className="italic">shipping</span>.
+              <span className="hl-line" style={{ '--d': '0.1s' }}>Turning messy <span className="italic ignite" style={{ '--di': '0.4s' }}>data</span></span>
+              <span className="hl-line" style={{ '--d': '0.2s' }}>into decisions</span>
+              <span className="hl-line" style={{ '--d': '0.3s' }}>worth <span className="italic ignite" style={{ '--di': '0.6s' }}>shipping</span>.</span>
             </h1>
-            <p className="hero-lede reveal" data-delay="1">
+            <p className="hero-lede hl-fade" style={{ '--d': '0.55s' }}>
               I'm <strong>Chris Pachulski</strong>: I turned a hobby into a career. Co-founded MTGBAN, a Magic: The Gathering arbitrage engine that grew to 500+ subscribers, while spending 7+ years shipping analytics pipelines across 5 industries for Ad.Net, Mozilla, SPINS, and Providencia. Now I'm a <strong>Senior Economic Analyst at Wizards of the Coast</strong>, working on the game I built a business around.
             </p>
-            <div className="hero-cta reveal" data-delay="2">
+            <div className="hero-cta hl-fade" style={{ '--d': '0.72s' }}>
               <div className="hero-actions">
                 <a href="#contact" className="btn btn-primary mono">Let's talk <span className="arrow">→</span></a>
                 <a href="#portfolio" className="btn mono">View case studies</a>
@@ -131,7 +132,7 @@ function Hero({ heroVariant }) {
               </div>
             </div>
           </div>
-          <div className="reveal" data-delay="1"><HeroTerminal variant={heroVariant} /></div>
+          <div className="hl-card"><HeroTerminal variant={heroVariant} /></div>
         </div>
       </div>
     </section>

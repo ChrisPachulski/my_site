@@ -684,6 +684,66 @@ html.mode-transitioning .accent {
   .hero-meta { font-size: var(--text-label-sm); gap: 8px; }
 }
 
+/* ═══════ HERO LOAD CHOREOGRAPHY ═══════ */
+/* One deliberate page-load sequence for the first fold: the eyebrow and the
+   three headline lines rise in cascade, the two italic pivots (`data`,
+   `shipping`) ignite from ink → accent with a glow overshoot as their line
+   settles, the MTG card summons in parallel, then a single aurora flare
+   punctuates the arrival and clears. Pure CSS load animations — above the
+   fold, so they run on first paint with no JS gate and no library (the
+   site's "no frameworks harmed" rule). The global reduced-motion block
+   (`* { animation-duration: 0.001s }`) collapses every step to its final
+   frame, so reduced-motion users get the composed layout with zero movement
+   and the flare resolves to opacity 0. */
+.hero-headline.hl { text-wrap: initial; }
+.hl .sub,
+.hl .hl-line {
+  display: block; opacity: 0; will-change: transform, opacity;
+  animation: hlRise 0.72s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: var(--d, 0s);
+}
+.hl .sub { animation-duration: 0.6s; animation-delay: 0.04s; }
+@keyframes hlRise { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: none; } }
+
+.hl .italic.ignite {
+  color: var(--ink); /* deterministic pre-ignite state; animation drives → accent */
+  animation: hlIgnite 0.85s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: var(--di, 0.4s);
+}
+@keyframes hlIgnite {
+  0%   { color: var(--ink); text-shadow: none; }
+  55%  { color: var(--accent); text-shadow: 0 0 26px var(--accent-soft), 0 0 10px var(--accent-soft); }
+  100% { color: var(--accent); text-shadow: none; }
+}
+
+.hero .hl-fade {
+  opacity: 0;
+  animation: hlFade 0.62s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: var(--d, 0s);
+}
+@keyframes hlFade { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+
+.hero .hl-card {
+  opacity: 0;
+  animation: hlCard 0.85s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: 0.28s;
+}
+@keyframes hlCard { from { opacity: 0; transform: translateY(24px) scale(0.97); } to { opacity: 1; transform: none; } }
+
+.hero-ignite {
+  position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: 0;
+  background: radial-gradient(ellipse 72% 62% at 68% 42%, var(--accent-soft), transparent 70%);
+  animation: heroIgnite 2.1s cubic-bezier(0.16, 1, 0.3, 1) 0.9s both;
+}
+@keyframes heroIgnite {
+  0%   { opacity: 0; transform: scale(0.86); }
+  32%  { opacity: 0.85; }
+  100% { opacity: 0; transform: scale(1.16); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-ignite { animation: none; opacity: 0; }
+}
+
 /* ═══════ ABOUT ═══════ */
 .about-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 64px; align-items: start; }
 .about-grid > * { min-width: 0; }
