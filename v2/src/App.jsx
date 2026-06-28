@@ -95,13 +95,13 @@ function Nav({ active, onHome, mode, onModeChange }) {
   );
 }
 
-function HomeContent({ active, onHome, onArticleOpen, gmDone, onGmComplete, mode, onModeChange }) {
+function HomeContent({ active, onHome, onArticleOpen, gmDone, onGmComplete, mode, onModeChange, hydrated }) {
   return (
     <>
       <Nav active={active} onHome={onHome} mode={mode} onModeChange={onModeChange} />
       <main id="main-content" tabIndex={-1}>
         <Hero heroVariant={HERO_VARIANT} />
-        {!gmDone && mode === 'after-hours' && (
+        {hydrated && !gmDone && mode === 'after-hours' && (
           <Suspense fallback={null}>
             <GhostMatch onComplete={onGmComplete} />
           </Suspense>
@@ -199,11 +199,20 @@ export default function App() {
   const { route, flowMode, navigate, back } = useRoute();
   const [active, setActive] = useState('home');
   const [gmDone, setGmDone] = useState(false);
-  const [mode, setMode] = useState(readStoredMode);
+  const [mode, setMode] = useState('after-hours'); // hydration-safe default; matches the SSR render
+  const [hydrated, setHydrated] = useState(false);  // GhostMatch is client-only: keep its lazy Suspense out of the SSR pass
   const transitionTimerRef = useRef(0);
 
   useEffect(() => {
+    setHydrated(true);
     document.documentElement.setAttribute('data-accent', ACCENT);
+    // Reconcile the real display-mode after hydration. The pre-paint inline
+    // script in index.html already applied data-theme/data-vibe, so this only
+    // syncs React state (the active ThemeSwitch segment) — no visual flash —
+    // while keeping the server and client first render identical so hydration
+    // matches for office-hours visitors.
+    const stored = readStoredMode();
+    if (stored !== 'after-hours') setMode(stored);
   }, []);
 
   // Cross-tab sync: a switch in another tab updates this one without
@@ -315,6 +324,7 @@ export default function App() {
             onGmComplete={() => setGmDone(true)}
             mode={mode}
             onModeChange={handleModeChange}
+            hydrated={hydrated}
           />
           <ArticleModal
             post={post}
@@ -336,6 +346,7 @@ export default function App() {
       onGmComplete={() => setGmDone(true)}
       mode={mode}
       onModeChange={handleModeChange}
+      hydrated={hydrated}
     />
   );
 }

@@ -1,6 +1,6 @@
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { marked } from 'marked';
 import { CATALOG } from '../src/lib/catalog.js';
 import { renderOgCards } from './render-og.mjs';
@@ -271,10 +271,17 @@ async function writeFileEnsured(filepath, contents) {
 }
 
 export function writingPrerender() {
+  let isSsrBuild = false;
   return {
     name: 'writing-prerender',
     apply: 'build',
+    configResolved(config) {
+      // The SSR pass (`vite build --ssr`) only produces the server bundle that
+      // this plugin consumes; it has no dist/index.html to prerender.
+      isSsrBuild = !!config.build?.ssr;
+    },
     async closeBundle() {
+      if (isSsrBuild) return;
       const dist = path.resolve(ROOT, 'dist');
       const indexPath = path.join(dist, 'index.html');
       let template;
@@ -352,13 +359,29 @@ export function writingPrerender() {
       // Sitemap
       await fs.writeFile(path.join(dist, 'sitemap.xml'), buildSitemap(posts));
 
-      // Homepage: rewrite dist/index.html with real body content inside #root
-      // so the initial HTML response is no longer an empty SPA shell. Must run
-      // last — earlier steps use the unmodified template captured above.
-      const homeHtml = injectRoot(template, homePageHtml(posts));
+      // Homepage: server-render the real React app into #root and tag it for
+      // in-place hydration, so the browser adopts this markup instead of wiping
+      // #root and re-animating the hero. Falls back to the static SEO body if
+      // the SSR bundle is missing. Must run last — earlier steps use the
+      // unmodified template captured above.
+      let homeInner;
+      let homeMode = 'hydrated';
+      try {
+        const ssrEntry = pathToFileURL(path.join(ROOT, 'dist-ssr', 'entry-server.js')).href;
+        const { render } = await import(ssrEntry);
+        homeInner = render();
+      } catch (err) {
+        console.warn(`[prerender] SSR bundle unavailable (${err.message}); home falls back to static body`);
+        homeInner = homePageHtml(posts);
+        homeMode = 'static';
+      }
+      const rootTag = homeMode === 'hydrated'
+        ? `<div id="root" data-hydrate="home">${homeInner}</div>`
+        : `<div id="root">${homeInner}</div>`;
+      const homeHtml = template.replace(/<div\s+id="root"><\/div>/, rootTag);
       await fs.writeFile(indexPath, homeHtml);
 
-      console.log(`[prerender] wrote ${posts.length} article pages + 404 + sitemap + home`);
+      console.log(`[prerender] wrote ${posts.length} article pages + 404 + sitemap + home (${homeMode})`);
     },
   };
 }
