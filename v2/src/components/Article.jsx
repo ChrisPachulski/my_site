@@ -87,7 +87,24 @@ export default function Article({ post, mode = 'page', onNavigate }) {
           <span className="article-chip mono">{post.read}</span>
           <span className="article-chip mono">{post.cats}</span>
         </div>
+        {post.stamp && (
+          <div className="article-stamp" aria-hidden="true">{post.stamp}</div>
+        )}
       </header>
+
+      {post.stamp && (
+        <aside className="article-addendum" aria-label="Author's note">
+          <span className="article-addendum-label mono">// {post.stamp}</span>
+          <p>
+            <strong>Written on paternity leave.</strong> The second baby arrived, the house
+            rearranged itself around a newborn, and newborn time comes in odd margins — a lot of
+            small, quiet hours where you're pinned under a sleeping infant with nothing to do but
+            think. This is one of a cluster of field notes that came out of those hours. If a pile
+            of them landed at once, that's the stamp in the corner explaining itself: I had,
+            unusually, the time. Normal service — and normal time-scarcity — resumes shortly.
+          </p>
+        </aside>
+      )}
 
       <div className="article-content" aria-busy={body === null || undefined}>
         {body === null ? (

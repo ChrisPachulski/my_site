@@ -1075,8 +1075,58 @@ html.mode-transitioning .accent {
 .article-head {
   padding: 36px clamp(28px, 5vw, 64px) 28px;
   border-bottom: 1px solid color-mix(in oklab, var(--line-bright) 35%, transparent);
+  position: relative;
 }
 .article-doc--page .article-head { padding: 0 0 32px; }
+
+/* Paternity-leave stamp — a cheeky classic red rubber stamp, top-right, scoped
+   to posts that declare `stamp` in catalog.js. Decorative; the addendum below
+   carries the meaning for screen readers. */
+.article-doc { --stamp-red: oklch(0.62 0.22 25); }
+.article-stamp {
+  position: absolute;
+  top: 4px;
+  right: 0;
+  transform: rotate(-11deg);
+  transform-origin: center;
+  padding: 6px 14px;
+  color: var(--stamp-red);
+  border: 2.5px solid var(--stamp-red);
+  border-radius: 6px;
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--stamp-red) 55%, transparent);
+  font-family: var(--mono);
+  font-weight: 700;
+  font-size: clamp(11px, 2.1vw, 15px);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  line-height: 1;
+  white-space: nowrap;
+  opacity: 0.9;
+  pointer-events: none;
+  user-select: none;
+}
+.article-addendum {
+  margin: 24px 0 4px;
+  padding: 14px 18px;
+  border: 1px solid color-mix(in oklab, var(--stamp-red) 45%, transparent);
+  border-radius: 4px;
+  background: color-mix(in oklab, var(--stamp-red) 8%, transparent);
+}
+.article-addendum-label {
+  display: block;
+  color: var(--stamp-red);
+  font-size: var(--text-label-sm);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.article-addendum p {
+  margin: 0;
+  color: var(--ink-dim);
+  font-size: var(--text-body-2xs);
+  line-height: 1.55;
+}
+.article-addendum strong { color: var(--ink); font-weight: 600; }
 
 .article-back {
   display: inline-flex; align-items: center; gap: 8px;
