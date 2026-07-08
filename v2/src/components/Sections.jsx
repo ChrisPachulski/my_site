@@ -724,7 +724,6 @@ export function Contact() {
         </div>
         <footer className="footer">
           <div>© Chris Pachulski 2026 · Built by hand, no frameworks harmed.</div>
-          <div>/* hire me, mentor me, or just chat MTG: same mailbox. */</div>
         </footer>
       </div>
     </section>

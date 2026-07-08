@@ -202,6 +202,12 @@ export default function App() {
   const [mode, setMode] = useState('after-hours'); // hydration-safe default; matches the SSR render
   const [hydrated, setHydrated] = useState(false);  // GhostMatch is client-only: keep its lazy Suspense out of the SSR pass
   const transitionTimerRef = useRef(0);
+  // When a nav link is clicked, we set `active` directly and remember the
+  // id + an expiry time. While the lock is live, the IntersectionObserver
+  // below won't overwrite `active` — keeps the highlight on the clicked
+  // section instead of flickering through every section the smooth-scroll
+  // passes over.
+  const navClickRef = useRef({ id: null, until: 0 });
 
   useEffect(() => {
     setHydrated(true);
@@ -250,23 +256,41 @@ export default function App() {
   useEffect(() => {
     if (!onHomePage) return;
     const ids = ['home','about','skills','portfolio','resume','writing','contact'];
-    const targets = ids.map((id) => document.getElementById(id)).filter(Boolean);
-    if (!targets.length) return;
-    // The trip-line sits 72px below the viewport top, right under the fixed
-    // nav. A section is "active" when that line is inside it. 140px was
-    // overshooting the actual nav height and made anchors light up late.
-    let lastActive = 'home';
-    const io = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) lastActive = entry.target.id;
-        }
-        setActive(lastActive);
-      },
-      { rootMargin: '-72px 0px -100% 0px', threshold: 0 }
-    );
-    targets.forEach((el) => io.observe(el));
-    return () => io.disconnect();
+    // Deterministic active-section detection from scroll position. The
+    // IntersectionObserver this replaced used rootMargin '-72px 0px -100%
+    // 0px' which resolves to a degenerate (negative-height) root rect and
+    // missed intersection updates on short-distance smooth scrolls (e.g.
+    // home → about), leaving the previous link highlighted.
+    // The active section is the LAST whose top has crossed the trip-line
+    // (80px below viewport top — just below the fixed nav).
+    let raf = 0;
+    const TRIP_LINE = 80;
+    const compute = () => {
+      raf = 0;
+      const lock = navClickRef.current;
+      if (lock.id && performance.now() < lock.until) return;
+      let current = ids[0];
+      for (const id of ids) {
+        const el = document.getElementById(id);
+        if (!el) continue;
+        const rect = el.getBoundingClientRect();
+        if (rect.top - TRIP_LINE <= 0) current = id;
+        else break;
+      }
+      setActive(current);
+    };
+    const onScroll = () => {
+      if (raf) return;
+      raf = requestAnimationFrame(compute);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    compute();
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
   }, [onHomePage]);
 
   useEffect(() => {
@@ -291,6 +315,14 @@ export default function App() {
 
   const handleHomeNav = (target) => {
     if (target.startsWith('#')) {
+      // Click-driven anchor: set the active nav link IMMEDIATELY to the
+      // clicked id. Without this, the IntersectionObserver below lags
+      // behind during smooth-scroll and lands on the wrong section.
+      const id = target.slice(1);
+      if (id) {
+        setActive(id);
+        navClickRef.current = { id, until: performance.now() + 1100 };
+      }
       if (route.name !== 'home') {
         navigate('/');
         requestAnimationFrame(() => {

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useCallback } from 'react';
+import MagicCardFace from './MagicCardFace.jsx';
 import './magic-showcase.css';
 
 /* MagicShowcaseCard
@@ -92,41 +93,11 @@ export default function MagicShowcaseCard({ compact = false, autoplayDelay = 500
           onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); startLoop(); } }}
         >
           {/* ────── FRONT ────── */}
+          {/* Front face is the literal hero MagicCard so top + bottom
+              of the page show the same Chris Pachulski card. Foil + gleam
+              overlay it as siblings inside the same backface-clipped face. */}
           <div className="mscard-face mscard-front">
-            <div className="mscard-frame">
-              <div className="mscard-titlebar">
-                <div className="mscard-name" />
-              </div>
-              <div className="mscard-art" />
-              <div className="mscard-typeline">
-                <div className="mscard-typetext" />
-                <div className="mscard-set" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none">
-                    <defs>
-                      <linearGradient id="mscard-bolt" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%"   stopColor="#a3d1ff" />
-                        <stop offset="55%"  stopColor="#c9a3ff" />
-                        <stop offset="100%" stopColor="#ff9466" />
-                      </linearGradient>
-                    </defs>
-                    <path
-                      d="M13 2 L4 14 H11 L9 22 L20 9 H13 Z"
-                      fill="url(#mscard-bolt)"
-                      stroke="rgba(0,0,0,0.7)"
-                      strokeWidth="1"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </div>
-              </div>
-              <div className="mscard-textbox">
-                <div className="mscard-pt" />
-              </div>
-              <div className="mscard-credit">
-                <span className="left" />
-                <span className="right" />
-              </div>
-            </div>
+            <MagicCardFace />
             <div className="mscard-foil" />
             <div className="mscard-gleam" />
           </div>
