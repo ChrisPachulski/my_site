@@ -1079,32 +1079,35 @@ html.mode-transitioning .accent {
 }
 .article-doc--page .article-head { padding: 0 0 32px; }
 
-/* Paternity-leave stamp — a cheeky classic red rubber stamp, top-right, scoped
-   to posts that declare `stamp` in catalog.js. Decorative; the addendum below
-   carries the meaning for screen readers. */
-.article-doc { --stamp-red: oklch(0.62 0.22 25); }
-.article-stamp {
+/* Paternity-leave mark — a cheeky classic red rubber stamp on the writing-list
+   tiles (top-right corner), scoped to posts that declare `stamp` in catalog.js.
+   Decorative; the in-post addendum carries the meaning for screen readers. */
+:root { --stamp-red: oklch(0.62 0.22 25); }
+.article .card-stamp {
   position: absolute;
-  top: 4px;
-  right: 0;
-  transform: rotate(-11deg);
+  top: 12px;
+  right: 10px;
+  transform: rotate(-8deg);
   transform-origin: center;
-  padding: 6px 14px;
+  padding: 3px 8px;
   color: var(--stamp-red);
-  border: 2.5px solid var(--stamp-red);
-  border-radius: 6px;
-  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--stamp-red) 55%, transparent);
+  border: 2px solid var(--stamp-red);
+  border-radius: 5px;
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--stamp-red) 50%, transparent);
   font-family: var(--mono);
   font-weight: 700;
-  font-size: clamp(11px, 2.1vw, 15px);
-  letter-spacing: 0.18em;
+  font-size: 9px;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   line-height: 1;
   white-space: nowrap;
-  opacity: 0.9;
+  opacity: 0.92;
   pointer-events: none;
   user-select: none;
+  z-index: 2;
 }
+/* keep the category line from sliding under the stamp on stamped tiles */
+.article:has(.card-stamp) .cats { padding-right: 76px; }
 .article-addendum {
   margin: 24px 0 4px;
   padding: 14px 18px;

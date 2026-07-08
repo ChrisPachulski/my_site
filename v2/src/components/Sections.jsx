@@ -577,6 +577,7 @@ function ArticleCard({ a, onOpen }) {
       onClick={handle}
       onKeyDown={onKey}
     >
+      {a.stamp && <div className="card-stamp" aria-hidden="true">{a.stamp}</div>}
       <div className="cats">{a.cats}</div>
       <h4>{a.title}</h4>
       <div className="meta">
