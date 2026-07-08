@@ -6,6 +6,7 @@
 // `pivot`    is the single italicized word per the Italic Pivot Rule (DESIGN.md
 //            §3). Optional; falls back to the title's last word if omitted.
 export const CATALOG = [
+  { fileSlug: 'Improve-While-I-Sleep-Autoloop', slug: 'improve-while-i-sleep', cats: 'Claude Code · Workflow · tmux', title: 'Improve While I Sleep: Autoloop, an Autonomous Claude Mesh That Never Touches Main', date: 'Jul 2026', read: '60 min', pivot: 'Sleep', stamp: 'PAT LEAVE' },
   { fileSlug: 'Swift-Was-the-Fourth-Binding-Emerald-Apple-App', slug: 'swift-was-the-fourth-binding', cats: 'Swift · tvOS · AVPlayer', title: "Swift Was the Fourth Binding: Building the Emerald Exchange's Native Apple App", date: 'Jul 2026', read: '17 min', pivot: 'Fourth', stamp: 'PAT LEAVE' },
   { fileSlug: 'Watch-Opens-Plex-Until-It-Didnt-Emerald-Exchange-Becomes-the-Player', slug: 'emerald-exchange-becomes-the-player', cats: 'Rust · Plex · Transcoding', title: "Watch Opens Plex — Until It Didn't: The Emerald Exchange Becomes the Player", date: 'Jul 2026', read: '18 min', pivot: 'Player', stamp: 'PAT LEAVE' },
   { fileSlug: 'Not-Found-Beats-a-Guess-Family-Tree-From-Primary-Records', slug: 'not-found-beats-a-guess', cats: 'Python · Genealogy · Playwright', title: '"[not found]" Beats a Guess: A Six-Nation Family Tree Built From Primary Records Only', date: 'Jul 2026', read: '19 min', pivot: 'Guess', stamp: 'PAT LEAVE' },

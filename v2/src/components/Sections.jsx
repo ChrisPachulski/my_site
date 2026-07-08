@@ -5,6 +5,7 @@ import usePrefersReducedMotion from './featured/usePrefersReducedMotion.js';
 import ResearchLoopCard from './featured/ResearchLoopCard.jsx';
 import AtHomeMediaCard from './featured/AtHomeMediaCard.jsx';
 import EmeraldExchangeCard from './featured/EmeraldExchangeCard.jsx';
+import AutoloopCard from './featured/AutoloopCard.jsx';
 import MagicShowcaseCard from './MagicShowcaseCard.jsx';
 
 function useInView(threshold = 0.2) {
@@ -591,6 +592,7 @@ function ArticleCard({ a, onOpen }) {
 }
 
 const FEATURED = {
+  'improve-while-i-sleep':          AutoloopCard,
   'autonomous-research-loop':       ResearchLoopCard,
   'at-home-media':                  AtHomeMediaCard,
   'emerald-exchange-household':     EmeraldExchangeCard,

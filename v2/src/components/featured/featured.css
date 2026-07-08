@@ -201,6 +201,111 @@
   .research-loop-card.is-hover .loop-replication { animation: none; }
 }
 
+/* ═══ Autoloop (autonomous git-graph) ═══ */
+
+.autoloop-card { padding-top: 50px; }
+.autoloop-card .autoloop-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.5;
+}
+.autoloop-card .al-main {
+  stroke: var(--ink-mute);
+  stroke-width: 1;
+  opacity: 0.45;
+}
+.autoloop-card .al-integration {
+  stroke: var(--accent);
+  stroke-width: 1;
+  stroke-dasharray: 3 4;
+  opacity: 0.5;
+}
+.autoloop-card .al-branch-path {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1.3;
+  opacity: 0.75;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+.autoloop-card.in-view .al-branch-path {
+  animation: al-draw 0.9s ease forwards;
+  animation-delay: var(--delay, 0s);
+}
+@keyframes al-draw { to { stroke-dashoffset: 0; } }
+.autoloop-card .al-branch-node {
+  fill: var(--accent);
+  opacity: 0;
+  filter: drop-shadow(0 0 5px var(--accent));
+}
+.autoloop-card.in-view .al-branch-node {
+  animation: al-pop 0.4s ease forwards;
+  animation-delay: calc(var(--delay, 0s) + 0.55s);
+}
+@keyframes al-pop { from { opacity: 0; } to { opacity: 0.95; } }
+.autoloop-card .al-merge-dot { fill: var(--ink-mute); opacity: 0.7; }
+
+.autoloop-card .al-promote {
+  fill: none;
+  stroke: var(--ink-mute);
+  stroke-width: 1;
+  stroke-dasharray: 2 3;
+  opacity: 0.6;
+}
+.autoloop-card .al-arrowhead { fill: var(--ink-mute); }
+.autoloop-card .al-lock { fill: none; stroke: var(--ink-mute); stroke-width: 1.1; opacity: 0.7; }
+.autoloop-card .al-lock rect { fill: color-mix(in oklab, var(--ink-mute) 30%, transparent); }
+.autoloop-card .al-lock-shackle { fill: none; }
+
+.autoloop-card .al-gate {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1;
+  opacity: 0.3;
+}
+.autoloop-card.is-hover .al-gate { animation: al-gate-pulse 1.6s ease-in-out infinite; }
+@keyframes al-gate-pulse {
+  0%, 100% { opacity: 0.25; stroke-width: 1; }
+  50%      { opacity: 0.7;  stroke-width: 1.8; }
+}
+
+.autoloop-card .al-pulse {
+  fill: var(--accent);
+  filter: drop-shadow(0 0 7px var(--accent));
+  animation: al-travel 4.2s linear infinite;
+}
+.autoloop-card.is-hover .al-pulse { animation-duration: 2.1s; }
+@keyframes al-travel {
+  0%   { transform: translateX(0);     opacity: 0; }
+  8%   { opacity: 1; }
+  92%  { opacity: 1; }
+  100% { transform: translateX(200px); opacity: 0; }
+}
+
+.autoloop-card .autoloop-guard {
+  position: absolute;
+  top: 14px;
+  left: 16px;
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  color: var(--success, oklch(0.72 0.13 150));
+  text-transform: uppercase;
+  z-index: 3;
+  padding: 4px 8px;
+  border: 1px solid color-mix(in oklab, var(--success, oklch(0.72 0.13 150)) 55%, var(--line-bright));
+  background: color-mix(in oklab, var(--bg) 70%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .autoloop-card .al-pulse { animation: none; opacity: 0.9; }
+  .autoloop-card.is-hover .al-gate { animation: none; }
+  .autoloop-card .al-branch-path { stroke-dashoffset: 0; }
+  .autoloop-card .al-branch-node { opacity: 0.95; }
+}
+
 /* ═══ At-Home Media (amber override) ═══ */
 
 .at-home-media-card {
