@@ -29,7 +29,7 @@ function ManaCost({ cost }) {
 }
 
 /* Card art is pure CSS — each "art kind" has a gradient treatment. */
-function CardArt({ kind, colors, legendary }) {
+function CardArt({ kind, legendary }) {
   return (
     <div className={`gm-art gm-art-${kind}${legendary ? ' gm-art-leg' : ''}`}>
       <div className="gm-art-fx" />
@@ -97,7 +97,7 @@ export default function Card({
           <span className="gm-name">{c.name}</span>
           <ManaCost cost={c.cost} />
         </div>
-        <CardArt kind={c.art} colors={c.colors} legendary={c.legendary} />
+        <CardArt kind={c.art} legendary={c.legendary} />
         <div className="gm-typebar">
           <span className="gm-type">{c.type}</span>
           {c.legendary && <span className="gm-set">◆</span>}
