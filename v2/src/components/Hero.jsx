@@ -64,12 +64,12 @@ function useRevealOnScroll() {
   }, []);
 }
 
-function HeroTerminal({ variant }) {
+function HeroTerminal() {
   // Only the MTG card — terminals removed; v2 default is 'sql' which fell through to card anyway.
   return <MagicCard />;
 }
 
-function Hero({ heroVariant }) {
+function Hero() {
   useRevealOnScroll();
   return (
     <section className="hero" id="home">
@@ -94,7 +94,7 @@ function Hero({ heroVariant }) {
               </div>
             </div>
           </div>
-          <div className="hl-card"><HeroTerminal variant={heroVariant} /></div>
+          <div className="hl-card"><HeroTerminal /></div>
         </div>
       </div>
     </section>
