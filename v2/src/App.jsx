@@ -11,7 +11,6 @@ import { getPost } from './lib/blog.js';
 const GhostMatch = lazy(() => import('./components/ghostmatch/GhostMatch.jsx'));
 
 const ACCENT = 'violet';
-const HERO_VARIANT = 'sql';
 const MODE_STORAGE_KEY = 'display-mode';
 const TRANSITION_MS = 520;
 
@@ -21,7 +20,7 @@ function readStoredMode() {
     return window.localStorage.getItem(MODE_STORAGE_KEY) === 'office-hours'
       ? 'office-hours'
       : 'after-hours';
-  } catch (e) {
+  } catch {
     return 'after-hours';
   }
 }
@@ -100,7 +99,7 @@ function HomeContent({ active, onHome, onArticleOpen, gmDone, onGmComplete, mode
     <>
       <Nav active={active} onHome={onHome} mode={mode} onModeChange={onModeChange} />
       <main id="main-content" tabIndex={-1}>
-        <Hero heroVariant={HERO_VARIANT} />
+        <Hero />
         {hydrated && !gmDone && mode === 'after-hours' && (
           <Suspense fallback={null}>
             <GhostMatch onComplete={onGmComplete} />
@@ -241,7 +240,7 @@ export default function App() {
       const html = document.documentElement;
       html.classList.add('mode-transitioning');
       applyMode(next);
-      try { window.localStorage.setItem(MODE_STORAGE_KEY, next); } catch (e) { /* ignore */ }
+      try { window.localStorage.setItem(MODE_STORAGE_KEY, next); } catch { /* ignore */ }
       if (transitionTimerRef.current) window.clearTimeout(transitionTimerRef.current);
       transitionTimerRef.current = window.setTimeout(() => {
         html.classList.remove('mode-transitioning');
