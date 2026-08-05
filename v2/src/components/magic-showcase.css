@@ -474,10 +474,12 @@
   transform: none;
 }
 
-/* Smaller size variant for tight spots */
+/* Smaller size variant for tight spots. 280x392 (was 240x336): the card
+   chrome is fixed-height, so the extra height widens the art window's share
+   and the 4:3 hero art crops less. */
 .mscard-arena.is-compact {
-  width: 240px;
-  height: 336px;
+  width: 280px;
+  height: 392px;
 }
 .mscard-arena.is-compact .mscard-back-center { width: 160px; height: 160px; }
 .mscard-arena.is-compact .mscard-back-gem { width: 78px; height: 78px; }
