@@ -5,7 +5,8 @@ import './magic-showcase.css';
 /* MagicShowcaseCard
  *
  * Reusable showcase of the workshop card from /lab/mtg-card.html.
- * Loops the full sequence ad infinitum once scrolled into view:
+ * Plays the sequence once when first scrolled into view (the invitation),
+ * then only replays on user input — hover, click, or keyboard focus:
  *   foil sweep → corner gleam → 3D flip → back gem pulse → flip back → rest
  *
  * Props:
@@ -13,20 +14,21 @@ import './magic-showcase.css';
  *   autoplayDelay     — ms after viewport entry before the first play (default 500)
  *
  * The .is-playing class is toggled imperatively via ref so the CSS
- * animation restarts cleanly each cycle. React doesn't manage that
+ * animation restarts cleanly each play. React doesn't manage that
  * class (the className prop stays "mscard-root"), so re-renders won't
  * fight the animation.
  */
-const PLAY_MS = 6300; // total sequence duration
-const REST_MS = 1100; // pause between loops
-const PERIOD_MS = PLAY_MS + REST_MS;
+const prefersReducedMotion = () =>
+  typeof window !== 'undefined' &&
+  typeof window.matchMedia === 'function' &&
+  window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 export default function MagicShowcaseCard({ compact = false, autoplayDelay = 500 }) {
   const rootRef = useRef(null);
   const arenaRef = useRef(null);
-  const intervalRef = useRef(0);
 
   const restart = useCallback(() => {
+    if (prefersReducedMotion()) return;
     const el = rootRef.current;
     if (!el) return;
     el.classList.remove('is-playing');
@@ -35,42 +37,33 @@ export default function MagicShowcaseCard({ compact = false, autoplayDelay = 500
     el.classList.add('is-playing');
   }, []);
 
-  const startLoop = useCallback(() => {
-    restart();
-    if (intervalRef.current) window.clearInterval(intervalRef.current);
-    intervalRef.current = window.setInterval(restart, PERIOD_MS);
-  }, [restart]);
-
-  // Auto-start the loop when first scrolled into view, then keep going.
+  // Play once when first scrolled into view. No loop — every replay after
+  // this is user-triggered (hover/click/focus below).
   useEffect(() => {
+    if (prefersReducedMotion()) return;
     const el = arenaRef.current;
     if (!el) return;
     let startTimer = 0;
     const fire = () => {
-      startTimer = window.setTimeout(startLoop, autoplayDelay);
+      startTimer = window.setTimeout(restart, autoplayDelay);
     };
     if (!('IntersectionObserver' in window)) {
       fire();
-    } else {
-      const io = new IntersectionObserver((entries) => {
-        for (const e of entries) {
-          if (e.isIntersecting) {
-            fire();
-            io.disconnect();
-            return;
-          }
-        }
-      }, { threshold: 0.3 });
-      io.observe(el);
-      return () => {
-        io.disconnect();
-        if (startTimer) window.clearTimeout(startTimer);
-        if (intervalRef.current) window.clearInterval(intervalRef.current);
-      };
+      return () => { if (startTimer) window.clearTimeout(startTimer); };
     }
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        if (e.isIntersecting) {
+          fire();
+          io.disconnect();
+          return;
+        }
+      }
+    }, { threshold: 0.3 });
+    io.observe(el);
     return () => {
+      io.disconnect();
       if (startTimer) window.clearTimeout(startTimer);
-      if (intervalRef.current) window.clearInterval(intervalRef.current);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -86,11 +79,12 @@ export default function MagicShowcaseCard({ compact = false, autoplayDelay = 500
         <div
           ref={rootRef}
           className="mscard-root"
-          onClick={startLoop}
+          onClick={restart}
+          onFocus={restart}
           role="button"
           tabIndex={0}
-          aria-label="Magic card showcase — click to restart the loop"
-          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); startLoop(); } }}
+          aria-label="Magic card showcase — click or focus to replay"
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); restart(); } }}
         >
           {/* ────── FRONT ────── */}
           {/* Front face is the literal hero MagicCard so top + bottom
