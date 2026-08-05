@@ -644,6 +644,7 @@ html.mode-transitioning .accent {
 .mtg-rule { margin: 0 0 6px; color: var(--mtg-ink-dim); }
 .mtg-rule:first-of-type { color: var(--accent); font-family: var(--mono); font-size: var(--text-label-sm); letter-spacing: var(--tracking-loose); text-transform: uppercase; }
 .mtg-flavor { margin: 8px 0 0; font-style: italic; color: var(--mtg-ink-mute); font-size: var(--text-label); border-top: 1px solid color-mix(in oklab, var(--mtg-line) 70%, transparent); padding-top: 8px; }
+.mtg-flavor em { font-style: normal; }
 .mtg-bottom { display: flex; justify-content: flex-end; padding: 0 8px; }
 .mtg-pt { font-family: var(--serif); font-size: 1.125rem; background: var(--mtg-frame-soft); border: 1px solid var(--mtg-line); padding: 3px 14px; border-radius: 3px; letter-spacing: var(--tracking-snug); color: var(--mtg-ink); }
 
@@ -929,6 +930,12 @@ html.mode-transitioning .accent {
 .commit.side-right::before { right: -6px; left: auto; }
 .commit:hover::before { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 12px var(--accent); }
 .commit.current::before { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft), 0 0 12px var(--accent); animation: pulse 2.4s ease-in-out infinite; }
+/* Pseudo-element animation, so the global `* { animation-duration }` clamp
+   misses it — `*` matches elements only. Without this the HEAD dot keeps
+   pulsing for a reduced-motion visitor. Same class of gap as the hero aura. */
+@media (prefers-reduced-motion: reduce) {
+  .commit.current::before { animation: none !important; }
+}
 .commit .hash { font-family: var(--mono); font-size: var(--text-mini); color: var(--ink-mute); letter-spacing: var(--tracking-wide); }
 .commit .role { font-family: var(--serif); font-size: var(--text-subtitle); line-height: var(--leading-snug); margin: 2px 0 2px; letter-spacing: var(--tracking-snug); text-wrap: balance; }
 .commit .company { font-family: var(--mono); font-size: var(--text-label); color: var(--accent); margin-bottom: 6px; }
@@ -1569,6 +1576,12 @@ html[data-vibe="cyberpunk"] .mtg-card:hover {
 }
 @media (prefers-reduced-motion: reduce) {
   html[data-vibe="cyberpunk"] .mtg-card { animation: none; }
+  /* The aura keyframes live on the pseudo-elements, and neither the rule above
+     nor the global `* { animation-duration }` clamp reaches them — `*` does not
+     match ::before/::after. Without these two selectors the halo keeps breathing
+     for a reduced-motion visitor. Same pattern as the Izzet cards below. */
+  html[data-vibe="cyberpunk"] .mtg-card::before,
+  html[data-vibe="cyberpunk"] .mtg-card::after { animation: none !important; }
 }
 
 /* ─────────────────────────────────────────────────────────────────────

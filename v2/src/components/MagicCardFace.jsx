@@ -62,15 +62,15 @@ const MagicCardFace = forwardRef(function MagicCardFace(_props, ref) {
           <p className="mtg-rule mtg-stage" style={{ '--d': '1.15s' }}>Python, SQL, R</p>
           <p className="mtg-rule mtg-stage" style={{ '--d': '1.30s' }}>Protection from Data</p>
           <p className="mtg-rule mtg-stage" style={{ '--d': '1.45s' }}>
-            This creature's power is equal to the number of ETL pipelines you control, and its toughness is equal to that number plus 1.
+            Whenever an opponent makes a claim, you may draw a card unless that player cites a source.
           </p>
           <p className="mtg-flavor mtg-stage" style={{ '--d': '1.75s' }}>
-            "Short of leg. Long of opinion. The toddlers and dachshunds are brothers in arms and rule my life."
+            "Friends teach what you want to know. Enemies teach what you <em>need</em> to know."
           </p>
         </div>
 
         <div className="mtg-bottom">
-          <span className="mtg-pt mtg-stage" style={{ '--d': '2.05s' }}>*/*+1</span>
+          <span className="mtg-pt mtg-stage" style={{ '--d': '2.05s' }}>2/3</span>
         </div>
       </div>
     </div>
