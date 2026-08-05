@@ -46,8 +46,8 @@ const MagicCardFace = forwardRef(function MagicCardFace(_props, ref) {
 
         <div className="mtg-art mtg-stage" style={{ '--d': '0.25s' }}>
           <img
-            src="hero-portrait.jpg"
-            alt="Chris Pachulski"
+            src="/hero-art.webp"
+            alt="Chris Pachulski, painted as an Izzet wizard"
             draggable="false"
             onError={(e) => e.currentTarget.parentElement.classList.add('mtg-art-fallback')}
           />
