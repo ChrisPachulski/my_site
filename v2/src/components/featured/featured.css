@@ -312,6 +312,12 @@
   --accent: oklch(0.75 0.14 70);
   --accent-soft: oklch(0.75 0.14 70 / 0.14);
 }
+/* Card-scoped accents re-darkened for the cream bg, same AA rule as the
+   global light-theme accent overrides. */
+html[data-theme="light"] .at-home-media-card {
+  --accent: oklch(0.50 0.12 70);
+  --accent-soft: oklch(0.50 0.12 70 / 0.16);
+}
 
 .at-home-media-card .vignette {
   position: absolute;
@@ -498,6 +504,10 @@
   --accent: oklch(0.62 0.180 158);
   --accent-soft: oklch(0.62 0.180 158 / 0.16);
   --gem-rim: oklch(0.94 0.008 158);
+}
+html[data-theme="light"] .emerald-exchange-card {
+  --accent: oklch(0.47 0.14 158);
+  --accent-soft: oklch(0.47 0.14 158 / 0.16);
 }
 
 .emerald-exchange-card .kraken-svg {

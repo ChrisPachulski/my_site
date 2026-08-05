@@ -7,7 +7,7 @@ colors:
   bg-card: "oklch(0.18 0.07 280)"
   ink-cool: "oklch(0.92 0.04 270)"
   ink-dim: "oklch(0.65 0.08 270)"
-  ink-mute: "oklch(0.40 0.07 275)"
+  ink-mute: "oklch(0.60 0.07 275)"
   line-quiet: "oklch(0.22 0.06 280)"
   line-bright: "oklch(0.30 0.08 280)"
   plasma-violet: "oklch(0.70 0.26 300)"
@@ -185,7 +185,7 @@ The palette runs cool by default, with two warm signal flares (Solar Red, Solar 
 - **Bg Card** (`oklch(0.18 0.07 280)`): The translucent base for every floating panel (commit, project-row, skills-table, contact-form). Always combined with backdrop-filter blur and a `color-mix` alpha (typically 55–60%) so the aurora bleeds through.
 - **Ink Cool** (`oklch(0.92 0.04 270)`): Primary text. A cool white tinted toward periwinkle.
 - **Ink Dim** (`oklch(0.65 0.08 270)`): Secondary text — body paragraphs, fact-list values, project descriptions.
-- **Ink Mute** (`oklch(0.40 0.07 275)`): Tertiary text — labels, hashes, captions, idle states.
+- **Ink Mute** (`oklch(0.60 0.07 275)`): Tertiary text — labels, hashes, captions, idle states. Lightness holds ≥4.5:1 (WCAG AA) on bg-card; it also carries project-row descriptions, so it can never drop below AA.
 - **Line Quiet** (`oklch(0.22 0.06 280)`): Default divider.
 - **Line Bright** (`oklch(0.30 0.08 280)`): Strong divider, default border on flat surfaces, idle button border.
 

@@ -80,6 +80,18 @@ html[data-accent="olive"]  { --accent: oklch(0.70 0.13 115); --accent-soft: oklc
 html[data-accent="cyan"]   { --accent: oklch(0.72 0.13 195); --accent-soft: oklch(0.72 0.13 195 / 0.14); }
 html[data-accent="violet"] { --accent: oklch(0.70 0.14 300); --accent-soft: oklch(0.70 0.14 300 / 0.14); }
 
+/* Light theme: accents darkened to hold >=4.5:1 on the cream bg (WCAG AA) for
+   text and fills. Placed after the data-accent variants so they win on order.
+   Soft washes keep the darkened hue at low alpha. */
+html[data-theme="light"] { --success: oklch(0.50 0.11 150); }
+html[data-theme="light"],
+html[data-theme="light"][data-accent] { --accent: oklch(0.50 0.11 55); --accent-soft: oklch(0.50 0.11 55 / 0.16); }
+html[data-theme="light"][data-accent="rust"]   { --accent: oklch(0.50 0.13 35);  --accent-soft: oklch(0.50 0.13 35 / 0.16); }
+html[data-theme="light"][data-accent="amber"]  { --accent: oklch(0.50 0.12 70);  --accent-soft: oklch(0.50 0.12 70 / 0.16); }
+html[data-theme="light"][data-accent="olive"]  { --accent: oklch(0.47 0.10 115); --accent-soft: oklch(0.47 0.10 115 / 0.16); }
+html[data-theme="light"][data-accent="cyan"]   { --accent: oklch(0.47 0.09 195); --accent-soft: oklch(0.47 0.09 195 / 0.16); }
+html[data-theme="light"][data-accent="violet"] { --accent: oklch(0.52 0.18 300); --accent-soft: oklch(0.52 0.18 300 / 0.16); }
+
 * { box-sizing: border-box; }
 html, body {
   margin: 0; padding: 0; background: var(--bg); color: var(--ink);
@@ -828,6 +840,12 @@ html.mode-transitioning .accent {
 .projects-tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); font-family: var(--mono); font-size: var(--text-label); overflow-x: auto; overflow-y: hidden; min-width: 0; -webkit-overflow-scrolling: touch; scrollbar-width: none; scroll-snap-type: x proximity; }
 .projects-tabs::-webkit-scrollbar { display: none; }
 .projects-tabs button { scroll-snap-align: start; }
+/* Desktop has no visible scrollbar and no swipe, so an overflowing tab row is
+   effectively unreachable (mouse users won't shift+wheel). Wrap instead; the
+   swipe + edge-fade pattern stays for touch widths. */
+@media (min-width: 781px) {
+  .projects-tabs { flex-wrap: wrap; }
+}
 .projects-tabs button { padding: 14px 18px; color: var(--ink-mute); border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.2s; white-space: nowrap; }
 .projects-tabs button:hover { color: var(--ink-dim); }
 .projects-tabs button.active { color: var(--ink); border-bottom-color: var(--accent); }
@@ -1423,7 +1441,7 @@ html[data-theme="light"] .article-content blockquote {
 /* ═══════ CYBERPUNK LAYER ═══════ */
 html[data-vibe="cyberpunk"] {
   --bg: #07060d; --bg-elev: #0d0b18; --bg-card: #0f0d1f;
-  --ink: #e8ecff; --ink-dim: #8b95c4; --ink-mute: #4a5178;
+  --ink: #e8ecff; --ink-dim: #8b95c4; --ink-mute: oklch(0.60 0.07 275);
   --line: #1a1832; --line-bright: #2a2852; --line-quiet: #141128;
   --accent: oklch(0.82 0.21 195);
   --accent-soft: oklch(0.82 0.21 195 / 0.22);
@@ -1504,7 +1522,9 @@ html[data-vibe="cyberpunk"] .mtg-card::after {
   z-index: -1;
   pointer-events: none;
   filter: blur(40px);
-  opacity: 0.95;
+  /* Idle halo held to "very low intensity" (DESIGN.md section 4) so the earned
+     cursor-tilt outshines the unearned glow. */
+  opacity: 0.55;
   transition: opacity 0.5s ease;
 }
 html[data-vibe="cyberpunk"] .mtg-card::before {
@@ -1527,20 +1547,20 @@ html[data-vibe="cyberpunk"] .mtg-card::after {
 /* Color breathes continuously and slowly (the hook).
    Scale is mostly flat — a brief hiccup at ~48-53% of the cycle, not a smooth in/out. */
 @keyframes mtgAuraA {
-  0%   { opacity: 0.70; transform: scale(1); }
-  30%  { opacity: 0.88; transform: scale(1); }
-  47%  { opacity: 0.98; transform: scale(1); }
-  49%  { opacity: 1;    transform: scale(1.035); }
-  52%  { opacity: 1;    transform: scale(1); }
-  70%  { opacity: 0.88; transform: scale(1); }
-  100% { opacity: 0.70; transform: scale(1); }
+  0%   { opacity: 0.35; transform: scale(1); }
+  30%  { opacity: 0.46; transform: scale(1); }
+  47%  { opacity: 0.53; transform: scale(1); }
+  49%  { opacity: 0.56; transform: scale(1.035); }
+  52%  { opacity: 0.56; transform: scale(1); }
+  70%  { opacity: 0.46; transform: scale(1); }
+  100% { opacity: 0.35; transform: scale(1); }
 }
 /* Opacity-only breath. Matches mtgAuraA's restraint: no scale, just a slow
    fade so the literal MTG card has one halo pulse paired with one inner aura,
    not two competing scale animations. */
 @keyframes mtgRipple {
-  0%   { opacity: 0.9; }
-  60%  { opacity: 0.35; }
+  0%   { opacity: 0.45; }
+  60%  { opacity: 0.18; }
   100% { opacity: 0; }
 }
 html[data-vibe="cyberpunk"] .mtg-card:hover {
