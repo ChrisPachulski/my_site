@@ -1805,20 +1805,42 @@ html[data-vibe="cyberpunk"] .section-label .num { color: var(--accent-2); text-s
 
 /* Parchment: lighter frame, softer drop, dialed-down aura density so the
    sapphire/fire blooms read as warm seal-glow against parchment instead of
-   bleeding to a muddy mid-tone. */
+   bleeding to a muddy mid-tone.
+   Two compounding causes made the aura wash across the whole card face
+   instead of staying outside as a rim halo, and both are non-obvious:
+   (1) `.izzet-card` has `isolation: isolate`, which makes the z-index:-1
+   aura pseudo-elements paint ON TOP of the card's own background instead of
+   behind it -- so the aura was never bleeding through a translucent face,
+   it was being painted directly over it. `isolation: auto` here removes
+   that stacking context, so the pseudos paint beneath the card's own
+   background, where the near-opaque 99%/97% face alpha below genuinely
+   hides them (this alpha is load-bearing now; it was a no-op before).
+   (2) izzetBreath/izzetPulse (below) animate `opacity` at every keyframe
+   stop, and a running animation overrides any static `opacity` declared
+   elsewhere on that property for the animation's full duration -- so an
+   `opacity: 0.3`-style override on these pseudo-elements has never once
+   applied, in this rule or any prior version of it. Don't reach for that
+   property here; it's dead on arrival as long as the breath is running. */
 html[data-theme="light"] .izzet-card {
+  isolation: auto;
   background:
     linear-gradient(135deg,
-      color-mix(in oklab, var(--bg-card) 96%, transparent) 0%,
-      color-mix(in oklab, var(--bg-elev) 88%, transparent) 100%);
+      color-mix(in oklab, var(--bg-card) 99%, transparent) 0%,
+      color-mix(in oklab, var(--bg-elev) 97%, transparent) 100%);
   box-shadow:
     0 0 140px 10px oklch(0.78 0.12 305 / 0.10),
     0 0 220px 32px oklch(0.78 0.10 280 / 0.06);
 }
 html[data-theme="light"] .izzet-card.izzet-blue::before,
-html[data-theme="light"] .izzet-card.izzet-red::before { opacity: 0.32; }
+html[data-theme="light"] .izzet-card.izzet-red::before {
+  inset: -16px;
+  filter: blur(20px);
+}
 html[data-theme="light"] .izzet-card.izzet-blue::after,
-html[data-theme="light"] .izzet-card.izzet-red::after { opacity: 0.30; }
+html[data-theme="light"] .izzet-card.izzet-red::after {
+  inset: -16px;
+  filter: blur(14px);
+}
 @media (max-width: 700px) {
   .izzet-card { padding: 36px 22px; }
   /* Pull the bloom way in on mobile. Stacked About + Skills cards would
