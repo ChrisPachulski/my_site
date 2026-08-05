@@ -7,3 +7,17 @@
 
 node_modules
 .env
+# Planning artifacts — never commit (see global rules)
+.planning/
+plans/
+docs/plans/
+PLAN.md
+*-PLAN.md
+*-GOAL*.md
+*RESEARCH*.md
+*DISCUSSION-LOG*.md
+*CONTEXT*.md
+implementation-notes.md
+SPEC.md
+REVIEW.md
+VERIFICATION.md
