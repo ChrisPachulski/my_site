@@ -3,12 +3,12 @@ name: Chris Pachulski Portfolio
 description: A senior economic analyst's portfolio that signals taste, range, and craft — staged as a grimoire and a git log.
 colors:
   bg-deep: "oklch(0.10 0.04 280)"
-  bg-elev: "oklch(0.16 0.05 280)"
+  bg-elev: "oklch(0.16 0.05 280)"   # intent; ships as #0d0b18 = oklch(0.160 0.027 290)
   bg-card: "oklch(0.18 0.07 280)"
   ink-cool: "oklch(0.92 0.04 270)"
   ink-dim: "oklch(0.65 0.08 270)"
   ink-mute: "oklch(0.60 0.07 275)"
-  line-quiet: "oklch(0.22 0.06 280)"
+  line-quiet: "oklch(0.22 0.06 280)"  # intent; ships as #141128 = oklch(0.195 0.045 287)
   line-bright: "oklch(0.30 0.08 280)"
   plasma-violet: "oklch(0.70 0.26 300)"
   plasma-violet-soft: "oklch(0.70 0.26 300 / 0.22)"
@@ -162,7 +162,7 @@ This system explicitly rejects the category-reflex aesthetic. It is not a Vercel
 - Editorial typography: Instrument Serif headlines (italic accents on the operative word) over Inter Tight body, with JetBrains Mono carrying every label, hash, and code fragment. Orbitron arrives for cyberpunk-mode display headers.
 - Izzet duality: sapphire + fire as a paired signature on the two largest content cards (About = blue-dominant, Skills = red-dominant), with violet as the permanent base hue between them.
 - Sharp geometry: cards are flat panels with 0–8px radii. No bevels, no embossment, no glassmorphism in the macOS sense — just translucency + halo.
-- Motion is agency-bound: every animation responds to mouse, scroll, click, or focus. The two breathing auras are the only autoplay, and they are deliberately slow and color-only.
+- Motion is agency-bound: every animation responds to mouse, scroll, click, or focus. The three breathing auras — both Izzet cards and the hero MTG card — are the only autoplay, and they are deliberately slow and color-only.
 
 ## 2. Colors: The Plasma Palette
 
@@ -181,12 +181,12 @@ The palette runs cool by default, with two warm signal flares (Solar Red, Solar 
 
 ### Neutral
 - **Bg Deep** (`oklch(0.10 0.04 280)`): The page background. Tinted toward 280° (deep blue-violet) so it never reads as black.
-- **Bg Elev** (`oklch(0.16 0.05 280)`): Hover state for project rows, secondary panel surface, the elevated zone behind cards.
+- **Bg Elev** (`oklch(0.16 0.05 280)` as intent; the cyberpunk register ships `#0d0b18` = `oklch(0.160 0.027 290)`, and the base register ships a warm `#1a1815`): Hover state for project rows, secondary panel surface, the elevated zone behind cards.
 - **Bg Card** (`oklch(0.18 0.07 280)`): The translucent base for every floating panel (commit, project-row, skills-table, contact-form). Always combined with backdrop-filter blur and a `color-mix` alpha (typically 55–60%) so the aurora bleeds through.
 - **Ink Cool** (`oklch(0.92 0.04 270)`): Primary text. A cool white tinted toward periwinkle.
 - **Ink Dim** (`oklch(0.65 0.08 270)`): Secondary text — body paragraphs, fact-list values, project descriptions.
 - **Ink Mute** (`oklch(0.60 0.07 275)`): Tertiary text — labels, hashes, captions, idle states. Lightness holds ≥4.5:1 (WCAG AA) on bg-card; it also carries project-row descriptions, so it can never drop below AA.
-- **Line Quiet** (`oklch(0.22 0.06 280)`): Default divider.
+- **Line Quiet** (`oklch(0.22 0.06 280)` as intent; the cyberpunk register ships `#141128` = `oklch(0.195 0.045 287)`, and the base register ships a warm `#221f1a`): Default divider.
 - **Line Bright** (`oklch(0.30 0.08 280)`): Strong divider, default border on flat surfaces, idle button border.
 
 ### Named Rules
@@ -235,7 +235,7 @@ There are exactly three drop-shadow uses in the system, all on the literal MTG c
 - **Ambient halo** (`box-shadow: 0 0 60px -20px var(--accent-soft)`): Idle state on hero card and feature card. Soft, always-on, very low intensity.
 - **Hover halo** (`box-shadow: 0 0 0 1px var(--accent), 0 0 40px var(--accent-soft)`): Commit cards, project rows, pipe nodes. The 1px ring is the affordance; the 40px wash is the warmth.
 - **Focus halo** (`box-shadow: 0 0 0 1px var(--accent), 0 0 56px var(--accent-soft)`): Contact form on `:focus-within`. A larger, longer wash than hover — focus is more committed than hover.
-- **Breathing halo** (Izzet cards' `::before` + `::after` with `filter: blur(46px)` and `animation: izzetBreath 7s`): Color-only pulse. Scale stays ≈1.0 with a brief 1.012x hiccup mid-cycle. The page's signature ambient motion.
+- **Breathing halo** (Izzet cards' `::before` + `::after` with `filter: blur(46px)` and `animation: izzetBreath 7s`): Color-only pulse. Scale stays ≈1.0 with a brief 1.012x hiccup mid-cycle. The page's signature ambient motion. In the light register the same halo is pulled in and tightened (`inset: -16px`, `blur(20px)`/`blur(14px)`, `isolation: auto`) so it reads as a rim glow on cream instead of washing across the card face.
 - **Pulse trace** (git-log connectors, conic-gradient shimmer borders): Used on hover or scroll-in. Reads as "the data is flowing through this."
 
 ### Named Rules
@@ -299,7 +299,7 @@ There are exactly three drop-shadow uses in the system, all on the literal MTG c
 - **Frame:** 2.5:3.5 aspect ratio (real Magic: The Gathering proportions), 14px radius, 1px line-bright border, `backdrop-filter`-free since the card is meant to read as an opaque object.
 - **Layout:** Title bar (name + mana cost) → art window → type bar (creature type + set symbol) → text box (rules text + flavor) → P/T box. Each block reveals on a staggered 0.10s–2.05s delay sequence on first paint.
 - **Cursor tilt:** `perspective(1100px) rotateX(±10°) rotateY(±12°)` based on cursor position relative to card. Reverts on `mouseleave`.
-- **Aura:** Two stacked pseudo-elements blurred at 18–40px, animated on `mtgAuraA` (7s color breath) and `mtgRipple` (9s scale ripple). Hover collapses to a static violet glow.
+- **Aura:** Two stacked pseudo-elements blurred at 18–40px, animated on `mtgAuraA` (7s color breath) and `mtgRipple` (9s opacity fade). Hover collapses to a static violet glow.
 - **Reduced motion:** All animations halt. Card stops tilting, aura stops breathing, ripple stops.
 
 ## 6. Do's and Don'ts
@@ -307,7 +307,7 @@ There are exactly three drop-shadow uses in the system, all on the literal MTG c
 ### Do:
 - **Do** anchor every screen on Plasma Violet as the single voice color. Use Cryo Blue / Solar Red / Chartreuse only for the specific roles named in §2.
 - **Do** italicize exactly one word per serif headline and tint it Plasma Violet — the italic word IS the claim.
-- **Do** make every animation respond to a user input — mouse, scroll, click, focus. The two breathing halo auras are the only autoplay; both are color-only and slow.
+- **Do** make every animation respond to a user input — mouse, scroll, click, focus. The three breathing halo auras (both Izzet cards, the hero MTG card) are the only autoplay; all are color-only and slow.
 - **Do** respect `prefers-reduced-motion: reduce`. Halt aurora drift, breathing halos, hero card tilt, particle drift, scroll reveals. Reduce all animation durations to 1ms. New components must follow.
 - **Do** translucent panels with `backdrop-filter` blur and a `color-mix` alpha background. The aurora is part of the component — let it bleed through.
 - **Do** use Instrument Serif for argument, Inter Tight for prose, JetBrains Mono for evidence. Orbitron only in cyberpunk-mode display headers.
