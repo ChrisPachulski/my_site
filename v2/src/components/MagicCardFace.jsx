@@ -65,7 +65,7 @@ const MagicCardFace = forwardRef(function MagicCardFace(_props, ref) {
             Whenever an opponent makes a claim, you may draw a card unless that player cites a source.
           </p>
           <p className="mtg-flavor mtg-stage" style={{ '--d': '1.75s' }}>
-            "Friends teach what you want to know. Enemies teach what you <em>need</em> to know."
+            &ldquo;Don&rsquo;t just have an idea&mdash;have all of them.&rdquo; &mdash;Niv-Mizzet
           </p>
         </div>
 
