@@ -1,4 +1,10 @@
 [build]
+# Set explicitly, not omitted. netlify.toml only overrides a UI build setting
+# when it actually specifies that setting -- an absent key overrides nothing.
+# The dashboard may still carry base = "v2" from before the flatten, and that
+# directory no longer exists, so omitting this would fail the build. "/" is the
+# repo root, and publish is resolved relative to base.
+base = "/"
 command = "npm ci && npm run build"
 publish = "dist"
 
