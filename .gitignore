@@ -37,6 +37,7 @@ lerna-debug.log*
 # Planning artifacts — never commit (see global rules)
 .planning/
 plans/
+specs/
 docs/plans/
 PLAN.md
 *-PLAN.md
