@@ -1,9 +1,16 @@
 [build]
-# Set explicitly, not omitted. netlify.toml only overrides a UI build setting
-# when it actually specifies that setting -- an absent key overrides nothing.
-# The dashboard may still carry base = "v2" from before the flatten, and that
-# directory no longer exists, so omitting this would fail the build. "/" is the
-# repo root, and publish is resolved relative to base.
+# This file is the single source of truth for build config.
+#
+# The dashboard's build settings were cleared 2026-08-06. They had held
+# cmd = "hugo" and dir = "public" since 2025-03-27 -- leftovers from the Hugo
+# site that predates this one. They were inert only because the keys below
+# override them; rename or delete this file and the build would have silently
+# fallen back to running hugo against public/. Verified after clearing:
+# base = "", cmd = "", dir = "".
+#
+# base is set explicitly rather than omitted because netlify.toml overrides a
+# UI build setting only when it specifies that setting -- an absent key
+# overrides nothing. "/" is the repo root; publish resolves relative to base.
 base = "/"
 command = "npm ci && npm run build"
 publish = "dist"
