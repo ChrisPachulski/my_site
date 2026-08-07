@@ -26,7 +26,7 @@ So the argument has to survive in the first screen. The hero is a Magic: The Gat
 Built by hand. React and CSS, no UI framework, no CSS framework.
 
 <p align="center">
-  <img src="../.github/screenshot-hero.png" alt="The site's hero: a Magic-style card with a painted wizard portrait, beside the headline &quot;Turning messy data into decisions worth shipping&quot;" width="100%">
+  <img src=".github/screenshot-hero.png" alt="The site's hero: a Magic-style card with a painted wizard portrait, beside the headline &quot;Turning messy data into decisions worth shipping&quot;" width="100%">
 </p>
 
 ## Features
@@ -41,7 +41,6 @@ Built by hand. React and CSS, no UI framework, no CSS framework.
 ## Quick start
 
 ```bash
-cd v2
 npm install
 npm run dev
 ```
