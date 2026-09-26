@@ -28,6 +28,8 @@ You should think of effort in the same way. Claude will always try and do your t
 
 Fable 5.1 and Opus 5.5’s effort curves are our best yet, at each level if there is an uptick in benchmark scores and tokens consumed. Below is a graph of Terminal Bench 3.0 scores by effort, measured during my eval runs for this post.
 
+![Terminal-Bench 3.0 only: share of attempts that passed against median tokens per attempt, log scale, for Opus 5.5, Fable 5.1, Opus 5 and Fable 5, with one point per effort setting from low to max. Opus 5.5 scores highest at every setting, from 36.6% at low to 65.7% at max, and Fable 5.1 scores higher than Opus 5 and Fable 5 at every setting. Opus 5.5 at high matches Fable 5.1 at max (58.9% against 58.0%) on half the tokens. Fable 5 levels off at 43.4% from xhigh to max.](/img/spending-your-effort/effort-curves.webp)
+
 But what does this mean in practice? To evaluate this, I tried several tasks at different effort levels and poured over the benchmarks.
 
 ## Building with effort
@@ -37,6 +39,14 @@ The best way to understand how models work is to run experiments. I tried doing 
 ### Underspecified build task
 
 If I ask Claude to “build a personal fitness and workout tracker app,” effort changes dramatically how fleshed out the app is, but also results in Claude making more choices along the way. At low effort, the fitness app is just a log and a simple graph. At higher effort levels the app is more complex with additional detail. At max effort there’s a heat chart.
+
+![The fitness app built from a one-line prompt at each effort level: low effort, 1.5 min](/img/spending-your-effort/fig-a-low.webp)
+
+![The fitness app built from a one-line prompt at each effort level: medium effort, 4 min](/img/spending-your-effort/fig-a-medium.webp)
+
+![The fitness app built from a one-line prompt at each effort level: high effort, 11 min](/img/spending-your-effort/fig-a-high.webp)
+
+![The fitness app built from a one-line prompt at each effort level: max effort, 67 min](/img/spending-your-effort/fig-a-max.webp)
 
 If I wanted a simple base to iterate from, low effort would get it done. Max effort would be if I wanted Claude’s best one shot.
 
@@ -50,11 +60,27 @@ At max effort (which took 28 minutes), I got a mockup that looked very much like
 
 If my goal was to iterate and give feedback, low effort would get there much faster. But max effort gives me something much more polished right off the bat. For this particular task, I think I prefer using low effort to understand Claude’s vision.
 
+![The Claude Code /config redesign at each effort level: low effort](/img/spending-your-effort/fig-b-low.webp)
+
+![The Claude Code /config redesign at each effort level: medium effort](/img/spending-your-effort/fig-b-medium.webp)
+
+![The Claude Code /config redesign at each effort level: high effort](/img/spending-your-effort/fig-b-high.webp)
+
+![The Claude Code /config redesign at each effort level: max effort](/img/spending-your-effort/fig-b-max.webp)
+
 ### Highly specified build task
 
 What if I gave Claude lots of details? I tried asking Claude to interview me in-depth about the fitness app and then gave that spec to be implemented by different models at different effort levels.
 
 I found that given this spec, the models behaved much more similarly. I got designs that looked fairly similar and had similar implementations but with different details, at max effort Claude took some time to simplify a few of the details.
+
+![The fitness app built from the interview spec at each effort level: low effort, 16 min](/img/spending-your-effort/fig-c-low.webp)
+
+![The fitness app built from the interview spec at each effort level: medium effort, 22 min](/img/spending-your-effort/fig-c-medium.webp)
+
+![The fitness app built from the interview spec at each effort level: high effort, 33 min](/img/spending-your-effort/fig-c-high.webp)
+
+![The fitness app built from the interview spec at each effort level: max effort, 79 min](/img/spending-your-effort/fig-c-max.webp)
 
 ### Takeaways
 
@@ -101,9 +127,13 @@ But you don’t need this level of effort for every task.
 
 The diagram below shows every Terminal-Bench 3.0 result and how it failed, across different models and effort levels. Overall, increasing effort tends to reduce failures due to missing edgecases (purple blocks), but does not fix when the model has the wrong approach (blue blocks).
 
+![Terminal-Bench 3.0 attempts by outcome, Fable 5.1](/img/spending-your-effort/fig-d-outcomes.webp)
+
 ### Problem areas where effort helps
 
 One of the most interesting takeaways for me from evaluating these models on TerminalBench was that there were some problem areas that benefited from effort more than others. You can see a breakdown in the following diagram:
+
+![Where effort pays: pass rate by task category](/img/spending-your-effort/fig-e-categories.webp)
 
 To illustrate this, I chose a few problems from different areas from Terminal Bench 3.0 where Opus 5.5 failed at low effort but succeeded at high effort–mostly because it tested and accounted for edge cases:
 
