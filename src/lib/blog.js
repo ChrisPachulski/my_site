@@ -1,4 +1,4 @@
-import { CATALOG } from './catalog.js';
+import { CATALOG, UNLISTED } from './catalog.js';
 
 // Lazy: each markdown file becomes its own chunk, fetched only when an article
 // opens. The homepage and writing list never touch raw bodies.
@@ -6,8 +6,8 @@ const modules = import.meta.glob('../content/blog/*.md', { query: '?raw', import
 
 export const POSTS = CATALOG.map((c) => ({ ...c }));
 
-const bySlug = new Map(POSTS.map((p) => [p.slug, p]));
-const byFileSlug = new Map(POSTS.map((p) => [p.fileSlug, p]));
+const bySlug = new Map([...POSTS, ...UNLISTED].map((p) => [p.slug, p]));
+const byFileSlug = new Map([...POSTS, ...UNLISTED].map((p) => [p.fileSlug, p]));
 const bodyCache = new Map();
 
 export function getPost(slug) {

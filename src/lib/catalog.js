@@ -57,3 +57,10 @@ export const CATALOG = [
   { fileSlug: 'Racing-Ahead-Data-Driven-Insights-into-ZED-RUN', slug: 'zed-run-data-insights', cats: 'R · Blockchain', title: 'Racing Ahead: Data-Driven Insights into ZED RUN', date: 'Jun 2021', read: '5 min' },
   { fileSlug: 'R---Trading-Card-Market-Analytics-and-Automated-Reporting-A-Comprehensive-Breakdown', slug: 'trading-card-market-analytics-r', cats: 'R · MTG', title: 'R — Trading Card Market Analytics and Automated Reporting', date: 'Jan 2017', read: '8 min' },
 ];
+
+// Reachable by direct URL only: prerendered and routable at /writing/<slug>,
+// but kept out of the writing list, sitemap, prev/next links and 404
+// suggestions, and served with robots noindex.
+export const UNLISTED = [
+  { fileSlug: 'Using-Claude-Code-Spending-Your-Effort', slug: 'spending-your-effort', cats: 'Claude Code · Effort', title: 'Using Claude Code: Spending your effort', date: 'Sep 2026', read: '8 min', pivot: 'effort' },
+];
