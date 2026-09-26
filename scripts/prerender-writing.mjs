@@ -2,7 +2,7 @@ import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { marked } from 'marked';
-import { CATALOG } from '../src/lib/catalog.js';
+import { CATALOG, UNLISTED } from '../src/lib/catalog.js';
 import { renderOgCards } from './render-og.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -83,8 +83,8 @@ function italicTitle(title) {
 
 function articleHtml(post, bodyHtml) {
   const i = CATALOG.findIndex(p => p.slug === post.slug);
-  const prev = CATALOG[i + 1];
-  const next = CATALOG[i - 1];
+  const prev = i < 0 ? null : CATALOG[i + 1];
+  const next = i < 0 ? null : CATALOG[i - 1];
   const adjacent = `
     <div class="article-adjacent">
       ${prev ? `<a href="/writing/${prev.slug}" class="article-adj"><span class="article-adj-label mono">Older</span><span class="article-adj-title">${escapeHtml(prev.title)}</span></a>` : ''}
@@ -206,6 +206,7 @@ function injectMeta(template, meta) {
   };
 
   replaceOrInsert(/<link\s+rel="canonical"[^>]*>/i, `<link rel="canonical" href="${escapeAttr(meta.url)}" />`);
+  if (meta.noindex) replaceOrInsert(/<meta\s+name="robots"[^>]*>/i, `<meta name="robots" content="noindex" />`);
   replaceOrInsert(/<meta\s+property="og:type"[^>]*>/i,        `<meta property="og:type" content="article" />`);
   replaceOrInsert(/<meta\s+property="og:title"[^>]*>/i,       `<meta property="og:title" content="${escapeAttr(meta.title)}" />`);
   replaceOrInsert(/<meta\s+property="og:description"[^>]*>/i, `<meta property="og:description" content="${escapeAttr(meta.description)}" />`);
@@ -244,9 +245,9 @@ function buildSitemap(slugs) {
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join('\n')}\n</urlset>\n`;
 }
 
-async function loadPosts() {
+async function loadPosts(entries) {
   const out = [];
-  for (const c of CATALOG) {
+  for (const c of entries) {
     const file = path.join(CONTENT, `${c.fileSlug}.md`);
     let raw = '';
     try {
@@ -292,20 +293,23 @@ export function writingPrerender() {
         return;
       }
 
-      const posts = await loadPosts();
+      const posts = await loadPosts(CATALOG);
+      const unlisted = (await loadPosts(UNLISTED)).map(p => ({ ...p, unlisted: true }));
+      const pages = [...posts, ...unlisted];
 
       // OG cards first — written to dist/og/<slug>.png
       const ogDir = path.join(dist, 'og');
       await fs.mkdir(ogDir, { recursive: true });
       try {
-        await renderOgCards(posts.map(p => ({ slug: p.slug, title: p.title, date: p.date, read: p.read, cats: p.cats })), ogDir);
-        console.log(`[prerender] wrote ${posts.length} OG cards to dist/og/`);
+        await renderOgCards(pages.map(p => ({ slug: p.slug, title: p.title, date: p.date, read: p.read, cats: p.cats })), ogDir);
+        console.log(`[prerender] wrote ${pages.length} OG cards to dist/og/`);
       } catch (err) {
         console.warn(`[prerender] OG card generation failed: ${err.message}`);
       }
 
-      // Per-post HTML
-      for (const post of posts) {
+      // Per-post HTML. Unlisted pages carry no Article JSON-LD: it would name
+      // Chris as author of text he may not have written.
+      for (const post of pages) {
         const url = `${SITE_URL}/writing/${post.slug}`;
         const description = post.excerpt;
         const ogImage = `${SITE_URL}/og/${post.slug}.png`;
@@ -315,7 +319,8 @@ export function writingPrerender() {
           description,
           url,
           image: ogImage,
-          jsonLd: {
+          noindex: post.unlisted,
+          jsonLd: post.unlisted ? null : {
             '@context': 'https://schema.org',
             '@type': 'Article',
             headline: post.title,
@@ -381,7 +386,7 @@ export function writingPrerender() {
       const homeHtml = template.replace(/<div\s+id="root"><\/div>/, rootTag);
       await fs.writeFile(indexPath, homeHtml);
 
-      console.log(`[prerender] wrote ${posts.length} article pages + 404 + sitemap + home (${homeMode})`);
+      console.log(`[prerender] wrote ${posts.length} article pages + ${unlisted.length} unlisted + 404 + sitemap + home (${homeMode})`);
     },
   };
 }
