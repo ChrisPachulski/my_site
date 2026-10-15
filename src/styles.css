@@ -772,7 +772,11 @@ html.mode-transitioning .accent {
 .fact-list .fact:hover > * { transform: translateX(12px); }
 .fact-list .fact:hover::before { transform: scaleX(1); }
 .fact-list .fact > :first-child { flex: 0 0 120px; color: var(--ink-mute); text-transform: uppercase; letter-spacing: var(--tracking-label); font-size: var(--text-label-sm); }
-.fact-list .fact > :nth-child(2) { flex: 1 1 auto; min-width: 0; word-break: break-word; }
+.fact-list .fact > :nth-child(2) { flex: 1 1 auto; min-width: 0; word-break: break-word; font-size: var(--text-body-xs); }
+@media (max-width: 700px) {
+  .fact-list .fact { flex-direction: column; gap: 4px; }
+  .fact-list .fact > :first-child { flex-basis: auto; }
+}
 .fact-list .fact a { color: var(--accent); border-bottom: 1px dotted var(--accent); }
 .fact-list .fact a:focus-visible { outline: 1px solid var(--accent); outline-offset: 4px; border-radius: 1px; }
 
@@ -1805,7 +1809,9 @@ html[data-vibe="cyberpunk"] .section-label .num { color: var(--accent-2); text-s
       color-mix(in oklab, var(--bg-elev) 92%, transparent) 100%);
   border: 1px solid var(--line-bright);
   border-radius: 8px;
-  isolation: isolate;
+  /* No `isolation: isolate` here: it made the card a stacking context, so the
+     z-index:-1 aura pseudos painted over the face and washed out the text in
+     both themes. See the parchment note below. */
   /* Wide violet outer halo bridges the izzet blue/red bloom into the
      site's default violet aurora, so the two palettes no longer meet
      abruptly at the card edge. Halos only — no Y-offset drop shadow,
@@ -1821,11 +1827,11 @@ html[data-vibe="cyberpunk"] .section-label .num { color: var(--accent-2); text-s
    bleeding to a muddy mid-tone.
    Two compounding causes made the aura wash across the whole card face
    instead of staying outside as a rim halo, and both are non-obvious:
-   (1) `.izzet-card` has `isolation: isolate`, which makes the z-index:-1
+   (1) `.izzet-card` had `isolation: isolate`, which made the z-index:-1
    aura pseudo-elements paint ON TOP of the card's own background instead of
    behind it -- so the aura was never bleeding through a translucent face,
-   it was being painted directly over it. `isolation: auto` here removes
-   that stacking context, so the pseudos paint beneath the card's own
+   it was being painted directly over it. Dropping it (now in every theme)
+   removes that stacking context, so the pseudos paint beneath the card's own
    background, where the near-opaque 99%/97% face alpha below genuinely
    hides them (this alpha is load-bearing now; it was a no-op before).
    (2) izzetBreath/izzetPulse (below) animate `opacity` at every keyframe
@@ -1835,7 +1841,6 @@ html[data-vibe="cyberpunk"] .section-label .num { color: var(--accent-2); text-s
    applied, in this rule or any prior version of it. Don't reach for that
    property here; it's dead on arrival as long as the breath is running. */
 html[data-theme="light"] .izzet-card {
-  isolation: auto;
   background:
     linear-gradient(135deg,
       color-mix(in oklab, var(--bg-card) 99%, transparent) 0%,
