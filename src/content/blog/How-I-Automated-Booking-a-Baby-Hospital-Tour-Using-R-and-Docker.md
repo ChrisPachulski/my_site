@@ -74,6 +74,7 @@ if(successfully_scheduled$is_scheduled[1] == "No"){
 
                 successfully_scheduled = as_tibble(data.frame(is_scheduled = "yes"))
                 successfully_scheduled %>% write_csv('/home/cujo253/mines_of_moria/saint_lukes_baby_scheduling/confirmation.csv')
+                break # one tour is plenty - stop before booking the rest
             }
         }
     }
@@ -94,13 +95,13 @@ sudo apt update
 sudo apt install docker.io
 ```
 
-1. **Pull the Selenium Docker image**:
+2. **Pull the Selenium Docker image**:
 
 ```bash
 docker pull selenium/standalone-chrome:latest
 ```
 
-1. **Run the Selenium Docker container**:
+3. **Run the Selenium Docker container**:
 
 ```bash
 docker run -d -p 4445:4444 selenium/standalone-chrome:latest
