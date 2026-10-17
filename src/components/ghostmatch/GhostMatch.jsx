@@ -177,6 +177,13 @@ function reducer(state, ev) {
   }
 }
 
+/* 60-card deck minus every card the player owns in another zone. */
+function libraryCount(state, p) {
+  const { hand, graveyard, battlefield: bf } = state[p];
+  const onStack = state.stack.filter(s => s.owner === p).length;
+  return 60 - hand.length - graveyard.length - bf.lands.length - bf.creatures.length - bf.other.length - onStack;
+}
+
 /* ── Tease tile (default render — lives in document flow) ──────── */
 function TeaseTile({ onPlay }) {
   return (
@@ -735,7 +742,7 @@ export default function GhostMatch({ onComplete }) {
               </div>
               <div className="gm-pile">
                 <div className="gm-pile-label">Library</div>
-                <div className="gm-pile-count">{60 - state.opp.graveyard.length - state.opp.battlefield.lands.length - state.opp.battlefield.creatures.length - state.opp.battlefield.other.length - state.opp.hand.length}</div>
+                <div className="gm-pile-count">{libraryCount(state, 'opp')}</div>
               </div>
             </div>
             <HandRow hand={state.opp.hand} side="opp" focus={state.focus} />
@@ -767,7 +774,7 @@ export default function GhostMatch({ onComplete }) {
               </div>
               <div className="gm-pile">
                 <div className="gm-pile-label">Library</div>
-                <div className="gm-pile-count">{60 - state.you.graveyard.length - state.you.battlefield.lands.length - state.you.battlefield.creatures.length - state.you.battlefield.other.length - state.you.hand.length}</div>
+                <div className="gm-pile-count">{libraryCount(state, 'you')}</div>
               </div>
             </div>
           </div>
