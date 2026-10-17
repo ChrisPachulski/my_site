@@ -72,6 +72,13 @@ function deriveExcerpt(body) {
   return cut.slice(0, cut.lastIndexOf(' ')).replace(/[\s,;:.\-–—]+$/, '') + '…';
 }
 
+// Reading time at 230 wpm over every word of the body, code included, image
+// syntax excluded. The catalog's `read` is checked against this at build.
+export function readMinutes(body) {
+  const words = body.replace(/!\[[^\]]*\]\([^)]*\)/g, ' ').split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.round(words / 230));
+}
+
 function dateToISO(s) {
   // Fallback for posts without a frontmatter date: "Mar 2024" -> "2024-03-15"
   // (mid-month, since the catalog only knows the month).
@@ -272,6 +279,10 @@ async function loadPosts(entries) {
       continue;
     }
     const { frontmatter, body } = parseFrontmatter(raw);
+    const minutes = readMinutes(body);
+    if (c.read !== `${minutes} min`) {
+      console.warn(`[prerender] ${c.slug}: catalog read '${c.read}' but the body reads in ${minutes} min; update src/lib/catalog.js`);
+    }
     out.push({
       ...c,
       excerpt: frontmatter.excerpt || deriveExcerpt(body),
