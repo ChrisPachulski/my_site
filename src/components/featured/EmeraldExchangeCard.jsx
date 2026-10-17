@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { POSTS } from '../../lib/blog.js';
 import usePrefersReducedMotion from './usePrefersReducedMotion.js';
 import './featured.css';
 
@@ -117,7 +118,7 @@ export default function EmeraldExchangeCard({ a, onOpen }) {
         <span className="exchange-marker__label">ONE BOOKMARK · FIVE OPERATOR UIs REPLACED</span>
       </div>
 
-      <div className="badge">LATEST · MAY 2026</div>
+      <div className="badge">{POSTS[0]?.slug === a.slug && 'LATEST · '}{a.date.toUpperCase()}</div>
       <div className="cats">{a.cats}</div>
       <h4>{a.title}</h4>
       <div className="meta">

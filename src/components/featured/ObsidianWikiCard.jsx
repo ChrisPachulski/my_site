@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { POSTS } from '../../lib/blog.js';
 import usePrefersReducedMotion from './usePrefersReducedMotion.js';
 import './featured.css';
 
@@ -188,7 +189,7 @@ export default function ObsidianWikiCard({ a, onOpen }) {
         <div className="count-sub">ARTICLES SURVIVED · FIVE TYPES · ONE STOP HOOK</div>
       </div>
 
-      <div className="badge">LATEST · APR 2026</div>
+      <div className="badge">{POSTS[0]?.slug === a.slug && 'LATEST · '}{a.date.toUpperCase()}</div>
       <div className="cats">{a.cats}</div>
       <h4>{a.title}</h4>
       <div className="meta">
