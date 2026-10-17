@@ -116,7 +116,7 @@ export function Skills() {
                   <div className="name">{r.name} {r.daily && <span className="accent" title="Daily driver">●</span>}</div>
                   <div className="use">{r.use}</div>
                   <div className="yrs">{r.yrs}</div>
-                  <div className="skill-bar">
+                  <div className="skill-bar" role="meter" aria-label={`${r.name} depth`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={r.depth}>
                     <div className="skill-bar-fill" style={{ '--depth': inView ? r.depth / 100 : 0, transitionDelay: `${i * 90}ms` }}/>
                   </div>
                 </div>
