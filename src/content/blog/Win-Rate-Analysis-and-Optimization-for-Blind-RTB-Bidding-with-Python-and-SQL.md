@@ -28,13 +28,17 @@ These libraries are integral to executing complex data processing tasks, perform
 The script initiates precise data extraction using well-crafted SQL queries to capture relevant advertising data:
 
 ```sql
-SELECT advertiser_id, advertiser_name, SUM(revenue) AS revenue
+SELECT advertiser_id, advertiser_name,
+    ROUND(bid_price, 2) AS rounded_bid_price,
+    countIf(event_type = 'ad_return') AS ad_returns,
+    countIf(event_type = 'click') AS paid_clicks,
+    SUM(revenue) AS revenue
 FROM {table_name}
 WHERE event_date BETWEEN '2024-06-01' AND '2024-06-30'
   AND event_type IN ('ad_return', 'click')
   AND traffic_integration_type IN ('XML', 'OpenRTB')
   AND advertiser_name NOT IN ('AnonymizedAdvertiser')
-GROUP BY advertiser_id, advertiser_name
+GROUP BY advertiser_id, advertiser_name, rounded_bid_price
 HAVING revenue > 100
 ORDER BY revenue DESC;
 ```
@@ -47,18 +51,20 @@ The Python script processes this data by filtering, calculating win rates, and i
 
 ```python
 # Filtering relevant data
-df_filtered = df[df['ad_returns'] >= 50]
+df_filtered = df[df['ad_returns'] >= 50].copy()
 
 # Calculating win rate
 df_filtered['win_rate'] = df_filtered['paid_clicks'] / df_filtered['ad_returns']
 df_filtered['win_rate'] = np.minimum(df_filtered['win_rate'], 1)
 
 # Handling outliers with the IQR method
-Q1 = df_filtered.quantile(0.25)
-Q3 = df_filtered.quantile(0.75)
+cols = ['rounded_bid_price', 'win_rate']
+Q1 = df_filtered[cols].quantile(0.25)
+Q3 = df_filtered[cols].quantile(0.75)
 IQR = Q3 - Q1
 
-filtered_df = df_filtered[(df_filtered >= Q1 - 1.5 * IQR) & (df_filtered <= Q3 + 1.5 * IQR)]
+in_bounds = ((df_filtered[cols] >= Q1 - 1.5 * IQR) & (df_filtered[cols] <= Q3 + 1.5 * IQR)).all(axis=1)
+df_filtered = df_filtered[in_bounds].copy()
 ```
 
 These steps ensure robust and reliable data input for subsequent modeling.
@@ -69,14 +75,26 @@ The script employs multiple statistical modeling techniques, including polynomia
 
 ```python
 kf = KFold(n_splits=5, shuffle=True, random_state=42)
+X = df_filtered[['rounded_bid_price']].to_numpy()
+y = df_filtered['win_rate'].to_numpy()
 
-# Polynomial degree selection
+# Polynomial degree selection on held-out folds
+best_degree, best_mse = None, np.inf
 for degree in range(2, 6):
     poly = PolynomialFeatures(degree=degree)
-    X_poly = sm.add_constant(poly.fit_transform(X))
-    model = sm.OLS(y, X_poly).fit()
-    mse = mean_squared_error(y, model.predict(X_poly))
-    print(f"Degree {degree} MSE: {mse}")
+    X_poly = poly.fit_transform(X)
+    fold_mse = []
+    for train_idx, test_idx in kf.split(X_poly):
+        fold_model = sm.OLS(y[train_idx], X_poly[train_idx]).fit()
+        fold_mse.append(mean_squared_error(y[test_idx], fold_model.predict(X_poly[test_idx])))
+    mse = np.mean(fold_mse)
+    print(f"Degree {degree} CV MSE: {mse}")
+    if mse < best_mse:
+        best_degree, best_mse = degree, mse
+
+# Refit the winning degree on all the data
+poly = PolynomialFeatures(degree=best_degree)
+model = sm.OLS(y, poly.fit_transform(X)).fit()
 ```
 
 Cross-validation ensures the model's robustness, guiding strategic decisions based on predictive accuracy.
@@ -86,13 +104,17 @@ Cross-validation ensures the model's robustness, guiding strategic decisions bas
 An innovative feature of this script is its capability to dynamically calculate the required bid increment to achieve a specific increase in win rates, typically set at 10%:
 
 ```python
+total_ad_returns = df_filtered['ad_returns'].sum()
+current_win_rate = (df_filtered['win_rate'] * df_filtered['ad_returns']).sum() / total_ad_returns
+target_win_rate = current_win_rate * 1.10
+
 increment = 0.01
 max_iterations = 1000
 iteration = 0
 
 while iteration < max_iterations:
-    df_filtered['adjusted_bid'] = df_filtered['bid_price'] + increment
-    predicted_win_rate = model.predict(sm.add_constant(df_filtered[['adjusted_bid']]))
+    df_filtered['adjusted_bid'] = df_filtered['rounded_bid_price'] + increment
+    predicted_win_rate = model.predict(poly.transform(df_filtered[['adjusted_bid']].to_numpy()))
     new_weighted_win_rate = (predicted_win_rate * df_filtered['ad_returns']).sum() / total_ad_returns
 
     if new_weighted_win_rate >= target_win_rate:
@@ -116,7 +138,8 @@ Clear, detailed visualizations provide stakeholders with easily interpretable in
 ```python
 fig, ax = plt.subplots(figsize=(10, 6))
 ax.scatter(df_filtered['rounded_bid_price'], df_filtered['win_rate'], color='blue', label='Actual Data')
-ax.plot(df_filtered['rounded_bid_price'], predicted_win_rate, color='red', label='Predicted Win Rate')
+bid_grid = np.sort(df_filtered['rounded_bid_price'].unique()).reshape(-1, 1)
+ax.plot(bid_grid, model.predict(poly.transform(bid_grid)), color='red', label='Predicted Win Rate')
 
 ax.set_xlabel('Bid Price')
 ax.set_ylabel('Win Rate')
