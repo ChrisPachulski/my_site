@@ -35,7 +35,7 @@ To efficiently manage and monitor database growth, storage costs, and performanc
 PROJECT_ID="gaeas-cradle"
 ONE_WEEK_AGO=$(date -v -7d '+%s')
 
-bq ls --project_id=$PROJECT_ID --format=json \
+bq ls --max_results=10000 --project_id=$PROJECT_ID --format=json \
 | jq -r '.[].datasetReference.datasetId' \
 | while read DATASET; do
     bq ls --max_results=10000 --format=json $PROJECT_ID:$DATASET \
@@ -64,8 +64,6 @@ done \
     echo "$DATASET $TABLE $creation_time $size_human"
 done \
 | sort -k3,3r
-
-{{ end }}
 ```
 
 This explicit and reliable method ensures accurate tracking of storage utilization, providing insights critical for cost management and infrastructure planning. Could I have written a `.py` for this? Yes. I wanted CLI fun on the terminal.
@@ -83,7 +81,7 @@ Here's a comprehensive look at recent datasets and tables managed over the past 
 | vendor\_growth   | 2025\_03\_30\_vendor\_growth  | 2025-03-30 00:51:46 | 1.15 MB   |
 | ck\_velocity     | 2025\_03\_30\_CK\_VELOCITY    | 2025-03-30 02:29:59 | 4.66 MB   |
 
-Such structured and consistent data handling supports rapid analytics and reporting capabilities, integral to strategic decision-making. Naming conventions were not my strong suite back in the day when I originally put this together. As a side note as well, \_\_funny money\_\_ references the trade in bonus that sites like Card Kingdom offer, usually a 15-30% "bump" in value, which is an incredible resource for growing asset value & avoiding fees. Never sleep on credit bumps. 
+Such structured and consistent data handling supports rapid analytics and reporting capabilities, integral to strategic decision-making. Naming conventions were not my strong suit back in the day when I originally put this together. As a side note as well, __funny money__ references the trade in bonus that sites like Card Kingdom offer, usually a 15-30% "bump" in value, which is an incredible resource for growing asset value & avoiding fees. Never sleep on credit bumps. 
 
 ## Long-term Scalability and Impressive Data Growth
 
