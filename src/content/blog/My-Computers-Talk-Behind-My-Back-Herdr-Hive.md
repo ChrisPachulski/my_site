@@ -54,7 +54,7 @@ That's what you get from two agents with different views of the same problem. Ne
 
 ## Batons and the half-life of a skill
 
-Around the same time I built session batons. When a session goes stale, a script bakes its transcript into a short handoff note (no LLM involved, just extraction), so a new session can read the note instead of paying to resume the whole conversation. On the day I measured it, reopening 34 stale sessions would have cost about $113; their notes cost about $1.75. Roughly 65 times cheaper, at about two cents a note. Notes deliberately stay on the machine where they were made and never sync, because they contain verbatim conversation.
+Around the same time I built session batons. When a session goes stale, a script bakes its transcript into a short handoff note (no LLM involved, just extraction), so a new session can read the note instead of paying to resume the whole conversation. On the day I measured it, reopening 34 stale sessions would have cost about $113; their notes cost about $1.75. Roughly 65 times cheaper, at about five cents a note. Notes deliberately stay on the machine where they were made and never sync, because they contain verbatim conversation.
 
 I'd love to say the mesh took off from there. It didn't. A harness audit found sympathy had been used **twice in 60 days**, and it got swept into the skills archive along with 40 other skills with no logged use. The baton's startup hook was retired soon after in a harness trim.
 

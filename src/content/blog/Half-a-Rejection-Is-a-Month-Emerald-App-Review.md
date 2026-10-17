@@ -61,7 +61,7 @@ Meanwhile I kept getting uneasy. On October 3: *"Im concerned because you have y
 
 The worst part of finding 5.2.3 was remembering August 9.
 
-That day, worried about review, I'd built a variant of the app with live TV compiled out entirely. It took the bundle from 177 MB to 50 MB. The commit was never merged. Its branch was deleted, and the commit is still in the repo, on no branch at all. Two months later Apple came for exactly what it would have removed.
+That day, worried about review, I'd built a variant of the app with live TV compiled out entirely. It took the bundle from 177 MB to 50 MB. The commit was never merged. Its branch was deleted, and the commit is still in the repo, on no branch at all. A month later Apple came for exactly what it would have removed.
 
 I'd had the right instinct and then decided it wasn't needed. Building it wasn't the waste. Throwing it away before the review came back was.
 

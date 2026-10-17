@@ -1,11 +1,10 @@
 ---
-title: "Improve While I Sleep: Autoloop, an Autonomous Claude Mesh That Never Touches Main"
 date: 2026-07-08T04:00:00.000Z
 ---
 
 # Improve While I Sleep
 
-Point it at a git repo and walk away. A mesh of Claude subagents finds real work, fixes it on an isolated branch, adversarially verifies the fix, and stops for you to promote. It never runs `claude -p`, never spends into paid overage, and never touches `main` on its own.
+Point it at a git repo and walk away. A mesh of Claude subagents finds real work, fixes it on an isolated branch, adversarially verifies the fix, and stops for you to promote. It never runs `claude -p`, stops at the first credit of paid overage, and never touches `main` on its own.
 
 That's the whole pitch for autoloop, and it's also the whole difficulty. Anyone can write a `while true` loop that asks an LLM to "improve the codebase." What you get back is a machine that hallucinates bugs, lands plausible-but-wrong changes onto your main branch, and — if you're on a metered plan — bills you three hundred dollars while you sleep. Autoloop is what's left after you spend a month killing every one of those failure modes with actual code. It's about 5,455 lines of engine, 16 test files, and 94 commits of hard-won paranoia. This is the long field note on how it works and, more usefully, on everything that went wrong on the way there.
 
@@ -21,7 +20,7 @@ Hold those two ideas — the guard and the spine — and the rest of this is com
 
 ## The mental model
 
-The unit of work is a **window**: one iteration, one `/loop` wake. The `/loop` skill re-fires the *same* prompt file every tick, so each window is a fresh Claude session with no memory of the last one. That's not a limitation I worked around; it's the design. Statelessness is what makes the thing robust — there's no long-lived context to rot, no conversation to drift. The only continuity is what's written to disk.
+The unit of work is a **window**: one iteration, one `/loop` wake. The `/loop` skill re-fires the *same* prompt file every tick, and the prompt tells each window to behave like a fresh Claude session with no memory of the last one. (It's the same session underneath — `/loop` clears nothing — so the forgetting is a rule the driver enforces, not a reset.) That's not a limitation I worked around; it's the design. Treating every window as stateless is what makes the thing robust — the conversation still piles up underneath, but nothing is allowed to depend on it. The only continuity that counts is what's written to disk.
 
 From the driver prompt itself:
 
@@ -35,7 +34,7 @@ That's the skeleton. Now the organs.
 
 ## How a stateless loop remembers
 
-If every window is a fresh session with no conversational memory, an obvious question falls out: how does the loop learn anything? How does it avoid re-proposing the fix it made an hour ago, or re-walking a dead end it already explored three times? The answer is a small set of plain-markdown ledgers in `.autoloop/`, and they are the *entire* memory of the system. No database, no vector store — just files a human can open and read.
+If every window has to act as though it has no conversational memory, an obvious question falls out: how does the loop learn anything? How does it avoid re-proposing the fix it made an hour ago, or re-walking a dead end it already explored three times? The answer is a small set of plain-markdown ledgers in `.autoloop/`, and they are the *entire* memory of the system. No database, no vector store — just files a human can open and read.
 
 - **`iteration-log.md`** — an append-only diary of every window: what it looked at, what it found, what landed. On claude-sync's own loop this file is 111 kilobytes. A fresh window orients itself by reading the tail: here's where the last few windows left off. It's slow-growing institutional memory in the most literal sense.
 - **`dead-ends.md`** — every path that didn't pan out, each with an `attempts=N` counter. A window consults it *before* proposing anything, so the loop stops rediscovering the same non-fix. This is also what the bounded-persistence retry reads: a retryable failure with fewer than two attempts becomes the next window's primary objective, with the failure evidence embedded; a second failure parks the item on a human instead of grinding forever.
@@ -133,7 +132,7 @@ If the guard is the organ that fights runaway cost, the verification spine is th
 
 > a patch that passes the bug's test is merely PLAUSIBLE; semantic correctness ("VALID") is a separate, strictly-lower number (78%→62% SAN, 25.6%→17.9% human). GREEN IS NOT CORRECT — so a window's change is only `confirmed` when the gate is green AND an adversarial skeptic asserts the change is genuinely VALID (semantically correct, tests meaningful) WITH a concrete rationale. A green gate alone (plausible) does not confirm.
 
-Read that gap again: a patch that makes the failing test pass is *valid* only 62% of the time by an automated judge, and 18% of the time by a human. Passing the test is table stakes. It is not evidence the change is correct — the model could have written a test that passes for the wrong reason, or "fixed" the symptom by weakening an assertion. So a green gate, on its own, confirms nothing.
+Read that gap again: in that study the agent got a test-passing patch for 78% of sanitizer-reported bugs but a genuinely *valid* one for only 62%, and for human-reported bugs it fell from 25.6% to 17.9% — with valid decided by people reading the patches, not by the tests. Passing the test is table stakes. It is not evidence the change is correct — the model could have written a test that passes for the wrong reason, or "fixed" the symptom by weakening an assertion. So a green gate, on its own, confirms nothing.
 
 The `confirmed` boolean stacks three independent layers, and all three must hold.
 
@@ -205,7 +204,7 @@ If you can't name who hits it and what breaks, it isn't a bug. That one sentence
 
 ## The mesh: fanning out without a metered API
 
-The work itself happens in a mesh of subagents, and here's the trick that makes it billing-safe: it runs entirely *in-session* via the Workflow tool, never as a metered `claude -p` subprocess. Each `agent()` call is a subagent inside the same Max-window session; `parallel()` and `pipeline()` structure the fan-out. The Workflow sandbox is restricted — no filesystem, no Node API, and no `import` — which is why the two big workflow files carry inline *twins* of the confirm and verdict-trial logic, pinned equal to the canonical modules by drift-guard tests. Not elegant. Correct.
+The work itself happens in a mesh of subagents, and it runs entirely *in-session* via the Workflow tool, never as a `claude -p` subprocess. (I'd filed `claude -p` as metered. On a subscription login it isn't — it draws on the same plan limits — so in-session is a design choice, not the thing standing between me and a bill.) Each `agent()` call is a subagent inside the same Max-window session; `parallel()` and `pipeline()` structure the fan-out. The Workflow sandbox is restricted — no filesystem, no Node API, and no `import` — which is why the two big workflow files carry inline *twins* of the confirm and verdict-trial logic, pinned equal to the canonical modules by drift-guard tests. Not elegant. Correct.
 
 The flow is four phases:
 
@@ -342,17 +341,21 @@ There's a smaller concurrency hazard that lives *inside* a single loop, not acro
 The fix is a single-flight lock in the global `~/.claude/autoloop/locks/` directory — global, because it has to be honored by both the in-session driver *and* the launchd rekick sweep, and under macOS TCC the rekicker can only read that global dir. The acquire is a create-exclusive dance:
 
 ```js
-const tryExclusive = () => {
-  try { writeFileSync(lockPath(name), payload, { flag: 'wx' }); return true; }
+const tryExclusive = (p) => {
+  try { writeFileSync(p, payload, { flag: 'wx' }); return true; }
   catch (e) { if (e.code === 'EEXIST') return false; throw e; }
 };
-if (tryExclusive()) return true;
-if (isRunning(name)) return false;             // live holder → busy
-try { unlinkSync(lockPath(name)); } catch { }  // stale/scheduled residue → reclaim
-return tryExclusive();                         // lost the reclaim race → busy (correct)
+if (!tryExclusive(reclaimPath(name))) return false;  // another waiter is mid-acquire → busy
+try {
+  if (isRunning(name)) return false;                 // live holder → busy
+  try { unlinkSync(lockPath(name)); } catch { }      // stale residue (or nothing) → clear it
+  return tryExclusive(lockPath(name));               // only the marker holder ever creates the lock
+} finally {
+  try { unlinkSync(reclaimPath(name)); } catch { }
+}
 ```
 
-The `'wx'` flag is the whole trick — write, but fail if it exists, atomically at the filesystem level. If the lock is already held by a *live* process, you're busy: end the window silently, run nothing, don't even schedule a wake, because the holder owns continuity. If the lock is stale residue from a dead process, reclaim it — and if you lose the reclaim race to another waiter, you're busy again, which is the correct outcome. The driver prompt spells out the consequence bluntly: if the lock prints `busy`, *"end this wake silently: run NOTHING, do NOT ScheduleWakeup."* Two half-loops fighting over one branch is worse than one loop, so the loser doesn't sulk or retry — it just disappears and lets the winner drive.
+The `'wx'` flag is the whole trick — write, but fail if it exists, atomically at the filesystem level. If the lock is already held by a *live* process, you're busy: end the window silently, run nothing, don't even schedule a wake, because the holder owns continuity. If the lock is stale residue from a dead process, reclaim it — but every waiter has to take a second `'wx'` marker first, so only one of them is ever checking, deleting, or creating the lock. My first version had no marker, and a waiter that had already decided the lock was stale could delete the lock another waiter had just taken: two winners, the exact thing the lock exists to stop. My second version only made the *reclaimers* take the marker, and that still had two winners: the old holder releases, a fresh waiter walks straight in through the fast path, and the reclaimer deletes its lock anyway. (Correction, October 2026: the shipped file still has that second version. The snippet above is the fix it needs — a replay of every interleaving of two waiters and a releasing holder finds no double winner.) Lose the marker to another waiter and you're busy, which is the correct outcome. (The real file also expires a marker left by a crashed waiter, so a dead one can't wedge the loop.) The driver prompt spells out the consequence bluntly: if the lock prints `busy`, *"end this wake silently: run NOTHING, do NOT ScheduleWakeup."* Two half-loops fighting over one branch is worse than one loop, so the loser doesn't sulk or retry — it just disappears and lets the winner drive.
 
 ## Self-improvement mode: the loop that edits its own engine
 
@@ -394,7 +397,7 @@ if (isWorkflowScript(src)) {
 
 One more organ, and it's the least glamorous and most necessary. The in-session `ScheduleWakeup` timer is reliable while the Mac is awake — but macOS *sleep* suspends it, and a missed wake never re-fires. So a loop that was napping when I closed the lid stays parked at its prompt forever. For a fire-and-forget system, "dies silently when the laptop sleeps" is disqualifying.
 
-The fix is an external re-kicker: `rekick.mjs`, run every 180 seconds by a launchd agent. launchd coalesces a missed interval and runs it right after wake, which is the recovery path — the machine wakes, launchd fires the rekicker, the rekicker nudges the parked loop back into its cycle. And it's safe by construction:
+The fix is an external re-kicker: `rekick.mjs`, run every 180 seconds by a launchd agent. launchd skips the intervals the Mac slept through and fires again on the next 180-second tick after wake, which is the recovery path — the machine wakes, launchd fires the rekicker, the rekicker nudges the parked loop back into its cycle. And it's safe by construction:
 
 > only sends input when the pane is POSITIVELY idle (no 'esc to interrupt'), so it can never inject text into a turn mid-flight.
 
@@ -469,7 +472,7 @@ I'd be violating the entire ethos of this thing if I pretended it were finished.
 
 ## Where it sits in the ecosystem
 
-Three pieces of infrastructure make autoloop possible, and it's worth naming what each contributes. `/loop` is the harness — it re-fires the driver prompt on a schedule inside a tmux session; autoloop supplies the prompt and scaffolding, `/loop` supplies the heartbeat. The Workflow tool is how the mesh fans out in-session subagents without ever shelling out to a metered `claude -p`; the sandbox's restrictions are why the confirm and trial logic exist as drift-pinned inline twins. And ralph-loop is the intellectual ancestor: the keyed-directory parallel-loops shape, the refuse-to-overwrite-without-force discipline, the human ask-and-park primitive reshaped so nothing ever blocks, and the bounded-persistence retry. Autoloop deliberately did *not* take ralph's self-attested convergence or its ungoverned iteration — here, the guard fronts every window and the trials are the only confirm authority.
+Three pieces of infrastructure make autoloop possible, and it's worth naming what each contributes. `/loop` is the harness — it re-fires the driver prompt on a schedule inside a tmux session; autoloop supplies the prompt and scaffolding, `/loop` supplies the heartbeat. The Workflow tool is how the mesh fans out in-session subagents without ever shelling out to `claude -p`; the sandbox's restrictions are why the confirm and trial logic exist as drift-pinned inline twins. And ralph-loop is the intellectual ancestor: the keyed-directory parallel-loops shape, the refuse-to-overwrite-without-force discipline, the human ask-and-park primitive reshaped so nothing ever blocks, and the bounded-persistence retry. Autoloop deliberately did *not* take ralph's self-attested convergence or its ungoverned iteration — here, the guard fronts every window and the trials are the only confirm authority.
 
 ## The honest summary
 

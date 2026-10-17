@@ -19,7 +19,7 @@ And the reason it's *good* Swift — the reason it's not just a screen that phon
 
 The app is a Swift Package split into three layers, and the split is load-bearing.
 
-At the bottom is `EmeraldContracts` — about 494 lines, CryptoKit and Foundation only, **zero third-party dependencies.** (Zero on purpose: a binary dependency in a crypto layer is exactly the thing an App Store reviewer stops to ask about, and I'd rather not have that conversation.) This is the wire layer: key derivation, stream-grant HMACs, device-token decryption, the byte-exact JSON canonicalization that the HMAC is computed over. Notably it's *verify-only* — the app checks tokens, it never mints them, because the client is not a thing I want able to forge its own authorization.
+At the bottom is `EmeraldContracts` — about 494 lines, CryptoKit and Foundation only, **zero third-party dependencies.** (Zero on purpose: a binary dependency in a crypto layer is exactly the thing an App Store reviewer stops to ask about, and I'd rather not have that conversation.) This is the wire layer: key derivation, stream-grant HMACs, device-token decryption, the byte-exact JSON canonicalization that the HMAC is computed over. Notably the app never holds the server secret in production — the backend mints and checks the tokens, and this layer is there to prove the Swift bytes match. An HMAC key that can check a token can also forge one, and the client is not a thing I want able to forge its own authorization.
 
 In the middle is `EmeraldDomain` — about 823 lines, pure business logic, and its dependency list is literally empty. Foundation and nothing else.
 

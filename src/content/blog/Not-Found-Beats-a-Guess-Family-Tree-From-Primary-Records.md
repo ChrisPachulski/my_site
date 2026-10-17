@@ -1,6 +1,6 @@
 ---
-title: '"[not found]" Beats a Guess: A Six-Nation Family Tree Built From Primary Records Only'
-date: 2026-07-01T04:00:00.000Z
+title: '"[not found]" Beats a Guess: A Six-Nation Family Tree Built on Primary Records'
+date: 2026-07-07T04:00:00.000Z
 ---
 
 # "[not found]" Beats a Guess
@@ -15,11 +15,11 @@ Most consumer genealogy is a slot machine dressed as research. You get a hint le
 
 I wanted the opposite of a slot machine. I wanted a records room. So I built two things: a viewer that renders the tree and shows its own confidence honestly, and — the real work — a research pipeline that went and got the actual documents. 167 ancestor nodes so far. About 64% of them rest on a primary record image, meaning the scan of the actual certificate or act is sitting on my disk. The rest are labeled for exactly what they are, from aggregator-sourced down to inferred, so nobody — including me in five years — mistakes a good guess for a proven fact.
 
-## Twelve origins converging on two kids
+## Eleven origins converging on two kids
 
 Let me start with what the tree is *of*, because the shape of it is the reason it exists.
 
-My side runs Polish (the Pachulski and Koziej lines), Scottish, Ulster Irish, English, and colonial American and Canadian. My wife Dana's side runs Korean, Japanese, Chinese-Cantonese, and Tahitian Mā'ohi. Put our two kids at the root — Aurelia and Frederick — and their tree unifies twelve encoded heritage origins into one view. The current counts, by node: Scotland 46, Poland 37, Canada 18, USA 15, Japan 12, England 10, Korea 7, China 6, Ireland 5, Tahiti 3, Germany 3.
+My side runs Polish (the Pachulski and Koziej lines), Scottish, Ulster Irish, English, and colonial American and Canadian. My wife Dana's side runs Korean, Japanese, Chinese-Cantonese, and Tahitian Mā'ohi. Put our two kids at the root — Aurelia and Frederick — and their tree unifies eleven encoded heritage origins into one view. The current counts, by node: Scotland 46, Poland 37, Canada 18, USA 15, Japan 12, England 10, Korea 7, China 6, Ireland 5, Tahiti 3, Germany 3. The other five of the 167 are the four of us at the root and one open lead at the edge.
 
 That's not a metaphor about a melting pot. It's a data model. Every ancestor node carries an `origin`, and the viewer draws a per-person "blood donut" so you can see, at any point in the tree, what a person was made of and where the lines braid together.
 
