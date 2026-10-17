@@ -71,6 +71,8 @@ There's also a rung-4 move I'm fond of for claims that reading can't settle. If 
 
 ## The benchmark, and killing my own perfect score
 
+*Correction, October 2026: the 332-pair results below are invalid. The judge prompt carried the pair ID, and the ID gave away the label. The clean numbers, and how I found out, are in [The Answer Key Was in the ID](/writing/the-answer-key-was-in-the-id/).*
+
 Here's where I have to be careful, because this is the part where it would be easy to lie by omission.
 
 At one point Evergreen reported 1.00 precision and 1.00 recall. A perfect score. And I wrote a whole planning doc titled *"kill the vanity 1.00,"* explaining with citations why that number was garbage and could not be the headline. Two reasons, both quantified. First, it was measured on 14 test pairs I wrote *myself* — an exam I set for myself and then aced, which compares to nothing because nobody else takes it. Second, balanced test sets inflate precision massively: a peer tool in the literature shows precision collapsing from 0.88 on a balanced set to 0.39 on the natural 10-to-90 drift ratio you'd actually see in a real repo. A perfect score on a self-made balanced exam is not a result. It's a mirror.
@@ -79,7 +81,7 @@ So I threw it out and re-ran on a real external corpus — 332 validated Python 
 
 - **Recall 0.89** — it caught 8 of the 9 real drifts.
 - **Specificity 0.95** — of 323 true docs, it stayed quiet on 307 and false-flagged 16. That's the cry-wolf rate, and it's the number I actually care about.
-- **Precision** depends entirely on how common drift is, so I report it at three prevalence levels instead of cherry-picking: 0.33 on the raw corpus, 0.57 at a 10/90 ratio, 0.89 balanced.
+- **Precision** depends entirely on how common drift is, so I report it at three prevalence levels instead of cherry-picking: 0.33 on the raw corpus, 0.67 at a 10/90 ratio, 0.95 balanced.
 
 And the line I made myself write: at the matched flag rate, the peer tool DocPrism hits 0.62 precision and Evergreen hits **0.57.** It trails. I could have found a slice where mine looks better and led with that. Instead the benchmark leads with the confusion matrix and states the loss flatly, because a documentation-honesty tool that fudges its own numbers is a joke that isn't funny.
 
