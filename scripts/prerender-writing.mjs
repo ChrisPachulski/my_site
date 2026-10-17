@@ -12,6 +12,10 @@ const CONTENT    = path.join(ROOT, 'src', 'content', 'blog');
 
 const SITE_URL = 'https://chrispachulski.com';
 
+// Netlify serves each prerendered article at /writing/<slug>/ and 301s the
+// slashless form, so every emitted URL uses the trailing slash.
+const postPath = (slug) => `/writing/${slug}/`;
+
 function escapeHtml(s = '') {
   return String(s)
     .replace(/&/g, '&amp;')
@@ -87,8 +91,8 @@ function articleHtml(post, bodyHtml) {
   const next = i < 0 ? null : CATALOG[i - 1];
   const adjacent = `
     <div class="article-adjacent">
-      ${prev ? `<a href="/writing/${prev.slug}" class="article-adj"><span class="article-adj-label mono">Older</span><span class="article-adj-title">${escapeHtml(prev.title)}</span></a>` : ''}
-      ${next ? `<a href="/writing/${next.slug}" class="article-adj article-adj-next"><span class="article-adj-label mono">Newer</span><span class="article-adj-title">${escapeHtml(next.title)}</span></a>` : ''}
+      ${prev ? `<a href="${postPath(prev.slug)}" class="article-adj"><span class="article-adj-label mono">Older</span><span class="article-adj-title">${escapeHtml(prev.title)}</span></a>` : ''}
+      ${next ? `<a href="${postPath(next.slug)}" class="article-adj article-adj-next"><span class="article-adj-label mono">Newer</span><span class="article-adj-title">${escapeHtml(next.title)}</span></a>` : ''}
     </div>`;
   return `
 <main class="article-shell" data-screen-label="Field Notes">
@@ -118,7 +122,7 @@ function homePageHtml(posts) {
   // it as the initial HTML response, which is what fixes "empty SPA shell"
   // indexing. Copy mirrors what the live React UI shows; no cloaking.
   const writingItems = posts.map(p =>
-    `<li><a href="/writing/${p.slug}">${escapeHtml(p.title)}</a> <span class="prerender-meta">${escapeHtml(p.date)} · ${escapeHtml(p.read)} · ${escapeHtml(p.cats)}</span></li>`
+    `<li><a href="${postPath(p.slug)}">${escapeHtml(p.title)}</a> <span class="prerender-meta">${escapeHtml(p.date)} · ${escapeHtml(p.read)} · ${escapeHtml(p.cats)}</span></li>`
   ).join('\n        ');
 
   return `
@@ -169,7 +173,7 @@ function homePageHtml(posts) {
 
 function notFoundHtml(featured) {
   const rows = featured.map(p => `
-    <a href="/writing/${p.slug}" class="notfound-row">
+    <a href="${postPath(p.slug)}" class="notfound-row">
       <span class="notfound-meta mono">${escapeHtml(p.date)} · ${escapeHtml(p.read)}</span>
       <span class="notfound-title">${escapeHtml(p.title)}</span>
       <span class="notfound-arrow" aria-hidden="true">→</span>
@@ -246,7 +250,7 @@ function buildSitemap(slugs) {
   const urls = [
     `<url><loc>${SITE_URL}/</loc><changefreq>monthly</changefreq><priority>1.0</priority></url>`,
     ...slugs.map(s =>
-      `<url><loc>${SITE_URL}/writing/${s.slug}</loc><lastmod>${dateToISO(s.date)}</lastmod><changefreq>yearly</changefreq><priority>0.7</priority></url>`
+      `<url><loc>${SITE_URL}${postPath(s.slug)}</loc><lastmod>${dateToISO(s.date)}</lastmod><changefreq>yearly</changefreq><priority>0.7</priority></url>`
     ),
   ];
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join('\n')}\n</urlset>\n`;
@@ -317,7 +321,7 @@ export function writingPrerender() {
       // Per-post HTML. Unlisted pages carry no Article JSON-LD: it would name
       // Chris as author of text he may not have written.
       for (const post of pages) {
-        const url = `${SITE_URL}/writing/${post.slug}`;
+        const url = `${SITE_URL}${postPath(post.slug)}`;
         const description = post.excerpt;
         const ogImage = `${SITE_URL}/og/${post.slug}.png`;
 
