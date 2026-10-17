@@ -8,6 +8,7 @@ colors:
   ink-cool: "oklch(0.92 0.04 270)"
   ink-dim: "oklch(0.65 0.08 270)"
   ink-mute: "oklch(0.60 0.07 275)"
+  ink-mute-office: "#6a6357"           # Office hours (data-theme="light") register
   line-quiet: "oklch(0.22 0.06 280)"  # intent; ships as #141128 = oklch(0.195 0.045 287)
   line-bright: "oklch(0.30 0.08 280)"
   plasma-violet: "oklch(0.70 0.26 300)"
@@ -22,6 +23,7 @@ colors:
   success: "oklch(0.72 0.13 150)"
   warn: "oklch(0.72 0.13 65)"
   danger: "oklch(0.68 0.18 25)"
+  danger-office: "oklch(0.50 0.18 25)"  # Office hours (data-theme="light") register
 typography:
   display:
     fontFamily: "Orbitron, sans-serif"
@@ -186,6 +188,7 @@ The palette runs cool by default, with two warm signal flares (Solar Red, Solar 
 - **Ink Cool** (`oklch(0.92 0.04 270)`): Primary text. A cool white tinted toward periwinkle.
 - **Ink Dim** (`oklch(0.65 0.08 270)`): Secondary text — body paragraphs, fact-list values, project descriptions.
 - **Ink Mute** (`oklch(0.60 0.07 275)`): Tertiary text — labels, hashes, captions, idle states. Lightness holds ≥4.5:1 (WCAG AA) on bg-card; it also carries project-row descriptions, so it can never drop below AA.
+  Office hours (`data-theme="light"`) ships `#6a6357`: 5.18:1 on the `#f4efe4` paper and 4.73:1 on the `#ebe5d6` elevated surface. The earlier `#8c8476` measured 3.23:1 and failed AA, and `#6f685c` still falls to 4.39:1 on the elevated surface. The same register darkens Danger to `oklch(0.50 0.18 25)` (5.75:1 on paper) for the contact-form error text.
 - **Line Quiet** (`oklch(0.22 0.06 280)` as intent; the cyberpunk register ships `#141128` = `oklch(0.195 0.045 287)`, and the base register ships a warm `#221f1a`): Default divider.
 - **Line Bright** (`oklch(0.30 0.08 280)`): Strong divider, default border on flat surfaces, idle button border.
 
@@ -196,6 +199,8 @@ The palette runs cool by default, with two warm signal flares (Solar Red, Solar 
 **The Izzet Pair Is Sacred.** Sapphire + Fire only appear together, only on the two large editorial cards and the hero MTG card. Never use sapphire alone, never use fire alone. The pair is the signature; splitting it dissolves it.
 
 **The Tinted-Black Rule.** No `#000`. Every dark surface is tinted toward 280° (deep violet). The page background reads as charcoal-with-aurora, never as void.
+
+**The Muted-Ink AA Floor.** Ink Mute carries project descriptions, form labels and article metadata, so it holds WCAG AA (4.5:1) in both registers: `oklch(0.60 0.07 275)` after hours, `#6a6357` in office hours.
 
 ## 3. Typography
 
