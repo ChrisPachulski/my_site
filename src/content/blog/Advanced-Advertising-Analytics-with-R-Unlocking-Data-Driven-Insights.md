@@ -1,12 +1,11 @@
 ---
 title: 'Advanced Advertising Analytics with R: Unlocking Data-Driven Insights'
 date: 2023-05-28T04:00:00.000Z
-featureImage: /R_logo_resized.png
 ---
 
 Leveraging R and robust database integrations, businesses can gain deep analytical insights into advertising performance. In this blog post, we explore sophisticated R scripts designed specifically to analyze advertising data, competitor presence, and market behavior through comprehensive queries and transformations, all crafted with privacy and confidentiality in mind.
 
-### Preparing the Analytical Environment
+## Preparing the Analytical Environment
 
 Our analytical workflow starts by setting up an efficient R environment using essential libraries:
 
@@ -16,21 +15,26 @@ pacman::p_load(tidyverse, janitor, lubridate, anytime, RClickhouse, DBI, skimr, 
 
 This toolkit provides powerful functionality for data management, manipulation, and visualization, integral for advanced analytics.
 
-### Database Connectivity
+## Database Connectivity
 
 To extract actionable data, we establish seamless connections with ClickHouse databases:
 
 ```r
-conn = ch4_connect()
+conn = DBI::dbConnect(
+  RClickhouse::clickhouse(),
+  host = Sys.getenv("CLICKHOUSE_HOST"),
+  user = Sys.getenv("CLICKHOUSE_USER"),
+  password = Sys.getenv("CLICKHOUSE_PASSWORD")
+)
 ```
 
 This connection allows precise, high-performance data retrieval, essential for handling large-scale advertising datasets.
 
-### Detailed Competitor Analysis
+## Detailed Competitor Analysis
 
 One core analytical operation involves competitor identification and performance tracking. Queries are crafted to extract competitor-related data from advertising events, enabling precise market positioning insights:
 
-```sql
+```r
 data = DBI::dbGetQuery(conn, "
   SELECT DISTINCT affiliate_account_name, mark_url, said, search_keyword,
     CASE WHEN event_date BETWEEN '2022-04-01' AND '2023-03-31' THEN period_definition END as period,
@@ -49,11 +53,11 @@ data = DBI::dbGetQuery(conn, "
 
 This targeted extraction highlights competitor market activities, providing detailed performance metrics like requests, clicks, and revenue.
 
-### Non-Brand Advertising Analysis
+## Non-Brand Advertising Analysis
 
-Equally important is analyzing non-brand keyword performance, crucial for understanding market opportunities and consumer interests:
+Equally important is analyzing non-brand performance - here approximated by landing-page URLs in generic service categories rather than by the keywords themselves - crucial for understanding market opportunities and consumer interests:
 
-```sql
+```r
 nonbrand_data = DBI::dbGetQuery(conn, "
   SELECT DISTINCT affiliate_account_name, mark_url, said, search_keyword,
     CASE WHEN event_date BETWEEN '2022-04-01' AND '2023-03-31' THEN period_definition END as period,
@@ -78,11 +82,11 @@ nonbrand_data = DBI::dbGetQuery(conn, "
 
 This analysis provides strategic visibility into consumer behavior, advertising efficiency, and potential expansion areas within targeted service sectors.
 
-### Granular Competitor Keyword Insights
+## Granular Competitor Keyword Insights
 
 Further granularity is achieved through keyword-specific queries, particularly valuable for brands such as Azure and competitors in cloud computing:
 
-```sql
+```r
 competitor_data = DBI::dbGetQuery(conn, "
   SELECT DISTINCT affiliate_account_name, mark_url, said, search_keyword,
     CASE WHEN event_date BETWEEN '2022-04-01' AND '2023-03-31' THEN period_definition END as period,
@@ -106,11 +110,11 @@ competitor_data = DBI::dbGetQuery(conn, "
 
 This precise competitor benchmarking facilitates strategic positioning and targeted advertising investments.
 
-### IP-Level Advertising Investigation
+## IP-Level Advertising Investigation
 
 Detailed investigative analytics at the IP level further enhances advertising accuracy and fraud detection capabilities:
 
-```sql
+```r
 ip_data = DBI::dbGetQuery(conn, "
   SELECT DISTINCT uuid, publisher_referrer_domain, event_timestamp, dma_name, search_ip, publisher_referrer, mark_url,
     SUM(requests) AS requests,
@@ -118,7 +122,9 @@ ip_data = DBI::dbGetQuery(conn, "
     SUM(paid_clicks) AS clicks
   FROM addotnet.ad_event_view
   WHERE event_date >= '2023-03-16'
-    AND search_ip IN ('185.187.168.189', '194.195.93.36', '185.169.0.83' -- additional IP addresses...)
+    AND search_ip IN ('185.187.168.189', '194.195.93.36', '185.169.0.83'
+      -- additional IP addresses...
+    )
   GROUP BY uuid, publisher_referrer_domain, event_timestamp, dma_name, search_ip, publisher_referrer, mark_url
   HAVING requests > 0
   ORDER BY uuid, clicks DESC;
@@ -127,19 +133,19 @@ ip_data = DBI::dbGetQuery(conn, "
 
 This investigation identifies potentially anomalous traffic patterns, improving advertising spend efficiency and fraud mitigation.
 
-### Data Exportation and Actionable Insights
+## Data Exportation and Actionable Insights
 
 Results from these detailed analyses are meticulously summarized, then exported for easy integration into strategic decision-making processes:
 
 ```r
-summarized_data %>%
-  group_by(period) %>%
+bind_rows(competitor = data, nonbrand = nonbrand_data, cloud = competitor_data, .id = "segment") %>%
+  group_by(segment, period) %>%
   summarize(requests = scales::comma(sum(requests)), clicks = sum(clicks), revenue = sum(revenue)) %>%
   write_csv('output_file.csv')
 ```
 
 Efficient data exportation allows stakeholders to quickly leverage insights in operational and strategic contexts.
 
-### Conclusion
+## Conclusion
 
 Employing advanced R analytics with detailed, targeted data queries and transformations allows organizations to derive critical insights into advertising performance, competitor behavior, and market opportunities. This approach provides a comprehensive, data-driven foundation for strategic business decisions, optimizing advertising efficacy and market competitiveness, all while maintaining stringent data privacy.

@@ -1,12 +1,11 @@
 ---
 title: In-Depth Product-Level Analysis Using R for Advanced Market Insights
 date: 2023-09-09T04:00:00.000Z
-featureImage: /R_logo_resized.png
 ---
 
 Performing a detailed product-level analysis requires careful data manipulation, precise categorization, and insightful text analytics. In this blog post, we'll explore a structured, privacy-aware approach to analyzing product advertising data using R and essential packages such as `tidyverse`, `lubridate`, and `tidytext`.
 
-### Preparing the Analysis Environment
+## Preparing the Analysis Environment
 
 We start by loading the necessary libraries to ensure an efficient and powerful data analysis environment:
 
@@ -16,12 +15,12 @@ pacman::p_load(tidyverse, janitor, lubridate, anytime, RClickhouse, DBI, RMySQL,
 
 These packages collectively offer extensive capabilities for data import, manipulation, cleaning, text analytics, and database connectivity.
 
-### Data Retrieval from Databases
+## Data Retrieval from Databases
 
 Our analysis involves fetching specific product-related data using targeted SQL queries directly from databases, such as ClickHouse:
 
 ```r
-wayfair_pla <- DBI::dbGetQuery(conn,"
+ch_wayfair <- DBI::dbGetQuery(conn,"
   SELECT dt, id, title, brand, sale_price, product_category
   FROM feed_pla_master
   WHERE lower(advertiser_name) LIKE 'wayfair%'
@@ -34,7 +33,7 @@ wayfair_pla <- DBI::dbGetQuery(conn,"
 
 This ensures precise data retrieval, specifically targeting relevant products and timeframes.
 
-### Comprehensive Data Cleaning
+## Comprehensive Data Cleaning
 
 Subsequent steps involve thorough cleaning, including normalizing product identifiers and categories:
 
@@ -44,24 +43,28 @@ ch_wayfair_cleansed <- ch_wayfair %>% mutate(id = gsub('^0+{3}', '', id))
 
 Normalization facilitates effective joins and comparisons between datasets from different sources.
 
-### Advanced Data Integration
+## Advanced Data Integration
 
 We integrate external advertising performance data by performing detailed join operations:
 
 ```r
-joined_macys_bing_data <- bing_macys_data %>%
-  left_join(ch_macy_cleansed, by = c('merchant_product_id' = 'id', 'title' = 'title')) %>%
+bing_wayfair_data <- read_csv('bing_wayfair_product_report.csv',
+                              name_repair = make_clean_names,
+                              col_types = cols(merchant_product_id = col_character()))
+
+joined_wayfair_bing_data <- bing_wayfair_data %>%
+  left_join(ch_wayfair_cleansed, by = c('merchant_product_id' = 'id', 'title' = 'title')) %>%
   distinct()
 ```
 
 This approach helps in evaluating product visibility and advertising performance comprehensively.
 
-### Product Category Analysis
+## Product Category Analysis
 
 We perform granular category analyses to identify characteristics of descriptive product titles across main, middle, and lower categories:
 
 ```r
-main_category_descriptive_titles <- joined_macys_bing_data %>%
+main_category_descriptive_titles <- joined_wayfair_bing_data %>%
   separate(product_category, into = c('main_category', 'middle_category', 'lower_category'), sep = ' > ') %>%
   drop_na() %>%
   group_by(main_category) %>%
@@ -75,24 +78,28 @@ main_category_descriptive_titles <- joined_macys_bing_data %>%
 
 Such detailed analyses provide actionable insights into product marketing and content strategy.
 
-### Identifying Gaps in Advertising
+## Identifying Gaps in Advertising
 
 To reveal potential gaps in advertising coverage, we systematically analyze products without recorded advertising impressions:
 
 ```r
-missing_macys_bing_data <- ch_macy_cleansed %>%
-  left_join(bing_macys_data, by = c('id' = 'merchant_product_id', 'title' = 'title')) %>%
+missing_wayfair_bing_data <- ch_wayfair_cleansed %>%
+  left_join(bing_wayfair_data, by = c('id' = 'merchant_product_id', 'title' = 'title')) %>%
   distinct() %>%
   filter(is.na(account_name))
 ```
 
 This highlights products that might need enhanced advertising attention.
 
-### Text Analytics for Keyword Optimization
+## Text Analytics for Keyword Optimization
 
 Utilizing the power of `tidytext`, we conduct n-gram analyses to identify the most impactful keywords in product titles:
 
 ```r
+unique_titles <- joined_wayfair_bing_data %>%
+  separate(product_category, into = c('main_category', 'middle_category', 'lower_category'), sep = ' > ') %>%
+  distinct(main_category, title)
+
 ngram_titles <- unique_titles %>%
   unnest_ngrams(ngram, title, n = 2)
 
@@ -104,12 +111,12 @@ top_ngrams <- ngram_titles %>%
 
 Such keyword analyses inform strategic decisions about product naming and marketing language.
 
-### Analyzing Cost-Per-Click (CPC)
+## Analyzing Cost-Per-Click (CPC)
 
 A comprehensive CPC analysis segmented by product pricing provides crucial insights into advertising efficiency:
 
 ```r
-summary_df <- joined_macys_bing_data %>%
+summary_df <- joined_wayfair_bing_data %>%
   mutate(Price_Bucket = case_when(
     sale_price < 25 ~ "Under $25",
     sale_price >= 25 & sale_price < 50 ~ "$25 - $50",
@@ -124,7 +131,7 @@ summary_df <- joined_macys_bing_data %>%
 
 Understanding CPC trends across price buckets allows strategic allocation of advertising budgets.
 
-### Visualization for Enhanced Insights
+## Visualization for Enhanced Insights
 
 We leverage powerful visualizations, such as bar plots, to clearly communicate insights and facilitate decision-making:
 
@@ -137,6 +144,6 @@ ggplot(summary_df, aes(x = Price_Bucket, y = Avg_CPC)) +
   ylab("Average CPC")
 ```
 
-### Final Thoughts
+## Final Thoughts
 
 This detailed, privacy-conscious workflow demonstrates the powerful capabilities of R for conducting sophisticated market analyses. Leveraging robust text analytics, precise database querying, and insightful visualization, we provide clear, actionable insights essential for strategic business decisions.
