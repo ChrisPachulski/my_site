@@ -204,6 +204,7 @@ function injectMeta(template, meta) {
 
   html = html.replace(/<title>[\s\S]*?<\/title>/, () => `<title>${escapeHtml(meta.title)}</title>`);
   html = html.replace(/<meta\s+name="description"[^>]*>/i, () => `<meta name="description" content="${escapeAttr(meta.description)}" />`);
+  if (meta.author) html = html.replace(/<meta\s+name="author"[^>]*>/i, () => `<meta name="author" content="${escapeAttr(meta.author)}" />`);
 
   const replaceOrInsert = (re, replacement) => {
     if (re.test(html)) {
@@ -322,20 +323,23 @@ export function writingPrerender() {
         console.warn(`[prerender] OG card generation failed: ${err.message}`);
       }
 
-      // Per-post HTML. Unlisted pages carry no Article JSON-LD: it would name
-      // Chris as author of text he may not have written.
+      // Per-post HTML. Unlisted pages carry Article JSON-LD only when the
+      // catalog names their author; otherwise it would credit Chris with text
+      // he may not have written.
       for (const post of pages) {
+        const author = post.author || 'Chris Pachulski';
         const url = `${SITE_URL}${postPath(post.slug)}`;
         const description = post.excerpt;
         const ogImage = `${SITE_URL}/og/${post.slug}.png`;
 
         const meta = {
-          title: `${post.title} — Chris Pachulski`,
+          title: `${post.title} — ${author}`,
+          author,
           description,
           url,
           image: ogImage,
           noindex: post.unlisted,
-          jsonLd: post.unlisted ? null : {
+          jsonLd: post.unlisted && !post.author ? null : {
             '@context': 'https://schema.org',
             '@type': 'Article',
             headline: post.title,
@@ -343,11 +347,10 @@ export function writingPrerender() {
             url,
             datePublished: post.published,
             image: ogImage,
-            author: {
-              '@type': 'Person',
-              name: 'Chris Pachulski',
-              url: SITE_URL,
-            },
+            author: post.author
+              ? { '@type': 'Person', name: post.author }
+              : { '@type': 'Person', name: author, url: SITE_URL },
+            ...(post.source && { isBasedOn: post.source }),
             publisher: {
               '@type': 'Person',
               name: 'Chris Pachulski',

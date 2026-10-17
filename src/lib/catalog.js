@@ -5,6 +5,9 @@
 // `slug`     is the public lowercase-kebab URL slug at /writing/<slug>
 // `pivot`    is the single italicized word per the Italic Pivot Rule (DESIGN.md
 //            §3). Optional; falls back to the title's last word if omitted.
+// `author`   names someone other than Chris who wrote the post; the prerender
+//            uses it for the author meta, JSON-LD author and title suffix.
+//            Optional; `source` is then the original's URL.
 export const CATALOG = [
   { fileSlug: 'The-Model-Was-a-Coin-Flip-Emerald-Recommender', slug: 'the-model-was-a-coin-flip', cats: 'Python · Recommenders · numpy', title: 'The Model Was a Coin Flip: Rebuilding the Emerald Exchange Recommender Around the Red Dots', date: 'Oct 2026', read: '22 min', pivot: 'Flip' },
   { fileSlug: 'Half-a-Rejection-Is-a-Month-Emerald-App-Review', slug: 'half-a-rejection-is-a-month', cats: 'Swift · tvOS · App Review', title: 'Half a Rejection Is a Month: What App Review Actually Wanted', date: 'Oct 2026', read: '20 min', pivot: 'Half' },
@@ -67,5 +70,5 @@ export const CATALOG = [
 // but kept out of the writing list, sitemap, prev/next links and 404
 // suggestions, and served with robots noindex.
 export const UNLISTED = [
-  { fileSlug: 'Using-Claude-Code-Spending-Your-Effort', slug: 'spending-your-effort', cats: 'Claude Code · Effort', title: 'Using Claude Code: Spending your effort', date: 'Sep 2026', read: '8 min', pivot: 'effort' },
+  { fileSlug: 'Using-Claude-Code-Spending-Your-Effort', slug: 'spending-your-effort', cats: 'Claude Code · Effort', title: 'Using Claude Code: Spending your effort', date: 'Sep 2026', read: '8 min', pivot: 'effort', author: 'Thariq Shihipar', source: 'https://claude.dev/blog/spending-your-effort/' },
 ];

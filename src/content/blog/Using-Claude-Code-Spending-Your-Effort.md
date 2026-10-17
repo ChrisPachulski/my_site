@@ -1,4 +1,10 @@
+---
+date: 2026-09-25T04:00:00.000Z
+---
+
 # Using Claude Code: Spending your effort
+
+*By Thariq Shihipar. Originally published September 25, 2026 at [claude.dev/blog/spending-your-effort](https://claude.dev/blog/spending-your-effort/); reproduced here.*
 
 One of the best parts of our newest Claude models is how they respond to effort without breaking the prompt cache in Claude Code, but I’ve received a lot of questions on this from users. What is effort really and when do you use which effort level? Why do we need effort at all?
 
