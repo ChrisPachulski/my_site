@@ -15,9 +15,11 @@ In two Python scripts I have recently written (`traffic_flow_backfill.py` and `t
 Both scripts utilize several important Python libraries to facilitate seamless data handling:
 
 ```python
+import os
 import pandas as pd
 import numpy as np
 from clickhouse_driver import Client
+from clickhouse_driver.errors import ServerException
 import addotnet_functions as anf
 ```
 
@@ -57,7 +59,7 @@ FROM (
   -- More detailed column definitions and joins
 FROM {table name} e
 LEFT JOIN (...)
-WHERE e.event_date = toDate('2023-10-03')
+WHERE e.event_date = toDate('{desired_date}')
 GROUP BY dt, e.event_date, search_date, search_hour, ...
 HAVING r > 0
 ) sq
@@ -108,7 +110,7 @@ This automated insertion process maintains data integrity and ensures that analy
 The scripts are designed for automation, leveraging environment variables for flexible date management and execution:
 
 ```python
-airflow_date = pd.to_datetime(os.environ["PROCESS_DATE"]).strftime('%Y-%m-%d')
+date = pd.to_datetime(os.environ["PROCESS_DATE"]).strftime('%Y-%m-%d')
 ```
 
 This design choice significantly enhances the script's adaptability for continuous integration and deployment in dynamic environments.
