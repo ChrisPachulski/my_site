@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import usePrefersReducedMotion from './usePrefersReducedMotion.js';
+import useOnScreen from './useOnScreen.js';
 import cardLinkProps from './cardLink.js';
 import './featured.css';
 
@@ -18,17 +19,20 @@ export default function AtHomeMediaCard({ a, onOpen }) {
   const [hover, setHover] = useState(false);
   const [marqueeIdx, setMarqueeIdx] = useState(0);
   const [progress, setProgress] = useState(0.32);
+  const cardRef = useRef(null);
+  const onScreen = useOnScreen(cardRef);
+  const paused = reduced || hover || !onScreen;
 
   useEffect(() => {
-    if (reduced || hover) return;
+    if (paused) return;
     const id = setInterval(() => {
       setMarqueeIdx((i) => (i + 1) % NOW_PLAYING_ITEMS.length);
     }, 3400);
     return () => clearInterval(id);
-  }, [hover, reduced]);
+  }, [paused]);
 
   useEffect(() => {
-    if (reduced || hover) return;
+    if (paused) return;
     const id = setInterval(() => {
       setProgress((p) => {
         const next = p + 0.015;
@@ -36,10 +40,11 @@ export default function AtHomeMediaCard({ a, onOpen }) {
       });
     }, 600);
     return () => clearInterval(id);
-  }, [hover, reduced]);
+  }, [paused]);
 
   return (
     <a
+      ref={cardRef}
       className={`featured-tile featured at-home-media-card${hover ? ' is-hover' : ''}`}
       aria-label={`Read: ${a.title}`}
       {...cardLinkProps(a.slug, onOpen)}

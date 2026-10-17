@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import usePrefersReducedMotion from './usePrefersReducedMotion.js';
+import useOnScreen from './useOnScreen.js';
 import cardLinkProps from './cardLink.js';
 import './featured.css';
 
@@ -26,9 +27,11 @@ export default function ResearchLoopCard({ a, onOpen }) {
   const [iter, setIter] = useState(1);
   const [activeNode, setActiveNode] = useState(0);
   const tickRef = useRef(null);
+  const cardRef = useRef(null);
+  const onScreen = useOnScreen(cardRef);
 
   useEffect(() => {
-    if (reduced) return;
+    if (reduced || !onScreen) return;
     const interval = hover ? 900 : 2800;
     tickRef.current = setInterval(() => {
       setActiveNode((n) => {
@@ -38,7 +41,7 @@ export default function ResearchLoopCard({ a, onOpen }) {
       });
     }, interval);
     return () => clearInterval(tickRef.current);
-  }, [hover, reduced]);
+  }, [hover, reduced, onScreen]);
 
   const dot = polar(NODES[activeNode].angle);
   const pathD = `M ${polar(0).x} ${polar(0).y} ` +
@@ -48,6 +51,7 @@ export default function ResearchLoopCard({ a, onOpen }) {
 
   return (
     <a
+      ref={cardRef}
       className={`featured-tile featured research-loop-card${hover ? ' is-hover' : ''}`}
       aria-label={`Read: ${a.title}`}
       {...cardLinkProps(a.slug, onOpen)}
