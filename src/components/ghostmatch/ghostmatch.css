@@ -2,12 +2,14 @@
    Variables inherit from the site theme (accent/ink/bg).
    Self-contained: no external images. All art is CSS gradients. */
 
-/* Card sizes follow the viewport height so both zones fit without scrolling:
-   the board stacks five card rows (4.5 hand-heights) on ~400px of chrome. */
+/* Hand and battlefield cards follow the viewport height so both zones fit
+   without scrolling: the board stacks five card rows (4.5 hand-heights) on
+   ~400px of chrome. The floor keeps card text readable; below it the overlay
+   scrolls. The stack floats over the board, so it keeps its full size. */
 .gm-root {
-  --gm-card-h-hand: clamp(64px, calc((100dvh - 400px) / 4.5), 156px);
+  --gm-card-h-hand: clamp(102px, calc((100dvh - 400px) / 4.5), 156px);
   --gm-card-h-bf:   calc(var(--gm-card-h-hand) * 0.83);
-  --gm-card-h-stk:  calc(var(--gm-card-h-hand) * 1.63);
+  --gm-card-h-stk:  254px;
   --gm-card-w-hand: calc(var(--gm-card-h-hand) * 63 / 88);
   --gm-card-w-bf:   calc(var(--gm-card-h-bf) * 63 / 88);
   --gm-card-w-stk:  calc(var(--gm-card-h-stk) * 63 / 88);
@@ -537,6 +539,7 @@
   inset: 4px;
   display: grid;
   grid-template-rows: auto 46% auto 1fr auto;
+  grid-template-columns: minmax(0, 1fr);       /* names never widen the frame past the card */
   background: rgba(0,0,0,0.35);
   border-radius: 5px;
   padding: 4px 5px;
@@ -547,8 +550,9 @@
 .gm-size-stack .gm-frame { padding: 5px 6px; gap: 3px; }
 
 /* Titlebar */
+/* On a narrow card the cost wraps under the name rather than being cut off. */
 .gm-titlebar {
-  display: flex; align-items: center; justify-content: space-between; gap: 4px;
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 2px 4px;
   padding: 2px 4px;
   background: linear-gradient(90deg, rgba(255,255,255,0.12), rgba(255,255,255,0.06));
   border-radius: 3px;
@@ -569,7 +573,7 @@
 .gm-frame-w .gm-name, .gm-frame-orzhov .gm-name { color: #2a1f15; }
 
 /* Mana cost */
-.gm-cost { display: flex; gap: 2px; flex-shrink: 0; }
+.gm-cost { display: flex; gap: 2px; flex-shrink: 0; margin-left: auto; }
 .gm-pip {
   display: inline-flex; align-items: center; justify-content: center;
   width: 12px; height: 12px;
@@ -1430,12 +1434,14 @@
 }
 
 /* Small viewport: the HUD joins the grid below the board instead of floating
-   over the hand, and cards also cap on width so six tapped lands fit. */
+   over the hand, battlefield cards cap on width so six tapped lands fit, and
+   hand cards hold a readable size while the overlay scrolls. */
 @media (max-width: 760px) {
   .gm-root {
     padding: 8px 10px;
     grid-template-rows: 1fr auto 1fr auto;
-    --gm-card-h-hand: clamp(48px, min(calc((100dvh - 470px) / 4.5), 22vw), 102px);
+    --gm-card-h-hand: 102px;
+    --gm-card-h-bf:   min(85px, 18vw);
   }
   .gm-hud {
     position: relative;
