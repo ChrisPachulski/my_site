@@ -28,7 +28,8 @@ Every scheduled task in my setup runs a `.bat` file, not a `.py` file. The `.bat
 ```bat
 @echo off
 set LOG_DIR=C:\Users\%USERNAME%\Documents\ETL\logs
-set LOG_FILE=%LOG_DIR%\DAILY_EXAMPLE_BATCH.log
+for /f %%d in ('powershell -NoProfile -Command "Get-Date -Format yyyy-MM-dd"') do set RUN_DATE=%%d
+set LOG_FILE=%LOG_DIR%\DAILY_EXAMPLE_BATCH_%RUN_DATE%.log
 set SCRIPT=C:\Users\%USERNAME%\Documents\ETL\scripts\Daily_Example.py
 
 echo ============================================ >> "%LOG_FILE%"
@@ -64,7 +65,7 @@ LOG_DIR = Path.home() / "Documents" / "ETL" / "logs"
 LOG_DIR.mkdir(parents=True, exist_ok=True)
 
 script_name = Path(__file__).stem
-py_log_path = LOG_DIR / f"{script_name.upper()}.log"
+py_log_path = LOG_DIR / f"{script_name.upper()}_{datetime.now():%Y-%m-%d}.log"
 
 logging.basicConfig(
     filename=py_log_path,
@@ -75,14 +76,17 @@ logging.basicConfig(
 logger = logging.getLogger(script_name)
 ```
 
-With this in place, I get one log per script, named consistently, co-located with the batch log. When a script fails I have two files to look at: the batch log (did Python even start, what was the exit code, did any traceback escape?) and the Python log (at what point in the ETL did things start going sideways?).
+With this in place, I get one log per script per day, named consistently, co-located with the batch log. When a script fails I have two files to look at: the batch log (did Python even start, what was the exit code, did any traceback escape?) and the Python log (at what point in the ETL did things start going sideways?).
 
 ## Wrap the main body in try / except
 
 This is the least glamorous part of the pattern and the one that pays the biggest dividend. Wrap the main body of the ETL in a `try` / `except` that logs the traceback, emails a human, and re-raises.
 
 ```python
+import os
 from mail_utils import send_failure_notification
+
+batch_log = os.environ.get("LOG_FILE")  # set by the .bat wrapper, None when run by hand
 
 try:
     logger.info("=== run start ===")
@@ -95,7 +99,7 @@ except Exception as e:
     send_failure_notification(
         subject=f"[FAIL] {script_name}",
         body=f"Script failed at {datetime.now():%Y-%m-%d %H:%M:%S}\n\n{tb}",
-        attachments=[py_log_path],
+        attachments=[p for p in (py_log_path, batch_log) if p],
     )
     raise
 ```
@@ -106,12 +110,15 @@ The `raise` at the end is important. You don't want to swallow the exception. Yo
 
 ## Retention policy
 
-The failure mode nobody tells you about on Windows: logs eat your disk. Twenty jobs, daily, for a year, is seven thousand log files. If any of them are verbose, it adds up fast.
+The failure mode nobody tells you about on Windows: logs eat your disk. Twenty jobs, daily, for a year, two logs a run, is fourteen thousand log files. If any of them are verbose, it adds up fast.
 
 I keep thirty days of batch logs and ninety days of Python logs, because the Python log is where the actual forensic value is. Cleanup is a separate scheduled job that runs at 2 AM and purges anything older than the retention window. No magic, just a PowerShell equivalent of `find`:
 
 ```powershell
 $LogDir = "$env:USERPROFILE\Documents\ETL\logs"
+Get-ChildItem -Path $LogDir -Filter "*_BATCH_*.log" |
+    Where-Object { $_.LastWriteTime -lt (Get-Date).AddDays(-30) } |
+    Remove-Item -Force
 Get-ChildItem -Path $LogDir -Filter "*.log" |
     Where-Object { $_.LastWriteTime -lt (Get-Date).AddDays(-90) } |
     Remove-Item -Force
