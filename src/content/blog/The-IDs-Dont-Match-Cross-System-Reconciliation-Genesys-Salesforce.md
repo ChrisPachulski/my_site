@@ -98,7 +98,9 @@ def format_drift(df_cases: pd.DataFrame, df_convos: pd.DataFrame) -> pd.DataFram
     populated = df_cases[
         df_cases["conversation_id"].notna() & (df_cases["conversation_id"] != "")
     ].copy()
-    populated["valid_format"] = populated["conversation_id"].str.match(UUID_RE).fillna(False).astype(bool)
+    populated["valid_format"] = populated["conversation_id"].apply(
+        lambda x: isinstance(x, str) and UUID_RE.fullmatch(x) is not None
+    ).astype(bool)
     failures = populated[~populated["valid_format"]].copy()
     failures["failure_type"] = "format_drift"
     failures["failure_detail"] = failures["conversation_id"].apply(
