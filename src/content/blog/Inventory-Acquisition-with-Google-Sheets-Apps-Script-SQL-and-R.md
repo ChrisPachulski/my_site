@@ -10,7 +10,7 @@ Efficient inventory management and purchasing decisions are vital for the succes
 
 ### Objective
 
-The main goal was to simplify and automate the buying process for a local game booth (Specifically - Tarkan) at an conn event, ensuring that inventory levels, pricing data, and purchasing history were accurate, accessible, and easy to manage.
+The main goal was to simplify and automate the buying process for a local game booth (Specifically - Tarkan) at a con event, ensuring that inventory levels, pricing data, and purchasing history were accurate, accessible, and easy to manage.
 
 ### Setting Up the Google Sheet
 
@@ -23,7 +23,7 @@ The Google Sheet serves as the central hub for managing orders and inventory. It
 
 ### Automating Data Refreshes with SQL and R
 
-To keep the Catalog tab accurate and updated in real-time, I employed SQL queries executed via R scripts. These scripts retrieve and clean data from databases, ensuring the Google Sheet reflects real-time inventory and pricing information.
+To keep the Catalog tab accurate and updated daily, I employed SQL queries executed via R scripts. These scripts retrieve and clean data from databases, ensuring the Google Sheet reflects current inventory and pricing information.
 
 A simplified overview of the SQL and R integration:
 
@@ -31,7 +31,7 @@ A simplified overview of the SQL and R integration:
 * **R Data Processing:** The retrieved data is then cleaned, structured, and formatted using the powerful R libraries such as `tidyverse` and `data.table`, ready for integration into the Google Sheet.
 * **Google Sheets Integration:** R scripts utilize the `googlesheets4` package to automatically populate and refresh the Catalog tab.
 
-This automation ensures data accuracy, saves significant manual entry time, and provides reliable, real-time insights for purchasing decisions.
+This automation ensures data accuracy, saves significant manual entry time, and provides reliable, up-to-date insights for purchasing decisions.
 
 ### Enhancing User Experience with Apps Script
 
@@ -64,7 +64,7 @@ Using the [example Google Sheet provided](https://docs.google.com/spreadsheets/d
 Implementing this integrated solution provided substantial operational improvements:
 
 * **Efficiency:** Dramatically reduced time spent on manual inventory updates and purchasing.
-* **Accuracy:** Real-time inventory and pricing data minimized purchasing errors and inventory discrepancies.
+* **Accuracy:** Daily-refreshed inventory and pricing data minimized purchasing errors and inventory discrepancies.
 * **Enhanced Decision-Making:** Historical purchase logging improved inventory forecasting and restocking decisions.
 * **User-Friendly Interface:** Clear visual guidance and intuitive interface boosted staff adoption and productivity.
 
