@@ -1,14 +1,13 @@
 ---
 title: R vs Python - Lazy vs. Non-Lazy Evaluation
 date: 2023-04-28T04:00:00.000Z
-featureImage: /images/classic-blog/R_Lazy.png
 ---
 
 ***
 
 ## What Exactly is Lazy Evaluation?
 
-##### (Spoilers - I prefer Lazy. Who doesn't prefer to be Lazy?!)
+*(Spoilers - I prefer Lazy. Who doesn't prefer to be Lazy?!)*
 
 Lazy evaluation, also known as deferred execution, is a programming concept where the evaluation of an expression is postponed until its value is actually needed. To clearly understand this, let’s first define a few basics:
 

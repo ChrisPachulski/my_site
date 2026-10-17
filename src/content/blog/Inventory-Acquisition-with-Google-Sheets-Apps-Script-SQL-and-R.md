@@ -1,7 +1,6 @@
 ---
 title: 'Inventory Acquisition with Google Sheets, Apps Script, SQL, and R'
 date: 2023-10-15T04:00:00.000Z
-featureImage: /images_resized.png
 ---
 
 ## Streamlining Game Store Inventory Management with Google Sheets, Apps Script, SQL, and R

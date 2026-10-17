@@ -1,12 +1,11 @@
 ---
 title: In-Depth Product-Level Analysis Using R for Advanced Market Insights
 date: 2023-09-09T04:00:00.000Z
-featureImage: /R_logo_resized.png
 ---
 
 Performing a detailed product-level analysis requires careful data manipulation, precise categorization, and insightful text analytics. In this blog post, we'll explore a structured, privacy-aware approach to analyzing product advertising data using R and essential packages such as `tidyverse`, `lubridate`, and `tidytext`.
 
-### Preparing the Analysis Environment
+## Preparing the Analysis Environment
 
 We start by loading the necessary libraries to ensure an efficient and powerful data analysis environment:
 
@@ -16,7 +15,7 @@ pacman::p_load(tidyverse, janitor, lubridate, anytime, RClickhouse, DBI, RMySQL,
 
 These packages collectively offer extensive capabilities for data import, manipulation, cleaning, text analytics, and database connectivity.
 
-### Data Retrieval from Databases
+## Data Retrieval from Databases
 
 Our analysis involves fetching specific product-related data using targeted SQL queries directly from databases, such as ClickHouse:
 
@@ -34,7 +33,7 @@ ch_wayfair <- DBI::dbGetQuery(conn,"
 
 This ensures precise data retrieval, specifically targeting relevant products and timeframes.
 
-### Comprehensive Data Cleaning
+## Comprehensive Data Cleaning
 
 Subsequent steps involve thorough cleaning, including normalizing product identifiers and categories:
 
@@ -44,7 +43,7 @@ ch_wayfair_cleansed <- ch_wayfair %>% mutate(id = gsub('^0+{3}', '', id))
 
 Normalization facilitates effective joins and comparisons between datasets from different sources.
 
-### Advanced Data Integration
+## Advanced Data Integration
 
 We integrate external advertising performance data by performing detailed join operations:
 
@@ -58,7 +57,7 @@ joined_wayfair_bing_data <- bing_wayfair_data %>%
 
 This approach helps in evaluating product visibility and advertising performance comprehensively.
 
-### Product Category Analysis
+## Product Category Analysis
 
 We perform granular category analyses to identify characteristics of descriptive product titles across main, middle, and lower categories:
 
@@ -77,7 +76,7 @@ main_category_descriptive_titles <- joined_wayfair_bing_data %>%
 
 Such detailed analyses provide actionable insights into product marketing and content strategy.
 
-### Identifying Gaps in Advertising
+## Identifying Gaps in Advertising
 
 To reveal potential gaps in advertising coverage, we systematically analyze products without recorded advertising impressions:
 
@@ -90,7 +89,7 @@ missing_wayfair_bing_data <- ch_wayfair_cleansed %>%
 
 This highlights products that might need enhanced advertising attention.
 
-### Text Analytics for Keyword Optimization
+## Text Analytics for Keyword Optimization
 
 Utilizing the power of `tidytext`, we conduct n-gram analyses to identify the most impactful keywords in product titles:
 
@@ -110,7 +109,7 @@ top_ngrams <- ngram_titles %>%
 
 Such keyword analyses inform strategic decisions about product naming and marketing language.
 
-### Analyzing Cost-Per-Click (CPC)
+## Analyzing Cost-Per-Click (CPC)
 
 A comprehensive CPC analysis segmented by product pricing provides crucial insights into advertising efficiency:
 
@@ -130,7 +129,7 @@ summary_df <- joined_wayfair_bing_data %>%
 
 Understanding CPC trends across price buckets allows strategic allocation of advertising budgets.
 
-### Visualization for Enhanced Insights
+## Visualization for Enhanced Insights
 
 We leverage powerful visualizations, such as bar plots, to clearly communicate insights and facilitate decision-making:
 
@@ -143,6 +142,6 @@ ggplot(summary_df, aes(x = Price_Bucket, y = Avg_CPC)) +
   ylab("Average CPC")
 ```
 
-### Final Thoughts
+## Final Thoughts
 
 This detailed, privacy-conscious workflow demonstrates the powerful capabilities of R for conducting sophisticated market analyses. Leveraging robust text analytics, precise database querying, and insightful visualization, we provide clear, actionable insights essential for strategic business decisions.

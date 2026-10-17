@@ -1,12 +1,11 @@
 ---
 title: 'Advanced Advertising Analytics with R: Unlocking Data-Driven Insights'
 date: 2023-05-28T04:00:00.000Z
-featureImage: /R_logo_resized.png
 ---
 
 Leveraging R and robust database integrations, businesses can gain deep analytical insights into advertising performance. In this blog post, we explore sophisticated R scripts designed specifically to analyze advertising data, competitor presence, and market behavior through comprehensive queries and transformations, all crafted with privacy and confidentiality in mind.
 
-### Preparing the Analytical Environment
+## Preparing the Analytical Environment
 
 Our analytical workflow starts by setting up an efficient R environment using essential libraries:
 
@@ -16,7 +15,7 @@ pacman::p_load(tidyverse, janitor, lubridate, anytime, RClickhouse, DBI, skimr, 
 
 This toolkit provides powerful functionality for data management, manipulation, and visualization, integral for advanced analytics.
 
-### Database Connectivity
+## Database Connectivity
 
 To extract actionable data, we establish seamless connections with ClickHouse databases:
 
@@ -31,7 +30,7 @@ conn = DBI::dbConnect(
 
 This connection allows precise, high-performance data retrieval, essential for handling large-scale advertising datasets.
 
-### Detailed Competitor Analysis
+## Detailed Competitor Analysis
 
 One core analytical operation involves competitor identification and performance tracking. Queries are crafted to extract competitor-related data from advertising events, enabling precise market positioning insights:
 
@@ -54,7 +53,7 @@ data = DBI::dbGetQuery(conn, "
 
 This targeted extraction highlights competitor market activities, providing detailed performance metrics like requests, clicks, and revenue.
 
-### Non-Brand Advertising Analysis
+## Non-Brand Advertising Analysis
 
 Equally important is analyzing non-brand performance - here approximated by landing-page URLs in generic service categories rather than by the keywords themselves - crucial for understanding market opportunities and consumer interests:
 
@@ -83,7 +82,7 @@ nonbrand_data = DBI::dbGetQuery(conn, "
 
 This analysis provides strategic visibility into consumer behavior, advertising efficiency, and potential expansion areas within targeted service sectors.
 
-### Granular Competitor Keyword Insights
+## Granular Competitor Keyword Insights
 
 Further granularity is achieved through keyword-specific queries, particularly valuable for brands such as Azure and competitors in cloud computing:
 
@@ -111,7 +110,7 @@ competitor_data = DBI::dbGetQuery(conn, "
 
 This precise competitor benchmarking facilitates strategic positioning and targeted advertising investments.
 
-### IP-Level Advertising Investigation
+## IP-Level Advertising Investigation
 
 Detailed investigative analytics at the IP level further enhances advertising accuracy and fraud detection capabilities:
 
@@ -134,7 +133,7 @@ ip_data = DBI::dbGetQuery(conn, "
 
 This investigation identifies potentially anomalous traffic patterns, improving advertising spend efficiency and fraud mitigation.
 
-### Data Exportation and Actionable Insights
+## Data Exportation and Actionable Insights
 
 Results from these detailed analyses are meticulously summarized, then exported for easy integration into strategic decision-making processes:
 
@@ -147,6 +146,6 @@ bind_rows(competitor = data, nonbrand = nonbrand_data, cloud = competitor_data, 
 
 Efficient data exportation allows stakeholders to quickly leverage insights in operational and strategic contexts.
 
-### Conclusion
+## Conclusion
 
 Employing advanced R analytics with detailed, targeted data queries and transformations allows organizations to derive critical insights into advertising performance, competitor behavior, and market opportunities. This approach provides a comprehensive, data-driven foundation for strategic business decisions, optimizing advertising efficacy and market competitiveness, all while maintaining stringent data privacy.
