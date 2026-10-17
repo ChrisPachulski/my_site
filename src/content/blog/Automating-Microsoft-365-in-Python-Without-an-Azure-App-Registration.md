@@ -164,21 +164,26 @@ A separate metadata file sits alongside it tracking when the user last went thro
 }
 ```
 
-`last_interactive_auth` is the field that matters for observability. The refresh token itself doesn't run out on that clock, a job that refreshes daily never hits Microsoft's 90-day inactivity window. What forces the re-auth is tenant policy, conditional access sign-in frequency or a password reset, and sign-in frequency counts from the last interactive login. In my tenant that lands at roughly 90 days. When it's been 83 days, I want my scripts warning me. When it's been 90, they should fail loudly so I don't lose a day wondering why a scheduled job stopped producing output.
+`last_interactive_auth` is the field that matters for observability. The refresh token itself doesn't run out on that clock, a job that refreshes daily never hits Microsoft's 90-day inactivity window. What forces the re-auth is tenant policy, conditional access sign-in frequency or a password reset, and sign-in frequency counts from the last interactive login. The window below is a setting, 90 by default, so set it to whatever your tenant actually enforces, and if silent auth keeps working past it the check says so instead of crying wolf. When it's been 83 days, I want my scripts warning me. When it's been 90, they should fail loudly so I don't lose a day wondering why a scheduled job stopped producing output.
 
 ```python
+SIGN_IN_WINDOW_DAYS = 90  # your tenant's sign-in frequency, not a token lifetime
+
 def check_token_health() -> dict:
     meta = _load_auth_meta(CACHE_DIR)
     last = meta.get("last_interactive_auth")
     if last is None:
         return {"status": "unknown", "days_remaining": None, "last_auth": None}
 
-    from datetime import datetime, timezone
+    from datetime import datetime, timedelta, timezone
     dt = datetime.fromisoformat(last)
     days_since = (datetime.now(timezone.utc) - dt).days
-    remaining = 90 - days_since  # my tenant's sign-in frequency, not a token lifetime
+    remaining = SIGN_IN_WINDOW_DAYS - days_since
+    silent = meta.get("last_silent_auth")
 
-    if remaining <= 0:
+    if silent and datetime.fromisoformat(silent) > dt + timedelta(days=SIGN_IN_WINDOW_DAYS):
+        status = "unknown"  # silent auth outlived the window, so the window is set wrong
+    elif remaining <= 0:
         status = "expired"
     elif remaining <= 7:
         status = "warning"
