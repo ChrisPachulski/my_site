@@ -1,7 +1,8 @@
 # Per-post pages are real prerendered files at /writing/<slug>/index.html
 # (Netlify serves them automatically — no rewrite needed for known slugs).
-# Unknown writing slugs fall through to the styled 404 page.
-/writing/*  /writing/_not-found/index.html  200
+# Unknown writing slugs get the styled 404 page with a real 404 status. Not
+# forced, so existing article files still win (Netlify shadowing).
+/writing/*  /writing/_not-found/index.html  404
 
 # Catch-all SPA fallback for any other unknown route, so the React app boots.
 /*  /index.html  200

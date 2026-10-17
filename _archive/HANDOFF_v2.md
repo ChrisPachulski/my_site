@@ -4,9 +4,9 @@
 Vite + React port of the original `design_handoff_portfolio` prototype, deployed to Netlify. Superseded the old Hugo theme. Lives at **https://chrispachulski.netlify.app**.
 
 ## Repo
-- Path: `C:\Users\pachulc\OneDrive - Hasbro Inc\Documents\best-analytics\Python\external\my_site`
+- Path: local clone of the repo below
 - Remote: `https://github.com/ChrisPachulski/my_site` (master branch)
-- `gh auth status` shows both accounts; **personal (ChrisPachulski) is active** — do NOT switch to `pachulc_hasbro`
+- `gh auth status` shows both accounts; **personal (ChrisPachulski) is active** — do NOT switch to the work account
 - **Commits use inline identity** (no git config is set anywhere):
   ```
   git -c user.name="ChrisPachulski" -c user.email="cjpach@icloud.com" commit -m "..."
@@ -70,7 +70,7 @@ Current state is what the user originally called "YES right behavior":
 If the user asks to change it: **clarify with a sketch or screenshot before touching code**. Vocabulary like "tighter", "sharper", "75% higher", "horizontal S" led to worse outcomes in this session. Small blind iterations compound.
 
 ### TINA_TOKEN leak in git history
-Prior commits (before this session) contain `TINA_TOKEN = "9e5a8d4de..."` and `NEXT_PUBLIC_TINA_CLIENT_ID` in `netlify.toml`. Current file has them removed but history still shows them. **User should rotate via Tina dashboard** — flagged but not resolved.
+The Tina Cloud token and client ID formerly committed in this repo (old `netlify.toml`, `_archive/hugo/tina/config.ts`) remain in git history; the token must be revoked in the Tina Cloud dashboard.
 
 ### Old Hugo files
 `config.yaml`, `data/`, `i18n/`, `themes/`, `.hugo_build.lock`, etc. remain in repo. Safe to bulk-delete; Netlify no longer reads them.
