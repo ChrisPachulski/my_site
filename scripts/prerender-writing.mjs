@@ -372,7 +372,13 @@ export function writingPrerender() {
         };
 
         const bodySource = post.body.replace(/^[\s\n]*#\s+[^\n]+\n+/, '');
-        const bodyHtml = marked.parse(bodySource, { mangle: false, headerIds: false });
+        // Same scroll wrapper and lazy images Article.jsx renders, so the
+        // prerendered first paint matches the hydrated page.
+        const bodyHtml = marked.parse(bodySource, { mangle: false, headerIds: false })
+          .replace(/<table>/g, '<div class="table-scroll" tabindex="0"><table>')
+          .replace(/<\/table>/g, '</table></div>')
+          .replace(/<pre>/g, '<pre tabindex="0">')
+          .replace(/<img /g, '<img loading="lazy" decoding="async" ');
         const inner = articleHtml(post, bodyHtml);
         const html = injectRoot(injectMeta(template, meta), inner);
         await writeFileEnsured(path.join(dist, 'writing', post.slug, 'index.html'), html);

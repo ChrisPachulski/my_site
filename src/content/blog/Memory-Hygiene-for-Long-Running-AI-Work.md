@@ -11,7 +11,7 @@ A Claude Code session would start, and within the first few queries, the same th
 
 This is a known failure mode of naive "retrieve top-K by similarity + boost on access" systems. The feedback loop is: a memory gets surfaced, its access count goes up, its composite score goes up, it gets surfaced more. Once a memory crosses the threshold where its boost dominates its cosine similarity to the query, it becomes permanent furniture. The system stops learning. The memory store becomes a three-item archive of whatever got surfaced first.
 
-This post is about the three-layer system I built to fix that. One layer is the memory substrate itself, a DuckDB-backed vector store with a scoring function that includes an anti-stickiness term. One layer is the consolidation process that runs periodically and prunes, merges, and rebalances. One layer is the plan-directory hygiene that applies the same discipline to markdown files that accumulate the way memories do. Together they've cut my memory store by more than half, the plan directory by more than 80%, and the subjective quality of my agent's recall up considerably.
+This post is about the three-layer system I built to fix that. One layer is the memory substrate itself, a DuckDB-backed vector store with a scoring function that includes an anti-stickiness term. One layer is the consolidation process that runs periodically and prunes, merges, and rebalances. One layer is the plan-directory hygiene that applies the same discipline to markdown files that accumulate the way memories do. Together they've cut my memory store by more than half and the plan directory by more than 80%, and pushed the subjective quality of my agent's recall up considerably.
 
 The argument, short version: for long-running AI-assisted work, pruning is not a cost. It's a feature. You need it the same way gardens need it. Left untended, the weeds win.
 
@@ -53,7 +53,7 @@ class MemoryRecord(TypedDict):
     cooldown_until: str | None # snoozed until this timestamp
 ```
 
-The embedding backend is dual. OpenAI's `text-embedding-3-small` when `OPENAI_API_KEY` is set; a TF-IDF fallback when it isn't. The TF-IDF path lives inside the package and zero-pads to 1536 dimensions (the OpenAI model's output size) so the schema doesn't have to change depending on which backend was used. This matters because I don't always have an API key available, scratch VMs, offline demos, airports, and losing the memory store because my local environment can't embed is a failure mode I refuse to accept.
+The embedding backend is dual. OpenAI's `text-embedding-3-small` when `OPENAI_API_KEY` is set; a TF-IDF fallback when it isn't. The TF-IDF path lives inside the package and zero-pads to 1536 dimensions (the OpenAI model's output size) so the schema doesn't have to change depending on which backend was used. This matters because I don't always have an API key available (scratch VMs, offline demos, airports), and losing the memory store because my local environment can't embed is a failure mode I refuse to accept.
 
 ## The composite score: five factors, one formula
 

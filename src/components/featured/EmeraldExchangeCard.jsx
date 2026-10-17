@@ -107,7 +107,7 @@ export default function EmeraldExchangeCard({ a, onOpen }) {
 
       <div className="badge">{POSTS[0]?.slug === a.slug && 'LATEST · '}{a.date.toUpperCase()}</div>
       <div className="cats">{a.cats}</div>
-      <h4>{a.title}</h4>
+      <h3>{a.title}</h3>
       <div className="exchange-marker" aria-hidden="true">
         <span className="exchange-marker__bracket">[ 01 ]</span>
         <span className="exchange-marker__label">ONE BOOKMARK · FIVE OPERATOR UIs REPLACED</span>

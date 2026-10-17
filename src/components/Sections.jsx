@@ -161,7 +161,7 @@ const PROJECTS = [
   },
   {
     title: 'Python Utility Toolkit',
-    tag: 'Open source · 2021',
+    tag: 'Open source · 2025',
     stack: ['Python', 'GCP', 'Salesforce', 'Genesys', 'SharePoint'],
     desc: 'A batteries-included library for my day-job: GCP, Salesforce, SharePoint, Genesys API, all in one import.',
     href: 'https://github.com/ChrisPachulski/py_toolkit', category: 'open',
@@ -569,7 +569,7 @@ function ArticleCard({ a, onOpen }) {
     >
       {a.stamp && <div className="card-stamp" aria-hidden="true">{a.stamp}</div>}
       <div className="cats">{a.cats}</div>
-      <h4>{a.title}</h4>
+      <h3>{a.title}</h3>
       <div className="meta">
         <span>{a.date}</span>
         <span>·</span>

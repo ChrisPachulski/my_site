@@ -183,7 +183,7 @@ export default function ObsidianWikiCard({ a, onOpen }) {
 
       <div className="badge">{POSTS[0]?.slug === a.slug && 'LATEST · '}{a.date.toUpperCase()}</div>
       <div className="cats">{a.cats}</div>
-      <h4>{a.title}</h4>
+      <h3>{a.title}</h3>
       <div className="meta">
         <span>{a.date}</span>
         <span>·</span>

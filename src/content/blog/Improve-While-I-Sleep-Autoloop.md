@@ -8,7 +8,7 @@ Point it at a git repo and walk away. A mesh of Claude subagents finds real work
 
 That's the whole pitch for autoloop, and it's also the whole difficulty. Anyone can write a `while true` loop that asks an LLM to "improve the codebase." What you get back is a machine that hallucinates bugs, lands plausible-but-wrong changes onto your main branch, and — if you're on a metered plan — bills you three hundred dollars while you sleep. Autoloop is what's left after you spend a month killing every one of those failure modes with actual code. It's about 5,455 lines of engine, 16 test files, and 94 commits of hard-won paranoia. This is the long field note on how it works and, more usefully, on everything that went wrong on the way there.
 
-Fair warning: this is a 60-minute read with real code in it. It's the deepest thing I've built this year, and it deserves the length. Grab coffee.
+Fair warning: this is a 38-minute read with real code in it. It's the deepest thing I've built this year, and it deserves the length. Grab coffee.
 
 ## The take, first
 

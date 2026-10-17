@@ -343,7 +343,7 @@ export default function App() {
   useEffect(() => {
     const post = route.name === 'article' ? getPost(route.slug) : null;
     if (route.name !== 'article') document.title = HOME_TITLE;
-    else document.title = post ? `${post.title} — Chris Pachulski` : 'Not Found — Chris Pachulski';
+    else document.title = post ? `${post.title} — ${post.author || 'Chris Pachulski'}` : 'Not Found — Chris Pachulski';
     // Trailing slash: the prerendered file is /writing/<slug>/index.html.
     const url = route.name === 'article' ? `${articlePath(route.slug)}/` : '/';
     if (headUrl.current === null) headUrl.current = url;  // first page: the served head already matches

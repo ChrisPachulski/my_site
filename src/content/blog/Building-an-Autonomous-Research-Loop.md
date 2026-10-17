@@ -1,6 +1,6 @@
 ---
 title: 'Building an Autonomous Research Loop: The Stack, The Rationale, and What I Borrowed From Karpathy and Feynman'
-date: 2026-04-18T04:00:00.000Z
+date: 2026-02-24T05:00:00.000Z
 ---
 
 # Building an Autonomous Research Loop

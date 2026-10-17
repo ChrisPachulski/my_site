@@ -95,7 +95,7 @@ py_toolkit/
 
 * pyproject.toml: Specifies metadata and dependencies for package installation. It has largely replaced the old setup.py approach - **Poetry** builds straight off of it.
 * requirements.txt: Lists all dependencies explicitly for easy environment setup.
-* init.py: Signals Python that the directory is a package and allows for importing modules easily.
+* `__init__.py`: Signals Python that the directory is a package and allows for importing modules easily.
 * README.md and LICENSE: Commonly used for providing basic package information and licensing.
 * tests: Typically uses pytest or unittest frameworks.
 * docs: Frequently contains user documentation or instructions in markdown format (py\_toolkit just leans on the README).

@@ -60,7 +60,7 @@ export default function AtHomeMediaCard({ a, onOpen }) {
 
       <div className="badge">HOME THEATER · S01E11</div>
       <div className="cats">{a.cats}</div>
-      <h4 className="amh-title" data-text={a.title}>{a.title}</h4>
+      <h3 className="amh-title" data-text={a.title}>{a.title}</h3>
 
       <div className="now-playing" aria-hidden="true">
         <span className="np-label">NOW PLAYING</span>

@@ -17,6 +17,7 @@ const MD_COMPONENTS = {
     <div className="table-scroll" tabIndex={0}><table {...props} node={undefined} /></div>
   ),
   pre: (props) => <pre tabIndex={0} {...props} node={undefined} />,
+  img: (props) => <img loading="lazy" decoding="async" {...props} node={undefined} />,
 };
 
 // Italic Pivot Rule (DESIGN.md): exactly one operative word per headline is

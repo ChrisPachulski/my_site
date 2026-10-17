@@ -1,5 +1,5 @@
 ---
-title: 'The Canon Was the Scaffolding: 298 Philosophers, a Homelab, and One Question About Opaque AI'
+title: 'The Canon Was the Scaffolding: 298 Works, a Homelab, and One Question About Opaque AI'
 date: 2026-06-26T04:00:00.000Z
 ---
 

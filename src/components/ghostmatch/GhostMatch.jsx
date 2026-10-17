@@ -191,7 +191,7 @@ function focusAbout(scroll) {
   if (!target) return;
   if (!target.hasAttribute('tabindex')) target.setAttribute('tabindex', '-1');
   target.focus({ preventScroll: true });
-  if (scroll) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  if (scroll) target.scrollIntoView({ block: 'start' });
 }
 
 /* ── Tease tile (default render — lives in document flow) ──────── */
