@@ -109,7 +109,7 @@ Which is what you wanted in the first place.
 
 ## The column-ID indirection problem
 
-The `add_rows` function above does something subtle that's worth spelling out: it resolves a title → column-ID map *inside* each call, meaning every write pays the cost of one `get_sheet` round-trip. For a single 10-row insert that's fine. For an ETL that's inserting 10,000 rows in batches of 500, you do not want to re-fetch the sheet metadata twenty times.
+The `add_rows` function above does something subtle that's worth spelling out: it resolves a title → column-ID map *inside* each call, meaning every write pays the cost of one `get_sheet` round-trip. For a single 10-row insert that's fine. For an ETL that's inserting 10,000 rows in batches of 400, you do not want to re-fetch the sheet metadata twenty-five times.
 
 The optimization, which production code should use, is to resolve the column map once and thread it through:
 
@@ -143,7 +143,10 @@ def update_rows(sheet_id: int, updates: list[dict]) -> None:
         row = smartsheet.models.Row()
         row.id = record["row_id"]
         for title, value in record.items():
-            if title == "row_id":
+            if title == "row_id" or title.endswith("__formula"):
+                continue
+            # formula cells are flagged by the formula-aware read further down
+            if pd.notna(record.get(f"{title}__formula")):
                 continue
             if title not in col_map:
                 raise ValueError(f"Column not found: {title}")
@@ -206,7 +209,7 @@ Two more Smartsheet-isms that will save you an afternoon.
 
 **Every sheet has exactly one primary column.** You set it via `primary: True` at create time. You cannot change it later without recreating the sheet. The primary column is what shows up in cross-sheet references as the row's identity, and what Smartsheet treats as the "natural label" of a row. Pick it carefully. I default to a description or business-key field, not an auto-generated ID.
 
-**Cells have both a `value` and a `formula`.** If a cell has a formula, `cell.value` gives you the current evaluated value and `cell.formula` gives you the formula string. When reading a sheet, I return `value`. When updating a sheet, never write to a formula-backed cell, the API will accept it silently and then Smartsheet will re-evaluate the formula on the next calculation pass and overwrite your value. The right move is to detect formula cells upstream and skip them.
+**Cells have both a `value` and a `formula`.** If a cell has a formula, `cell.value` gives you the current evaluated value and `cell.formula` gives you the formula string. When reading a sheet, I return `value`. When updating a sheet, never write to a formula-backed cell. If the formula is a column formula, the API rejects the update outright with error 1302 ("Updating a cell in a column formula is not supported"). The right move is to detect formula cells upstream and skip them, which is what the `__formula` check in `update_rows` above is for.
 
 ```python
 def sheet_to_dataframe(sheet) -> pd.DataFrame:
@@ -224,7 +227,7 @@ def sheet_to_dataframe(sheet) -> pd.DataFrame:
     return pd.DataFrame(records)
 ```
 
-That `__formula` suffix convention lets you pull formulas out when you need them (for diffing sheets across environments, for example) while leaving the default read path clean.
+That `__formula` suffix convention lets you pull formulas out when you need them (for diffing sheets across environments, for example) while the value columns stay exactly what the plain read gives you.
 
 ## Batching and rate limits
 
@@ -240,7 +243,7 @@ def delete_rows(sheet_id: int, row_ids: list[int], batch_size: int = 400) -> Non
         client.Sheets.delete_rows(sheet_id, batch)
 ```
 
-`add_rows` batches the same way in production, and does the batching before firing any API call, so a partial failure doesn't leave you in a half-inserted state.
+`add_rows` batches the same way in production, and builds every batch before firing any API call, so a bad column name fails before anything is written. It is not a transaction though: if batch three of five gets rejected, batches one and two are already in the sheet, so a retry has to match on the business key instead of blindly re-inserting.
 
 Rate-limit-wise, Smartsheet's quotas are per-user and per-minute, and the API returns `429` with a `Retry-After` header when you're over. The wrapper doesn't bake in a retry decorator because different callers want different retry semantics (ETLs want retries, interactive scripts want to fail fast). The SDK's internal retry logic is adequate for most use cases; the exception is bulk writes, where you want application-level backoff to avoid wasting the API budget on repeated requests that are all going to get throttled.
 
@@ -270,10 +273,12 @@ When someone hands you a new environment with "a couple hundred" sheets and asks
 The end-to-end ETL pattern for a Smartsheet-backed data source looks roughly like this:
 
 ```python
-from smartsheet_utils import read_sheet_by_name, update_rows, add_rows
+from smartsheet_utils import find_sheet, sheet_to_dataframe, update_rows, add_rows
 
-# pull Smartsheet side as a DataFrame
-df_sheet = read_sheet_by_name("Q4 Budget Tracker")
+# pull Smartsheet side as a DataFrame, keeping the ID for the writes below
+sheet = find_sheet("Q4 Budget Tracker")
+sheet_id = sheet.id
+df_sheet = sheet_to_dataframe(sheet)
 
 # pull upstream source (a warehouse table, via a role-routed connector)
 df_source = query_to_df("""
