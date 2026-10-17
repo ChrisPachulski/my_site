@@ -116,7 +116,7 @@ The reason `cli-anything` matters for this post is that without it, the literatu
 
 The research loop produces a lot of output, iteration by iteration. Log entries, referee reports, diagnostic reports, literature syntheses. The question is how to make sure that output gets captured before the cognitive haze of iteration thirteen makes you forget what iteration ten concluded.
 
-The answer is hooks. Two of them, specifically, running at the session boundary.
+The answer is hooks. Two of them, specifically, running at the points where work gets handed off: the end of a response and the commit.
 
 **`timeline-gate.sh`** is a Stop hook. It fires every time Claude finishes a response and tries to stop, not just at the end of the session. It checks whether any work was done today, any commits since midnight local, any uncommitted changes to tracked files, and then checks whether `TIMELINE.md` was modified today. If work was done and the timeline wasn't updated, the hook blocks the stop with a system message that reads, in part: "session has changes but no timeline entry today. You MUST add today's entry to TIMELINE.md before stopping."
 
@@ -126,7 +126,7 @@ Together, these two hooks enforce an invariant that the research loop by itself 
 
 There's a subtler third hook, `timeline-reminder.sh`, a non-blocking UserPromptSubmit hook throttled once per hour, that surfaces a gentle nudge if the timeline hasn't been updated that session. It's a suggestion rather than a wall. The wall is the Stop hook. The suggestion exists so the wall doesn't have to do all the work.
 
-When I said at the top of this post that the hook and the research loop work in beautiful synchronicity, this is what I meant. The loop runs for hours. The loop produces knowledge. The hooks force the knowledge into a human-readable shape before the session can end. No iteration's findings get lost. No new project escapes without a README. The invariants are enforced at the hook layer so the loop doesn't have to enforce them itself.
+When I said at the top of this post that the hook and the research loop work in beautiful synchronicity, this is what I meant. The loop runs for hours. The loop produces knowledge. The hooks force the knowledge into a human-readable shape before Claude can finish a response or land a commit. No iteration's findings get lost. No new project escapes without a README. The invariants are enforced at the hook layer so the loop doesn't have to enforce them itself.
 
 ## Convergence: ten criteria and a skeptic
 
