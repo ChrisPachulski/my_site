@@ -737,8 +737,10 @@ export default function GhostMatch({ onComplete }) {
   const showCounterPrompt = stage === 'counter' && state.prompt === 'counter' && !state.ended;
   const interactiveInst = showCounterPrompt ? COUNTER_CARD_INST : null;
 
+  /* A div, not a section: the after-hours theme pins every page <section> to
+     position: relative, which would drop the dialog back into the page flow. */
   return (
-    <section
+    <div
       ref={rootRef}
       className="gm-root"
       role="dialog"
@@ -864,6 +866,6 @@ export default function GhostMatch({ onComplete }) {
           {state.ended && <VictoryScreen onContinue={handleVictoryContinue} expired={expired} />}
         </>
       )}
-    </section>
+    </div>
   );
 }
