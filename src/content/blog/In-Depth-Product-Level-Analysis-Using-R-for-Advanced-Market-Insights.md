@@ -21,7 +21,7 @@ These packages collectively offer extensive capabilities for data import, manipu
 Our analysis involves fetching specific product-related data using targeted SQL queries directly from databases, such as ClickHouse:
 
 ```r
-wayfair_pla <- DBI::dbGetQuery(conn,"
+ch_wayfair <- DBI::dbGetQuery(conn,"
   SELECT dt, id, title, brand, sale_price, product_category
   FROM feed_pla_master
   WHERE lower(advertiser_name) LIKE 'wayfair%'
@@ -49,8 +49,10 @@ Normalization facilitates effective joins and comparisons between datasets from 
 We integrate external advertising performance data by performing detailed join operations:
 
 ```r
-joined_macys_bing_data <- bing_macys_data %>%
-  left_join(ch_macy_cleansed, by = c('merchant_product_id' = 'id', 'title' = 'title')) %>%
+bing_wayfair_data <- read_csv('bing_wayfair_product_report.csv') %>% clean_names()
+
+joined_wayfair_bing_data <- bing_wayfair_data %>%
+  left_join(ch_wayfair_cleansed, by = c('merchant_product_id' = 'id', 'title' = 'title')) %>%
   distinct()
 ```
 
@@ -61,7 +63,7 @@ This approach helps in evaluating product visibility and advertising performance
 We perform granular category analyses to identify characteristics of descriptive product titles across main, middle, and lower categories:
 
 ```r
-main_category_descriptive_titles <- joined_macys_bing_data %>%
+main_category_descriptive_titles <- joined_wayfair_bing_data %>%
   separate(product_category, into = c('main_category', 'middle_category', 'lower_category'), sep = ' > ') %>%
   drop_na() %>%
   group_by(main_category) %>%
@@ -80,8 +82,8 @@ Such detailed analyses provide actionable insights into product marketing and co
 To reveal potential gaps in advertising coverage, we systematically analyze products without recorded advertising impressions:
 
 ```r
-missing_macys_bing_data <- ch_macy_cleansed %>%
-  left_join(bing_macys_data, by = c('id' = 'merchant_product_id', 'title' = 'title')) %>%
+missing_wayfair_bing_data <- ch_wayfair_cleansed %>%
+  left_join(bing_wayfair_data, by = c('id' = 'merchant_product_id', 'title' = 'title')) %>%
   distinct() %>%
   filter(is.na(account_name))
 ```
@@ -93,6 +95,10 @@ This highlights products that might need enhanced advertising attention.
 Utilizing the power of `tidytext`, we conduct n-gram analyses to identify the most impactful keywords in product titles:
 
 ```r
+unique_titles <- joined_wayfair_bing_data %>%
+  separate(product_category, into = c('main_category', 'middle_category', 'lower_category'), sep = ' > ') %>%
+  distinct(main_category, title)
+
 ngram_titles <- unique_titles %>%
   unnest_ngrams(ngram, title, n = 2)
 
@@ -109,7 +115,7 @@ Such keyword analyses inform strategic decisions about product naming and market
 A comprehensive CPC analysis segmented by product pricing provides crucial insights into advertising efficiency:
 
 ```r
-summary_df <- joined_macys_bing_data %>%
+summary_df <- joined_wayfair_bing_data %>%
   mutate(Price_Bucket = case_when(
     sale_price < 25 ~ "Under $25",
     sale_price >= 25 & sale_price < 50 ~ "$25 - $50",
