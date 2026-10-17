@@ -407,7 +407,7 @@ const EDUCATION = [
   { hash:'edu25a', role:'Google Data Analytics Certification', company:'Google', time:'2025', bullets:[{t:'Foundations of data analysis and BI tooling'}] },
   { hash:'edu22a', role:'Full R Track Certifications', company:'Business Science University', time:'2022', bullets:[{t:'Shiny apps, time-series forecasting, tidymodels'}] },
   { hash:'edu19a', role:'Master of Business Administration (MBA)', company:'Hofstra University', time:'2019', bullets:[] },
-  { hash:'edu17a', role:'BA, Classical Languages & Biology', company:'Creighton University', time:'2017', bullets:[{t:'Yes, really: Latin, Greek, and biochem.'}] },
+  { hash:'edu17a', role:'BS – Biological Sciences & Classical Studies', company:'Creighton University', time:'2017', bullets:[{t:'Yes, really: Latin, Greek, and biochem.'}] },
 ];
 
 /* Individual commit card — watches for itself coming into view for the reveal. */

@@ -59,7 +59,7 @@ export function About() {
                 <div className="fact"><span>current</span><span>Wizards of the Coast, Magic: The Gathering</span></div>
                 <div className="fact"><span>experience</span><span>7+ yrs shipping data systems · 5 industries</span></div>
                 <div className="fact"><span>previously</span><span>The Providencia Group · Ad.Net · Mozilla · Spins LLC · Consumer Edge Research</span></div>
-                <div className="fact"><span>education</span><span>MBA, Hofstra · BA Classics + Biology, Creighton</span></div>
+                <div className="fact"><span>education</span><span>MBA, Hofstra · BS – Biological Sciences &amp; Classical Studies, Creighton University</span></div>
                 <div className="fact"><span>location</span><span>Seattle, WA · Remote</span></div>
               </div>
             </div>
