@@ -93,10 +93,10 @@ export const CARDS = {
   'counterflux': {
     id: 'counterflux',
     name: 'Counterflux',
-    cost: ['U', 'U'],
+    cost: ['U', 'U', 'R'],
     type: 'Instant',
-    colors: ['U'],
-    text: 'Counter target spell. ~ cannot be countered.',
+    colors: ['U', 'R'],
+    text: "~ can't be countered. Counter target spell you don't control. Overload {1}{U}{U}{R}.",
     flavor: '"Stack of docs. clarity → dream → session-sounds."',
     art: 'swirl',
   },
