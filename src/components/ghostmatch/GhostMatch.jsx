@@ -489,7 +489,7 @@ function VictoryScreen({ onContinue, expired }) {
         <div className="gm-victory-tags">
           <span>WotC Senior Economic Analyst</span>
           <span>MTGBAN co-founder · $1.2M ARR</span>
-          <span>8 yrs shipping data systems</span>
+          <span>7+ yrs shipping data systems</span>
         </div>
         <button ref={ctaRef} type="button" className="gm-victory-cta" onClick={onContinue}>
           Explore the portfolio <span aria-hidden="true">↓</span>
