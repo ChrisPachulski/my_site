@@ -7,7 +7,6 @@ import NotFound from './components/NotFound.jsx';
 import ThemeSwitch from './components/ThemeSwitch.jsx';
 import { useRoute, articlePath } from './lib/router.js';
 import { getPost } from './lib/blog.js';
-import { UNLISTED } from './lib/catalog.js';
 
 const GhostMatch = lazy(() => import('./components/ghostmatch/GhostMatch.jsx'));
 
@@ -15,8 +14,9 @@ const ACCENT = 'violet';
 const HERO_VARIANT = 'sql';
 const MODE_STORAGE_KEY = 'display-mode';
 const TRANSITION_MS = 520;
-const SITE_URL = 'https://chrispachulski.com';
 const HOME_TITLE = 'Chris Pachulski — Senior Economic Analyst';
+// Route-dependent head tags the build writes into each URL's own HTML file.
+const HEAD_TAGS = 'meta[name="description"], meta[name="robots"], link[rel="canonical"], meta[property^="og:"], meta[name^="twitter:"], script[type="application/ld+json"]';
 
 function readStoredMode() {
   if (typeof window === 'undefined') return 'after-hours';
@@ -334,32 +334,31 @@ export default function App() {
     if (el) el.scrollIntoView({ behavior: 'instant', block: 'start' });
   }, [route.name]);
 
-  // Route-dependent head tags. Crawlers read each URL's own prerendered head;
-  // this keeps the live document in step after client-side navigation, and
-  // drops the unlisted pages' noindex once the visitor moves on.
+  // Route-dependent head. Crawlers read each URL's own prerendered head; after
+  // a client-side navigation the live document copies HEAD_TAGS (description,
+  // canonical, robots, Open Graph, Twitter, JSON-LD) from the new URL's file,
+  // so the build stays their one source. The title is set at once, so it never
+  // waits on the fetch (and dev, which serves index.html everywhere, keeps it).
+  const headUrl = useRef(null);
   useEffect(() => {
     const post = route.name === 'article' ? getPost(route.slug) : null;
-    let title = HOME_TITLE;
-    let path = '/';
-    if (route.name === 'article') {
-      title = post ? `${post.title} — Chris Pachulski` : 'Not Found — Chris Pachulski';
-      path = post ? articlePath(post.slug) : '/writing/_not-found/';
-    }
-    document.title = title;
-    const url = SITE_URL + path;
-    document.querySelector('link[rel="canonical"]')?.setAttribute('href', url);
-    document.querySelector('meta[property="og:url"]')?.setAttribute('content', url);
-    document.querySelector('meta[property="og:title"]')?.setAttribute('content', title);
-    document.querySelector('meta[name="twitter:title"]')?.setAttribute('content', title);
-    const noindex = !!post && UNLISTED.some((p) => p.slug === post.slug);
-    let robots = document.querySelector('meta[name="robots"]');
-    if (noindex && !robots) {
-      robots = document.createElement('meta');
-      robots.name = 'robots';
-      document.head.appendChild(robots);
-    }
-    if (noindex) robots.content = 'noindex';
-    else robots?.remove();
+    if (route.name !== 'article') document.title = HOME_TITLE;
+    else document.title = post ? `${post.title} — Chris Pachulski` : 'Not Found — Chris Pachulski';
+    // Trailing slash: the prerendered file is /writing/<slug>/index.html.
+    const url = route.name === 'article' ? `${articlePath(route.slug)}/` : '/';
+    if (headUrl.current === null) headUrl.current = url;  // first page: the served head already matches
+    if (url === headUrl.current) return;
+    const ctrl = new AbortController();
+    fetch(url, { signal: ctrl.signal })
+      .then((r) => (r.ok ? r.text() : Promise.reject(new Error(r.status))))
+      .then((html) => {
+        const next = new DOMParser().parseFromString(html, 'text/html').head;
+        document.head.querySelectorAll(HEAD_TAGS).forEach((el) => el.remove());
+        document.head.append(...next.querySelectorAll(HEAD_TAGS));
+        headUrl.current = url;
+      })
+      .catch(() => {});  // offline or superseded: keep the old tags
+    return () => ctrl.abort();
   }, [route.name, route.slug]);
 
   const handleArticleOpen = (slug) => {
