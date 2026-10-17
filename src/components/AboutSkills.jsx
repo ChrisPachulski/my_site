@@ -176,11 +176,11 @@ export function Feature() {
               <span className="tag">featured</span>
               <h3>MTGBAN. I co-founded a <em>$1.2M</em> arbitrage engine for Magic: the Gathering.</h3>
               <p className="dim">
-                500+ paying customers use our aggregated pricing to buy, sell, and hedge across a fragmented collectibles market. I designed the BigQuery warehouse from scratch, and the entire pipeline runs on Digital Ocean droplets + the R tidyverse.
+                500+ paying customers used our aggregated pricing to buy, sell, and hedge across a fragmented collectibles market. I designed the BigQuery warehouse from scratch, and the entire pipeline ran on Digital Ocean droplets + the R tidyverse.
               </p>
-              <p className="dim">Time-series ML forecasts price movements. A Go dashboard surfaces it all.</p>
+              <p className="dim">Time-series ML forecast price movements. A Go dashboard surfaced it all.</p>
               <p className="feature-evidence">
-                <strong>$1.2M</strong> ARR <span aria-hidden="true">·</span> <strong>500+</strong> paying subs <span aria-hidden="true">·</span> <strong>24/7</strong> since 2017
+                <strong>$1.2M</strong> ARR <span aria-hidden="true">·</span> <strong>500+</strong> paying subs <span aria-hidden="true">·</span> <strong>24/7</strong> from 2017 to 2025
               </p>
             </div>
             <div>

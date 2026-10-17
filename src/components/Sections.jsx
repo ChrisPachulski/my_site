@@ -56,10 +56,10 @@ const PROJECTS = [
     title: 'MTGBAN: Collectibles Pricing & Forecasting Platform',
     tag: 'Co-founder · 2017 – 2025',
     stack: ['R', 'tidyverse', 'BigQuery', 'H2O AutoML', 'Prophet', 'RSelenium', 'Docker', 'Digital Ocean', 'Go'],
-    desc: 'Eight years of continuous shipping. 38+ production R scripts (~26K LOC) running a multi-TCG pricing, forecasting, and distribution platform for 500+ paying subscribers.',
+    desc: 'Eight years of continuous shipping. 38+ production R scripts (~26K LOC) that ran a multi-TCG pricing, forecasting, and distribution platform for 500+ paying subscribers.',
     href: 'https://www.mtgban.com/', category: 'founded',
     challenge: 'Collectibles markets fragment across 20+ marketplaces, six different trading-card games, and multiple grading authorities (PSA, Beckett). Pricing data is dirty, latent, and sold piecemeal. Serious traders, stores, and speculators lose spread to information asymmetry.',
-    solution: "Built the full stack from scratch. A BigQuery warehouse (gaeas-cradle) anchors the data layer. RSelenium + httr/rvest scrapers pull every major vendor: TCGplayer, Card Kingdom, Cardsphere, CK Buylist, MTGJSON, Scryfall. They cover MTG, Pokemon, Yu-Gi-Oh, One Piece, Lorcana, and Flesh and Blood, plus PSA and Beckett for graded cards. Forecasting is an H2O AutoML ensemble (GBM + Deep Learning) alongside Prophet for time-series. Community sentiment on Discord is mined with tidytext + NRC. A Twitter bot auto-distributes signals, MTGBAN's own API feeds paying subscribers, and a Go dashboard surfaces it all. Dockerized and running 24/7 on Digital Ocean since 2017.",
+    solution: "Built the full stack from scratch. A BigQuery warehouse (gaeas-cradle) anchored the data layer. RSelenium + httr/rvest scrapers pulled every major vendor: TCGplayer, Card Kingdom, Cardsphere, CK Buylist, MTGJSON, Scryfall. They covered MTG, Pokemon, Yu-Gi-Oh, One Piece, Lorcana, and Flesh and Blood, plus PSA and Beckett for graded cards. Forecasting was an H2O AutoML ensemble (GBM + Deep Learning) alongside Prophet for time-series. Community sentiment on Discord was mined with tidytext + NRC. A Twitter bot auto-distributed signals, MTGBAN's own API fed paying subscribers, and a Go dashboard surfaced it all. Dockerized and ran 24/7 on Digital Ocean from 2017 to 2025.",
     metrics: [
       { v: '$1.2M', k: 'Annual revenue' }, { v: '500+', k: 'Paying subscribers' },
       { v: '8 yrs', k: 'In continuous production' }, { v: '6', k: 'TCGs covered' },
@@ -512,7 +512,7 @@ export function Resume() {
               Seven years of <em>shipping</em>.
             </h2>
             <p className="dim reveal section-lede" data-delay="1">
-              A git log of the work. Most recent at top, origin/HEAD marked. Financial services, digital marketing, CPG, tech, plus my own startup since 2017.
+              A git log of the work. Most recent at top, HEAD marked. Government contracting, adtech, browser telemetry, CPG retail panel, and equity research, plus the startup I co-founded and ran from 2017 to 2025.
             </p>
           </div>
           <div className="reveal" data-delay="2">
