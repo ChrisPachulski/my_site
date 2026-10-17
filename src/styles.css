@@ -177,6 +177,7 @@ code, kbd, pre, samp,
   font-variant-numeric: tabular-nums;
 }
 html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 body {
   background-image:
     radial-gradient(ellipse 1200px 600px at 20% -10%, var(--accent-soft), transparent 60%),

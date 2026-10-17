@@ -357,11 +357,11 @@ export default function App() {
         navigate('/');
         requestAnimationFrame(() => {
           const el = document.querySelector(target);
-          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          if (el) el.scrollIntoView({ block: 'start' });  // smoothness comes from CSS scroll-behavior, which honours reduced motion
         });
       } else {
         const el = document.querySelector(target);
-        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        if (el) el.scrollIntoView({ block: 'start' });
       }
     } else if (target.startsWith('/#')) {
       handleHomeNav(target.slice(1));
