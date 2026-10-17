@@ -60,7 +60,8 @@ function deriveExcerpt(body) {
 }
 
 function dateToISO(s) {
-  // "Mar 2024" -> "2024-03-15"; gracefully default to first of month.
+  // Fallback for posts without a frontmatter date: "Mar 2024" -> "2024-03-15"
+  // (mid-month, since the catalog only knows the month).
   const months = { Jan:'01', Feb:'02', Mar:'03', Apr:'04', May:'05', Jun:'06', Jul:'07', Aug:'08', Sep:'09', Oct:'10', Nov:'11', Dec:'12' };
   const m = String(s).match(/^([A-Za-z]+)\s+(\d{4})$/);
   if (!m) return new Date().toISOString().slice(0, 10);
@@ -247,10 +248,12 @@ function injectRoot(template, innerHtml) {
 }
 
 function buildSitemap(slugs) {
+  // No <lastmod>: nothing records when a post was last edited, and a made-up
+  // date is worse than none.
   const urls = [
     `<url><loc>${SITE_URL}/</loc><changefreq>monthly</changefreq><priority>1.0</priority></url>`,
     ...slugs.map(s =>
-      `<url><loc>${SITE_URL}${postPath(s.slug)}</loc><lastmod>${dateToISO(s.date)}</lastmod><changefreq>yearly</changefreq><priority>0.7</priority></url>`
+      `<url><loc>${SITE_URL}${postPath(s.slug)}</loc><changefreq>yearly</changefreq><priority>0.7</priority></url>`
     ),
   ];
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join('\n')}\n</urlset>\n`;
@@ -271,6 +274,7 @@ async function loadPosts(entries) {
     out.push({
       ...c,
       excerpt: frontmatter.excerpt || deriveExcerpt(body),
+      published: frontmatter.date?.match(/^\d{4}-\d{2}-\d{2}/)?.[0] || dateToISO(c.date),
       body,
     });
   }
@@ -337,7 +341,7 @@ export function writingPrerender() {
             headline: post.title,
             description,
             url,
-            datePublished: dateToISO(post.date),
+            datePublished: post.published,
             image: ogImage,
             author: {
               '@type': 'Person',
