@@ -21,7 +21,7 @@
 
 .featured-tile .cats {
   font-family: var(--mono);
-  font-size: 10px;
+  font-size: 0.625rem;
   color: var(--accent);
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -31,7 +31,7 @@
 
 .featured-tile h4 {
   font-family: var(--serif);
-  font-size: clamp(20px, 2.2vw, 26px);
+  font-size: clamp(1.25rem, 2.2vw, 1.625rem);
   line-height: 1.2;
   letter-spacing: -0.01em;
   margin: 0;
@@ -49,7 +49,7 @@
   display: flex;
   gap: 14px;
   font-family: var(--mono);
-  font-size: 10px;
+  font-size: 0.625rem;
   color: var(--ink-mute);
   margin-top: auto;
   padding-top: 14px;
@@ -86,7 +86,7 @@
   top: 14px;
   right: 16px;
   font-family: var(--mono);
-  font-size: 9px;
+  font-size: 0.5625rem;
   letter-spacing: 0.12em;
   color: var(--ink-mute);
   text-transform: uppercase;
@@ -190,7 +190,7 @@
   left: 24px;
   bottom: 56px;
   font-family: var(--mono);
-  font-size: 10px;
+  font-size: 0.625rem;
   color: var(--ink-mute);
   z-index: 2;
   display: flex;
@@ -203,7 +203,7 @@
 }
 .research-loop-card .iter-counter .iter-num {
   color: var(--accent);
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 600;
 }
 
@@ -297,7 +297,7 @@
   top: 14px;
   left: 16px;
   font-family: var(--mono);
-  font-size: 9px;
+  font-size: 0.5625rem;
   letter-spacing: 0.12em;
   color: var(--success, oklch(0.72 0.13 150));
   text-transform: uppercase;
@@ -361,7 +361,7 @@ html[data-theme="light"] .at-home-media-card {
 
 .at-home-media-card .now-playing {
   font-family: var(--mono);
-  font-size: 11px;
+  font-size: 0.6875rem;
   display: flex;
   gap: 10px;
   align-items: baseline;
@@ -403,7 +403,7 @@ html[data-theme="light"] .at-home-media-card {
 }
 .at-home-media-card .timecode {
   font-family: var(--mono);
-  font-size: 10px;
+  font-size: 0.625rem;
   color: var(--ink-mute);
   min-width: 36px;
 }
@@ -417,7 +417,7 @@ html[data-theme="light"] .at-home-media-card {
 }
 .at-home-media-card .chip {
   font-family: var(--mono);
-  font-size: 9px;
+  font-size: 0.5625rem;
   letter-spacing: 0.1em;
   padding: 2px 6px;
   border: 1px solid color-mix(in oklab, var(--accent) 50%, var(--line));
@@ -430,7 +430,7 @@ html[data-theme="light"] .at-home-media-card {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 64px;
+  font-size: 4rem;
   color: var(--accent);
   opacity: 0;
   transform: scale(0.5);
@@ -482,7 +482,7 @@ html[data-theme="light"] .at-home-media-card {
 .obsidian-wiki-card h4 { position: relative; z-index: 3; max-width: 70%; }
 .obsidian-wiki-card .count-num {
   font-family: var(--display, var(--mono));
-  font-size: clamp(56px, 8vw, 96px);
+  font-size: clamp(3.5rem, 8vw, 6rem);
   font-weight: 700;
   line-height: 1;
   color: var(--ink);
@@ -491,7 +491,7 @@ html[data-theme="light"] .at-home-media-card {
 }
 .obsidian-wiki-card .count-sub {
   font-family: var(--mono);
-  font-size: 10px;
+  font-size: 0.625rem;
   color: var(--ink-mute);
   letter-spacing: 0.12em;
   margin-top: 8px;
@@ -624,14 +624,14 @@ html[data-theme="light"] .emerald-exchange-card {
 .emerald-exchange-card h4 { position: relative; z-index: 3; }
 .emerald-exchange-card .exchange-marker__bracket {
   font-family: var(--mono);
-  font-size: clamp(13px, 1.4vw, 17px);
+  font-size: clamp(0.8125rem, 1.4vw, 1.0625rem);
   color: var(--accent);
   letter-spacing: 0.10em;
   text-shadow: 0 0 8px var(--accent-soft);
 }
 .emerald-exchange-card .exchange-marker__label {
   font-family: var(--mono);
-  font-size: 9px;
+  font-size: 0.5625rem;
   color: var(--ink-mute);
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -663,7 +663,7 @@ html[data-theme="light"] .emerald-exchange-card {
   .featured-tile .badge {
     top: 12px;
     right: 12px;
-    font-size: 8px;
+    font-size: 0.5rem;
     padding: 3px 7px;
   }
 
@@ -700,13 +700,13 @@ html[data-theme="light"] .emerald-exchange-card {
     transform: none;
     margin-top: 8px;
   }
-  .obsidian-wiki-card .count-num { font-size: 40px; text-shadow: none; }
-  .obsidian-wiki-card .count-sub { font-size: 9px; margin-top: 2px; max-width: none; }
+  .obsidian-wiki-card .count-num { font-size: 2.5rem; text-shadow: none; }
+  .obsidian-wiki-card .count-sub { font-size: 0.5625rem; margin-top: 2px; max-width: none; }
 
   /* Mobile: the kraken's elaborate stroke work crashes into the title at the
      compressed grid cell; pull it back to a quiet ambient mark. */
   .emerald-exchange-card .kraken-svg { opacity: 0.32; }
-  .emerald-exchange-card .exchange-marker__bracket { font-size: 14px; text-shadow: none; }
+  .emerald-exchange-card .exchange-marker__bracket { font-size: 0.875rem; text-shadow: none; }
 }
 
 /* Parchment: the dark vignette and dark-mode neutrals on flair were tuned
