@@ -3,7 +3,7 @@ import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { marked } from 'marked';
 import { CATALOG, UNLISTED } from '../src/lib/catalog.js';
-import { renderOgCards } from './render-og.mjs';
+import { renderOgCards, splitPivot } from './render-og.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname  = path.dirname(__filename);
@@ -81,22 +81,9 @@ function dateToISO(s) {
   return `${m[2]}-${months[m[1]] || '01'}-15`;
 }
 
-function italicTitle(title) {
-  // Mirror Article.jsx ItalicTitle. Italicize the segment after the first
-  // colon when present; otherwise the last 1–2 words.
-  const colonSplit = title.split(/:\s+/);
-  if (colonSplit.length >= 2) {
-    const head = escapeHtml(colonSplit[0]);
-    const tail = escapeHtml(colonSplit.slice(1).join(': '));
-    return `${head}: <em>${tail}</em>`;
-  }
-  const words = title.split(/\s+/);
-  if (words.length <= 3) {
-    const last = words.pop();
-    return `${escapeHtml(words.join(' '))}${words.length ? ' ' : ''}<em>${escapeHtml(last)}</em>`;
-  }
-  const tail = words.slice(-2).join(' ');
-  return `${escapeHtml(words.slice(0, -2).join(' '))} <em>${escapeHtml(tail)}</em>`;
+function italicTitle(title, pivot) {
+  const [lead, em, tail] = splitPivot(title, pivot);
+  return `${escapeHtml(lead)}${em ? `<em>${escapeHtml(em)}</em>` : ''}${escapeHtml(tail)}`;
 }
 
 function articleHtml(post, bodyHtml) {
@@ -114,7 +101,7 @@ function articleHtml(post, bodyHtml) {
     <header class="article-head">
       <a href="/#writing" class="article-back mono"><span class="back-arrow" aria-hidden="true">←</span> writing</a>
       <div class="article-eyebrow mono">Field Notes</div>
-      <h1 id="article-title" class="article-title">${italicTitle(post.title)}</h1>
+      <h1 id="article-title" class="article-title">${italicTitle(post.title, post.pivot)}</h1>
       <div class="article-meta">
         <span class="article-chip mono">${escapeHtml(post.date)}</span>
         <span class="article-chip mono">${escapeHtml(post.read)}</span>
@@ -329,7 +316,7 @@ export function writingPrerender() {
       const ogDir = path.join(dist, 'og');
       await fs.mkdir(ogDir, { recursive: true });
       try {
-        await renderOgCards(pages.map(p => ({ slug: p.slug, title: p.title, date: p.date, read: p.read, cats: p.cats })), ogDir);
+        await renderOgCards(pages.map(p => ({ slug: p.slug, title: p.title, pivot: p.pivot, date: p.date, read: p.read, cats: p.cats })), ogDir);
         console.log(`[prerender] wrote ${pages.length} OG cards to dist/og/`);
       } catch (err) {
         console.warn(`[prerender] OG card generation failed: ${err.message}`);

@@ -78,30 +78,38 @@ const C = {
   plasmaSoft:    '#c685ec',
 };
 
-function italicTitleNodes(title) {
-  const colon = title.split(/:\s+/);
-  if (colon.length >= 2) {
-    return [
-      `${colon[0]}: `,
-      span({ style: { fontStyle: 'italic', color: C.plasmaSoft } }, colon.slice(1).join(': ')),
-    ];
-  }
-  const words = title.split(/\s+/);
-  if (words.length <= 3) {
-    const last = words.pop();
-    return [
-      `${words.join(' ')}${words.length ? ' ' : ''}`,
-      span({ style: { fontStyle: 'italic', color: C.plasmaSoft } }, last),
-    ];
-  }
-  const tail = words.slice(-2).join(' ');
-  return [
-    `${words.slice(0, -2).join(' ')} `,
-    span({ style: { fontStyle: 'italic', color: C.plasmaSoft } }, tail),
-  ];
+// Italic Pivot Rule, mirroring Article.jsx ItalicTitle: italicize the catalog
+// `pivot` when the title contains it, otherwise the last word (trailing
+// punctuation stays upright). Returns [lead, italic, tail].
+export function splitPivot(title, pivot) {
+  const trimmed = title.trim();
+  const idx = pivot ? trimmed.indexOf(pivot) : -1;
+  if (idx >= 0) return [trimmed.slice(0, idx), pivot, trimmed.slice(idx + pivot.length)];
+  const m = trimmed.match(/^(.*\s)?(\S+?)(\W*)$/);
+  return m ? [m[1] || '', m[2], m[3] || ''] : [trimmed, '', ''];
 }
 
-function ogCardTree({ title, date, read, cats }) {
+function italicTitleNodes(title, pivot) {
+  // One flex item per word so satori wraps the title like running text; a
+  // word holding the pivot ("Sleep:") stays one item so punctuation hugs it.
+  const words = [];
+  let word = [];
+  splitPivot(title, pivot).forEach((text, i) => {
+    for (const piece of text.split(/(\s+)/)) {
+      if (!piece) continue;
+      if (/^\s+$/.test(piece)) {
+        if (word.length) words.push(word);
+        word = [];
+      } else {
+        word.push(i === 1 ? span({ style: { fontStyle: 'italic', color: C.plasmaSoft } }, piece) : piece);
+      }
+    }
+  });
+  if (word.length) words.push(word);
+  return words.map(w => div({ style: { display: 'flex' } }, ...w));
+}
+
+function ogCardTree({ title, pivot, date, read, cats }) {
   return div(
     {
       style: {
@@ -167,10 +175,10 @@ function ogCardTree({ title, date, read, cats }) {
           maxWidth: '1000px',
           display: 'flex',
           flexWrap: 'wrap',
-          whiteSpace: 'pre-wrap',
+          columnGap: '0.25em',
         },
       },
-      ...italicTitleNodes(title),
+      ...italicTitleNodes(title, pivot),
     ),
 
     div(
