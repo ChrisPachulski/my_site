@@ -28,19 +28,23 @@ These libraries are integral to executing complex data processing tasks, perform
 The script initiates precise data extraction using well-crafted SQL queries to capture relevant advertising data:
 
 ```sql
-SELECT advertiser_id, advertiser_name,
-    ROUND(bid_price, 2) AS rounded_bid_price,
-    countIf(event_type = 'ad_return') AS ad_returns,
-    countIf(event_type = 'click') AS paid_clicks,
-    SUM(revenue) AS revenue
-FROM {table_name}
-WHERE event_date BETWEEN '2024-06-01' AND '2024-06-30'
-  AND event_type IN ('ad_return', 'click')
-  AND traffic_integration_type IN ('XML', 'OpenRTB')
-  AND advertiser_name NOT IN ('AnonymizedAdvertiser')
-GROUP BY advertiser_id, advertiser_name, rounded_bid_price
-HAVING revenue > 100
-ORDER BY revenue DESC;
+SELECT *
+FROM (
+    SELECT advertiser_id, advertiser_name,
+        ROUND(bid_price, 2) AS rounded_bid_price,
+        countIf(event_type = 'ad_return') AS ad_returns,
+        countIf(event_type = 'click') AS paid_clicks,
+        SUM(revenue) AS bucket_revenue,
+        SUM(SUM(revenue)) OVER (PARTITION BY advertiser_id) AS advertiser_revenue
+    FROM {table_name}
+    WHERE event_date BETWEEN '2024-06-01' AND '2024-06-30'
+      AND event_type IN ('ad_return', 'click')
+      AND traffic_integration_type IN ('XML', 'OpenRTB')
+      AND advertiser_name NOT IN ('AnonymizedAdvertiser')
+    GROUP BY advertiser_id, advertiser_name, rounded_bid_price
+)
+WHERE advertiser_revenue > 100
+ORDER BY advertiser_revenue DESC, rounded_bid_price;
 ```
 
 These SQL queries effectively aggregate revenue data to identify significant advertising opportunities for detailed analysis.
@@ -74,6 +78,10 @@ These steps ensure robust and reliable data input for subsequent modeling.
 The script employs multiple statistical modeling techniques, including polynomial regression and cross-validation, to accurately predict win rates and determine optimal bidding strategies:
 
 ```python
+# Five folds and curves up to degree 5 need enough buckets to stand on
+if len(df_filtered) < 8 or df_filtered['rounded_bid_price'].nunique() < 6:
+    raise ValueError("Not enough bid buckets left after filtering - widen the date range")
+
 kf = KFold(n_splits=5, shuffle=True, random_state=42)
 X = df_filtered[['rounded_bid_price']].to_numpy()
 y = df_filtered['win_rate'].to_numpy()
@@ -107,6 +115,8 @@ An innovative feature of this script is its capability to dynamically calculate 
 total_ad_returns = df_filtered['ad_returns'].sum()
 current_win_rate = (df_filtered['win_rate'] * df_filtered['ad_returns']).sum() / total_ad_returns
 target_win_rate = current_win_rate * 1.10
+if target_win_rate > 1:
+    raise ValueError(f"A 10% lift on a {current_win_rate:.1%} win rate is over 100% - nothing to bid toward")
 
 increment = 0.01
 max_iterations = 1000
@@ -114,7 +124,7 @@ iteration = 0
 
 while iteration < max_iterations:
     df_filtered['adjusted_bid'] = df_filtered['rounded_bid_price'] + increment
-    predicted_win_rate = model.predict(poly.transform(df_filtered[['adjusted_bid']].to_numpy()))
+    predicted_win_rate = np.clip(model.predict(poly.transform(df_filtered[['adjusted_bid']].to_numpy())), 0, 1)
     new_weighted_win_rate = (predicted_win_rate * df_filtered['ad_returns']).sum() / total_ad_returns
 
     if new_weighted_win_rate >= target_win_rate:
@@ -123,6 +133,8 @@ while iteration < max_iterations:
 
     increment += 0.01
     iteration += 1
+else:
+    print(f"No increment in the search range reaches the {target_win_rate:.1%} target")
 ```
 
 This methodology delivers precise, actionable recommendations for bidding strategy adjustments, automating the discovery of optimal bid values.
