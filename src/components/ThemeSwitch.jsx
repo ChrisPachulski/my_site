@@ -39,10 +39,11 @@ const SEGMENTS = [
 export default function ThemeSwitch({ mode, onChange }) {
   const buttonsRef = useRef([]);
 
+  // ARIA radio-group keys: Left/Up go back, Right/Down go forward.
   const handleKey = (e, idx) => {
-    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+    const dir = { ArrowLeft: -1, ArrowUp: -1, ArrowRight: 1, ArrowDown: 1 }[e.key];
+    if (!dir) return;
     e.preventDefault();
-    const dir = e.key === 'ArrowLeft' ? -1 : 1;
     const nextIdx = (idx + dir + SEGMENTS.length) % SEGMENTS.length;
     const nextValue = SEGMENTS[nextIdx].value;
     buttonsRef.current[nextIdx]?.focus();
@@ -60,6 +61,8 @@ export default function ThemeSwitch({ mode, onChange }) {
             type="button"
             role="radio"
             aria-checked={active}
+            aria-label={seg.label}
+            data-mode={seg.value}
             tabIndex={active ? 0 : -1}
             className={`theme-switch-seg${active ? ' active' : ''}`}
             onClick={() => { if (!active) onChange(seg.value); }}

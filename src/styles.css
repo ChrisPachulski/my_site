@@ -477,6 +477,16 @@ main:focus-visible { outline: none; }
 .theme-switch-seg.active:focus-visible {
   box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--accent), 0 6px 18px var(--accent-soft);
 }
+/* Until React hydrates, the server markup marks After hours active for every
+   visitor, while index.html's pre-paint script has already set data-theme.
+   These match only that mismatch, and draw the selection from data-theme. */
+html[data-theme="light"] .theme-switch-seg.active[data-mode="after-hours"] {
+  color: var(--ink-mute); background: transparent; box-shadow: none;
+}
+html[data-theme="light"] .theme-switch-seg:not(.active)[data-mode="office-hours"] {
+  color: var(--accent-ink); background: var(--accent);
+  box-shadow: 0 1px 0 color-mix(in oklab, var(--accent) 60%, transparent), 0 6px 18px var(--accent-soft);
+}
 .theme-switch-icon { display: inline-flex; width: 12px; height: 12px; flex: 0 0 auto; }
 .theme-switch-icon svg { width: 100%; height: 100%; }
 .theme-switch-label { font-weight: 600; }

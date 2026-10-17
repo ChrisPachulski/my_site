@@ -214,9 +214,10 @@ export default function App() {
     document.documentElement.setAttribute('data-accent', ACCENT);
     // Reconcile the real display-mode after hydration. The pre-paint inline
     // script in index.html already applied data-theme/data-vibe, so this only
-    // syncs React state (the active ThemeSwitch segment) — no visual flash —
-    // while keeping the server and client first render identical so hydration
-    // matches for office-hours visitors.
+    // syncs React state (the active ThemeSwitch segment) while keeping the
+    // server and client first render identical so hydration matches for
+    // office-hours visitors. Until then, CSS keyed on data-theme draws the
+    // switch's selection (see the theme-switch rules in styles.css).
     const stored = readStoredMode();
     if (stored !== 'after-hours') setMode(stored);
   }, []);
