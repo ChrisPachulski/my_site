@@ -159,11 +159,11 @@ The diagram below shows every Terminal-Bench 3.0 result and how it failed, acros
 
 One of the most interesting takeaways for me from evaluating these models on TerminalBench was that there were some problem areas that benefited from effort more than others. You can see a breakdown in the following diagram:
 
-![Where effort pays: pass rate by task category, low effort against top effort; the values are in the table below](/img/spending-your-effort/fig-e-categories.webp)
+![Where effort pays: pass rate by task category, low effort against top effort, for Fable 5.1, Opus 5 and Fable 5; Fable 5.1’s values are in the table below](/img/spending-your-effort/fig-e-categories.webp)
 
 *Pass rate. Low effort pools each model’s two lowest settings, top effort its three highest, since categories are small.*
 
-| Category | Tasks | Low effort | Top effort |
+| Category | Tasks | Fable 5.1 low effort | Fable 5.1 top effort |
 |---|---:|---:|---:|
 | Security | 7 | 64% | 87% |
 | Hardware | 5 | 34% | 75% |
