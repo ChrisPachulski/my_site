@@ -45,7 +45,7 @@ export function describeCard(card, { countered = false } = {}) {
     c.power != null && `${c.power}/${c.toughness}`,
     c.flavor,
     countered && 'Countered',
-  ].filter(Boolean).join('. ');
+  ].filter(Boolean).map(s => (/[.!?"')]$/.test(s) ? s : `${s}.`)).join(' ');
 }
 
 /* Card art is pure CSS — each "art kind" has a gradient treatment. */
