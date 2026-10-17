@@ -6,11 +6,11 @@ featureImage: /Python.svg_resized.png
 
 In today's fast-paced digital analytics environment, automating data retrieval, processing, and reporting tasks from platforms like Google Analytics (GA4) and Gmail can significantly enhance operational efficiency and accuracy. This extensive blog post dives into several sophisticated Python scripts designed to automate analytical data extraction, showcasing the potential of Python and API integrations to transform data analytics workflows while ensuring strict data privacy and confidentiality.
 
-### Gmail-Based Reporting Automation with Python
+## Gmail-Based Reporting Automation with Python
 
 Multiple scripts leverage the Gmail API to automate email-based data retrieval, systematically extract relevant attachments, and handle data securely. Consider a scenario involving anonymized Advertiser A, where scripts retrieve emails and download attachments for internal analysis:
 
-#### Anonymous Gmail Attachment Extraction Example:
+### Anonymous Gmail Attachment Extraction Example:
 
 ```python
 service = build('gmail', 'v1', credentials=creds)
@@ -33,11 +33,11 @@ if messages:
 
 Automating email attachment handling dramatically reduces manual workload and enhances the reliability of analytics data management processes.
 
-### Streamlining Google Analytics (GA4) Reporting
+## Streamlining Google Analytics (GA4) Reporting
 
 Advanced scripts automate real-time data extraction from Google Analytics Data API, handling anonymized Advertiser B and Advertiser C data, showcasing their ability to generate structured analytics reports:
 
-#### Anonymized GA4 Reporting Automation Example:
+### Anonymized GA4 Reporting Automation Example:
 
 ```python
 client = BetaAnalyticsDataClient()
@@ -63,20 +63,20 @@ print(proto.Message.to_json(response))
 
 These automated reports deliver precise and structured data insights, facilitating rapid integration into analytical and strategic decision-making workflows.
 
-### Ensuring Robustness with Error Handling
+## Ensuring Robustness with Error Handling
 
 Robust error handling is critical to ensure reliability in automated data retrieval workflows. Scripts designed for anonymized Advertiser D exemplify this meticulous error handling approach:
 
 ```python
 if analytics_data_df.empty:
-    sys.exit("Error: Retrieved data is empty. Exiting.", 1)
+    sys.exit("Error: Retrieved data is empty. Exiting.")
 else:
     analytics_data_df.to_csv('/secure/path/to/save/analytics_report.csv', index=False)
 ```
 
 Through immediate validation and error reporting, these scripts maintain data integrity and swiftly address potential disruptions.
 
-### Integration with Google Sheets for Real-Time Status Tracking
+## Integration with Google Sheets for Real-Time Status Tracking
 
 Scripts designed for anonymized Advertiser E demonstrate seamless integration with Google Sheets, facilitating real-time tracking and logging of analytics workflow statuses:
 
@@ -94,7 +94,7 @@ wkb.df_to_sheet(df=status_update_df, sheet='status_sheet', index=False)
 
 Real-time logging ensures immediate transparency and allows for rapid resolution of any anomalies or issues.
 
-### Enhancing Security and Privacy
+## Enhancing Security and Privacy
 
 In all scripts, object names, file paths, and advertiser identifiers have been anonymized to adhere to data privacy best practices. Security measures such as secure file handling and controlled environment variables are meticulously implemented:
 
@@ -105,7 +105,7 @@ PROCESS_DATE = os.environ.get('PROCESS_DATE', pd.Timestamp.now().strftime('%Y-%m
 
 Such stringent privacy measures ensure compliance with data protection regulations and internal security standards.
 
-### Practical Benefits and Applications
+## Practical Benefits and Applications
 
 The presented scripts deliver significant benefits to business operations by:
 
@@ -115,6 +115,6 @@ The presented scripts deliver significant benefits to business operations by:
 * **Ensuring Reliability**: Comprehensive error handling ensures dependable automation.
 * **Maintaining Data Privacy**: Rigorous anonymization and security practices protect sensitive data.
 
-### Conclusion
+## Conclusion
 
 The sophisticated integration of Python with Gmail and Google Analytics APIs revolutionizes data analytics by automating critical workflows securely and reliably. These powerful Python-driven processes empower organizations with streamlined operations, robust real-time analytics, and enhanced data security, enabling informed decision-making and optimized business strategies.
