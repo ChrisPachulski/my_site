@@ -1478,7 +1478,9 @@ html[data-vibe="cyberpunk"] body {
 
 html[data-vibe="cyberpunk"] .nav,
 html[data-vibe="cyberpunk"] .tweaks { position: relative; z-index: 100; }
-html[data-vibe="cyberpunk"] section { position: relative; z-index: 3; }
+/* .gm-root is a <section> too, but it is the fixed full-screen GhostMatch
+   overlay: this stacking rule must not pull it back into the page flow. */
+html[data-vibe="cyberpunk"] section:not(.gm-root) { position: relative; z-index: 3; }
 html[data-vibe="cyberpunk"] .nav { position: fixed; z-index: 100; }
 
 html[data-vibe="cyberpunk"] .hero-headline .sub {
