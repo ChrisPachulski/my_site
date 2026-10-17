@@ -64,7 +64,7 @@ To distinguish between new and existing clients accurately, we track their first
 data_long <- data_long %>%
   mutate(client_type = case_when(
     status == "Active" & lag(status, default = "Inactive") == "Inactive" & 
-      lag(consecutive_inactive_months, default = 0) >= 3 ~ "New Client",
+      consecutive_inactive_months >= 3 ~ "New Client",
     year(date) == year(min(date[status == "Active"], na.rm = TRUE)) ~ "New Client",
     TRUE ~ "Existing Client"
   ))
@@ -89,17 +89,17 @@ This step clarifies how revenue is distributed among new and existing clients an
 
 ### Measuring Client Retention and Growth
 
-Client retention is evaluated using clear criteria, typically over a 3-month active period, and segmented by year, providing insights into client longevity and engagement:
+Client retention is evaluated as the number of revenue-generating months each client has logged since January 2021, summarized as a median, providing insights into client longevity and engagement:
 
 ```r
 retention_analysis <- data_long %>%
   filter(revenue > 0, date >= '2021-01-01') %>%
   group_by(entity) %>%
   summarise(active_months = n()) %>%
-  summarise(avg_retention = median(active_months))
+  summarise(median_retention = median(active_months))
 ```
 
-By measuring average retention, we understand client engagement deeply, informing marketing and client relationship management strategies.
+By measuring median retention, we understand client engagement deeply, informing marketing and client relationship management strategies.
 
 ### Testing Budget Utilization and Performance
 
@@ -107,16 +107,21 @@ Assessing initial test budgets for clients helps identify average spend and typi
 
 ```r
 average_test_period <- data_long %>%
-  summarise(median_test_period = median(active_months), median_revenue = median(revenue))
+  filter(client_type == "New Client", revenue > 0) %>%
+  group_by(entity) %>%
+  summarise(active_months = n(), test_revenue = sum(revenue)) %>%
+  summarise(median_test_period = median(active_months), median_revenue = median(test_revenue))
 ```
 
 Accurate budgeting and testing periods directly inform financial forecasts and investment decisions.
 
 ### Advanced Insights through Client Retention Metrics
 
-Going deeper, we analyze specific client groups to determine their longevity and revenue contribution after initial engagement:
+Going deeper, we analyze clients active for more than a set threshold (here, three months) to determine their longevity and revenue contribution after initial engagement:
 
 ```r
+threshold_months <- 3
+
 retained_clients_analysis <- data_long %>%
   filter(revenue > 0) %>%
   group_by(entity) %>%
@@ -132,7 +137,7 @@ Comparative revenue analysis between new and existing clients further enriches s
 
 ```r
 revenue_comparison <- data_long %>%
-  group_by(year, client_type) %>%
+  group_by(year = year(date), client_type) %>%
   summarise(annual_revenue = sum(revenue)) %>%
   pivot_wider(names_from = client_type, values_from = annual_revenue)
 ```
