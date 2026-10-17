@@ -48,6 +48,8 @@ Here's a high-level breakdown of the script's functionality and commands:
 * Creates and configures a Conda environment named current\_staging\_environ based on Python dependencies extracted from a Docker image.
 * Dynamically handles environment variable setups and activations to mirror Airflow environments.
 
+(Fair warning - as written, this part of the linked script won't get a fresh machine there. It builds the installer name in lowercase - `darwin`/`linux` - while Anaconda publishes `MacOSX`/`Linux`, so the download 404s. It also installs Miniconda to `~/miniconda` but then sources `conda.sh` and writes the activation hooks under `~/anaconda3`. Fix both before you trust it on a new laptop.)
+
 ### 4. Git Repository Management
 
 * Automatically clones or updates the ETL repository.
