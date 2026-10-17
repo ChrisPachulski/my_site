@@ -524,6 +524,11 @@ html[data-vibe="cyberpunk"] .theme-switch-seg.active:hover {
   color: var(--accent-ink);
   text-shadow: 0 0 4px color-mix(in oklab, var(--accent-ink) 50%, transparent);
 }
+/* The themed active rule above outranks .theme-switch-seg.active:focus-visible,
+   so the focus ring is restated at this specificity. */
+html[data-vibe="cyberpunk"] .theme-switch-seg.active:focus-visible {
+  box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--ink), 0 0 20px var(--accent);
+}
 
 /* ═══════ MODE TRANSITION CHOREOGRAPHY ═══════ */
 /* Applied for ~520ms while switching modes. Enables transitions on color
@@ -1536,6 +1541,10 @@ html[data-vibe="cyberpunk"] .btn { border-radius: 0; background: var(--bg-elev);
 html[data-vibe="cyberpunk"] .btn:hover { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent), 0 0 28px var(--accent-soft); color: var(--accent); }
 html[data-vibe="cyberpunk"] .btn-primary { background: var(--accent); color: var(--accent-ink); box-shadow: 0 0 0 1px var(--accent), 0 0 32px var(--accent-soft); }
 html[data-vibe="cyberpunk"] .btn-primary:hover { background: var(--bg); color: var(--accent); box-shadow: 0 0 0 1px var(--accent), 0 0 48px var(--accent); }
+/* Themed buttons outrank the generic :focus-visible rings and their clip-path
+   cuts anything drawn outside the box, so the focus ring is drawn inside. */
+html[data-vibe="cyberpunk"] .btn:not(.btn-primary):focus-visible { color: var(--accent); box-shadow: inset 0 0 0 2px var(--accent); }
+html[data-vibe="cyberpunk"] .btn-primary:focus-visible            { box-shadow: inset 0 0 0 2px var(--accent-ink), inset 0 0 0 4px var(--accent); }
 
 /* Idle: dual-color Izzet aura (red + blue). On hover: collapse to single accent glow. */
 /* Red + blue read as Izzet guild colours against the dark background — magenta
@@ -2180,6 +2189,21 @@ html[data-vibe="cyberpunk"] .izzet-card.izzet-blue .fact-list .fact .accent {
    mount, so users never see this. The first-pass HTML crawler reads it for
    indexing; the second-pass render sees the React UI instead. */
 .prerender-home { display: none; }
+
+/* ═══════ FORCED COLORS (Windows High Contrast) ═══════ */
+/* Forced colors drops box-shadow and author colors, which is all most focus,
+   selection and depth-bar styles here use. Restore system-colored stand-ins. */
+@media (forced-colors: active) {
+  :focus-visible { outline: 2px solid Highlight !important; outline-offset: 2px !important; }
+  html[data-vibe="cyberpunk"] .btn:focus-visible { outline-offset: -4px !important; }  /* inside the clip-path */
+  .theme-switch-seg.active {
+    forced-color-adjust: none;
+    background: Highlight !important; color: HighlightText !important;
+    box-shadow: none !important; text-shadow: none !important;
+  }
+  .skill-bar { border: 1px solid CanvasText; }
+  .skill-bar-fill { forced-color-adjust: none; background: CanvasText !important; box-shadow: none !important; }
+}
 
 /* ═══════ PRINT ═══════ */
 @media print {
