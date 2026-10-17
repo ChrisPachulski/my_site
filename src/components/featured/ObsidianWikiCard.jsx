@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
+import { POSTS } from '../../lib/blog.js';
 import usePrefersReducedMotion from './usePrefersReducedMotion.js';
+import cardLinkProps from './cardLink.js';
 import './featured.css';
 
 const TARGET = 208;
@@ -150,23 +152,14 @@ export default function ObsidianWikiCard({ a, onOpen }) {
     }
   }, [hover, reduced]);
 
-  const open = () => onOpen(a.slug);
-  const onKey = (e) => {
-    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); }
-  };
-
   return (
-    <article
+    <a
       ref={cardRef}
       className={`featured-tile featured obsidian-wiki-card${hover ? ' is-hover' : ''}`}
-      role="button"
-      aria-haspopup="dialog"
       aria-label={`Read: ${a.title}`}
-      onClick={open}
-      onKeyDown={onKey}
+      {...cardLinkProps(a.slug, onOpen)}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
-      tabIndex={0}
     >
       <div className="flair-bg">
         <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} preserveAspectRatio="xMidYMid meet" aria-hidden="true" className="graph-svg">
@@ -188,7 +181,7 @@ export default function ObsidianWikiCard({ a, onOpen }) {
         <div className="count-sub">ARTICLES SURVIVED · FIVE TYPES · ONE STOP HOOK</div>
       </div>
 
-      <div className="badge">LATEST · APR 2026</div>
+      <div className="badge">{POSTS[0]?.slug === a.slug && 'LATEST · '}{a.date.toUpperCase()}</div>
       <div className="cats">{a.cats}</div>
       <h4>{a.title}</h4>
       <div className="meta">
@@ -197,6 +190,6 @@ export default function ObsidianWikiCard({ a, onOpen }) {
         <span>{a.read} read</span>
         <span style={{ marginLeft:'auto', color:'var(--accent)' }}>Traverse ›</span>
       </div>
-    </article>
+    </a>
   );
 }

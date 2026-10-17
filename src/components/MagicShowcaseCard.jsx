@@ -91,7 +91,7 @@ export default function MagicShowcaseCard({ compact = false, autoplayDelay = 500
               of the page show the same Chris Pachulski card. Foil + gleam
               overlay it as siblings inside the same backface-clipped face. */}
           <div className="mscard-face mscard-front">
-            <MagicCardFace />
+            <MagicCardFace loading="lazy" />
             <div className="mscard-foil" />
             <div className="mscard-gleam" />
           </div>

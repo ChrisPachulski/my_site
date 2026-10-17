@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import usePrefersReducedMotion from './usePrefersReducedMotion.js';
+import useOnScreen from './useOnScreen.js';
+import cardLinkProps from './cardLink.js';
 import './featured.css';
 
 const NODES = [
@@ -25,9 +27,11 @@ export default function ResearchLoopCard({ a, onOpen }) {
   const [iter, setIter] = useState(1);
   const [activeNode, setActiveNode] = useState(0);
   const tickRef = useRef(null);
+  const cardRef = useRef(null);
+  const onScreen = useOnScreen(cardRef);
 
   useEffect(() => {
-    if (reduced) return;
+    if (reduced || !onScreen) return;
     const interval = hover ? 900 : 2800;
     tickRef.current = setInterval(() => {
       setActiveNode((n) => {
@@ -37,12 +41,7 @@ export default function ResearchLoopCard({ a, onOpen }) {
       });
     }, interval);
     return () => clearInterval(tickRef.current);
-  }, [hover, reduced]);
-
-  const open = () => onOpen(a.slug);
-  const onKey = (e) => {
-    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); }
-  };
+  }, [hover, reduced, onScreen]);
 
   const dot = polar(NODES[activeNode].angle);
   const pathD = `M ${polar(0).x} ${polar(0).y} ` +
@@ -51,16 +50,13 @@ export default function ResearchLoopCard({ a, onOpen }) {
     }).join(' ') + ' Z';
 
   return (
-    <article
+    <a
+      ref={cardRef}
       className={`featured-tile featured research-loop-card${hover ? ' is-hover' : ''}`}
-      role="button"
-      aria-haspopup="dialog"
       aria-label={`Read: ${a.title}`}
-      onClick={open}
-      onKeyDown={onKey}
+      {...cardLinkProps(a.slug, onOpen)}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
-      tabIndex={0}
     >
       <div className="flair-bg">
         <svg viewBox="0 0 200 200" preserveAspectRatio="xMidYMid meet" aria-hidden="true" className="loop-svg">
@@ -94,6 +90,6 @@ export default function ResearchLoopCard({ a, onOpen }) {
         <span>{a.read} read</span>
         <span style={{ marginLeft:'auto', color:'var(--accent)' }}>Read ›</span>
       </div>
-    </article>
+    </a>
   );
 }
