@@ -1,4 +1,10 @@
+---
+date: 2026-09-25T04:00:00.000Z
+---
+
 # Using Claude Code: Spending your effort
+
+*By Thariq Shihipar. Originally published September 25, 2026 at [claude.dev/blog/spending-your-effort](https://claude.dev/blog/spending-your-effort/); reproduced here.*
 
 One of the best parts of our newest Claude models is how they respond to effort without breaking the prompt cache in Claude Code, but I’ve received a lot of questions on this from users. What is effort really and when do you use which effort level? Why do we need effort at all?
 
@@ -26,15 +32,17 @@ You should think of effort in the same way. Claude will always try and do your t
 
 ## Effort curves
 
-Fable 5.1 and Opus 5.5’s effort curves are our best yet, at each level if there is an uptick in benchmark scores and tokens consumed. Below is a graph of Terminal Bench 3.0 scores by effort, measured during my eval runs for this post.
+Fable 5.1 and Opus 5.5’s effort curves are our best yet: at each level, there is an uptick in benchmark scores and tokens consumed. Below is a graph of Terminal Bench 3.0 scores by effort, measured during my eval runs for this post.
 
 ![Terminal-Bench 3.0 only: share of attempts that passed against median tokens per attempt, log scale, for Opus 5.5, Fable 5.1, Opus 5 and Fable 5, with one point per effort setting from low to max. Opus 5.5 scores highest at every setting, from 36.6% at low to 65.7% at max, and Fable 5.1 scores higher than Opus 5 and Fable 5 at every setting. Opus 5.5 at high matches Fable 5.1 at max (58.9% against 58.0%) on half the tokens. Fable 5 levels off at 43.4% from xhigh to max.](/img/spending-your-effort/effort-curves.webp)
 
-But what does this mean in practice? To evaluate this, I tried several tasks at different effort levels and poured over the benchmarks.
+*Terminal-Bench 3.0, the same 70 tasks for every model (the 4 GPU tasks are left out). Opus 5.5 ran about three weeks later, with responses capped at 128k tokens and no GitHub or PyPI access; Opus 5’s max is its effort-120 run.*
+
+But what does this mean in practice? To evaluate this, I tried several tasks at different effort levels and pored over the benchmarks.
 
 ## Building with effort
 
-The best way to understand how models work is to run experiments. I tried doing the same tasks at several different effort levels on Opus 5.5 understand the work it would do. I did this on a wide variety of work, but am illustrating this with a few toy examples.
+The best way to understand how models work is to run experiments. I tried doing the same tasks at several different effort levels on Opus 5.5 to understand the work it would do. I did this on a wide variety of work, but am illustrating this with a few toy examples.
 
 ### Underspecified build task
 
@@ -99,9 +107,9 @@ But these are obviously toy examples, where Claude is well able to complete them
 
 To find these difficult problems, you have to go to the benchmarks so I dove into one I like: Terminal Bench 3, a community sourced benchmark.
 
-Terminal-Bench 3.0 problems can broadly be separated into categories like security, hardware, ML,  science, software, operations and media.  You can see all of the problems here: <https://github.com/harbor-framework/terminal-bench/releases/tag/v3.0.0>, they’re sourced from the community so anyone can contribute.
+Terminal-Bench 3.0 problems can broadly be separated into categories like security, hardware, ML,  science, software, operations and media.  You can see all of the problems here: <https://github.com/harbor-framework/terminal-bench/releases/tag/v3.0.0>. They’re sourced from the community, so anyone can contribute.
 
-It’s worth reading to get a sense of the type of problems these models face. I found I was surprised by the scope and ambition of a lot of these tasks. The are much more complicated than the average task I’d face.
+It’s worth reading to get a sense of the type of problems these models face. I found I was surprised by the scope and ambition of a lot of these tasks. They are much more complicated than the average task I’d face.
 
 For example, some of the tasks included:
 
@@ -125,29 +133,61 @@ For something as edge-cased as a HTML sanitizer, this extra effort is well worth
 
 But you don’t need this level of effort for every task.
 
-The diagram below shows every Terminal-Bench 3.0 result and how it failed, across different models and effort levels. Overall, increasing effort tends to reduce failures due to missing edgecases (purple blocks), but does not fix when the model has the wrong approach (blue blocks).
+The diagram below shows every Terminal-Bench 3.0 result and how it failed, across different models and effort levels. Overall, increasing effort tends to reduce failures due to missing edgecases (purple blocks), but does not fix when the model has the wrong approach (blue blocks). (The static copy here shows Fable 5.1 at low and max effort only; the original’s interactive version covers the other models and levels.)
 
-![Terminal-Bench 3.0 attempts by outcome, Fable 5.1](/img/spending-your-effort/fig-d-outcomes.webp)
+![Terminal-Bench 3.0 attempts by outcome, Fable 5.1 at low and max effort; the values are in the table below](/img/spending-your-effort/fig-d-outcomes.webp)
+
+*Each square is one attempt, 370 attempts per setting. Failure kinds come from a model judge and are approximate.*
+
+| Outcome | Fable 5.1 low | Fable 5.1 max |
+|---|---:|---:|
+| Median tokens per attempt | 73k | 222k |
+| Passed | 140 | 214 |
+| Missed a case | 59 | 24 |
+| — Works on my machine | 2 | 1 |
+| — Overfit to the examples | 7 | 3 |
+| — Close, but not exact | 10 | 6 |
+| — A bug its tests missed | 40 | 14 |
+| Other failures | 38 | 25 |
+| Made the wrong call | 133 | 107 |
+| — Misread a requirement | 45 | 26 |
+| — Wrong or incomplete fix | 31 | 10 |
+| — Got the domain rule wrong | 32 | 24 |
+| — Picked the wrong reading | 25 | 47 |
 
 ### Problem areas where effort helps
 
 One of the most interesting takeaways for me from evaluating these models on TerminalBench was that there were some problem areas that benefited from effort more than others. You can see a breakdown in the following diagram:
 
-![Where effort pays: pass rate by task category](/img/spending-your-effort/fig-e-categories.webp)
+![Where effort pays: pass rate by task category, low effort against top effort, for Fable 5.1, Opus 5 and Fable 5; Fable 5.1’s values are in the table below](/img/spending-your-effort/fig-e-categories.webp)
+
+*Pass rate. Low effort pools each model’s two lowest settings, top effort its three highest, since categories are small.*
+
+| Category | Tasks | Fable 5.1 low effort | Fable 5.1 top effort |
+|---|---:|---:|---:|
+| Security | 7 | 64% | 87% |
+| Hardware | 5 | 34% | 75% |
+| ML | 13 | 54% | 73% |
+| Science | 15 | 41% | 61% |
+| Software | 20 | 43% | 56% |
+| Media | 4 | 18% | 30% |
+| Operations | 10 | 12% | 22% |
+
+*A note on the numbers: these come from our own internal runs, 5 attempts per task, with our production safety interventions off for Fable 5.1; in Claude products, Fable 5.1’s safeguards hand some security requests to Opus. The security tasks also ran without internet access, so the per-task counts here won’t line up with the public leaderboard or the launch post. The worked examples come from individual runs, some at intermediate effort settings.*
 
 To illustrate this, I chose a few problems from different areas from Terminal Bench 3.0 where Opus 5.5 failed at low effort but succeeded at high effort–mostly because it tested and accounted for edge cases:
 
 - **mvcc-lsm-compaction:** a Terminal-Bench 3.0 task that asks for a fix to a storage-engine bug from its crash report, without breaking compaction. Opus 5.5 went from 0/5 at low to 4/5 at xhigh.
   - At low (about a minute per attempt), Claude would edit the code before building it or running the reproducer, and did not check that its new test would have caught the original bug.
   - At xhigh (about 11 minutes), Claude reproduced the crash first, wrote a randomized test against a reference that never compacts, and checked that its tests failed on half-finished fixes.
-- **cli-2ph-simple:** is a Terminal-Bench 3.0 task that asks for a CLI linear-program solver written in Python. Opus 5.5 went from 0/5 at low to 5/5 at high.
+- **cli-2ph-simplex:** is a Terminal-Bench 3.0 task that asks for a CLI linear-program solver written in Python. Opus 5.5 went from 0/5 at low to 5/5 at high.
   - The low attempts wrote a solver in one pass, checked it with a few small problems and stopped around 10k tokens. In the final message, Claude warned it might be slow on big problems, but did not check.
   - During the high attempts Claude tested its solver on random problems against a separate brute-force solver, then timed bigger ones, hit cases that ran far too long or crashed, and reworked its search.
 - **gsea-proteomics:** a Terminal-Bench 3.0 task that asks for a gene set enrichment analysis (GSEA) on proteomics data to find which of eight treatments resemble a target tissue. Opus 5.5 went from 0/5 at low to 4/5 at high.
   - At low effort, Claude picked a reasonable-sounding way to prep the data, ran the analysis that one way, and reported the result.
-  - At high Claude tried two ways of prepping the data, it noticed that the list of significant treatments changed, and dug into why before choosing the correct one.
+  - At high, Claude tried two ways of prepping the data, noticed that the list of significant treatments changed, and dug into why before choosing the correct one.
 
-If a user were in the loop, Claude may have asked the user about the way to setup the problem, but without a user in the loop high effort does better.
+If a user were in the loop, Claude may have asked the user about the way to set up the problem, but without a user in the loop, high effort does better.
 
 ## When to use different effort levels in Claude Code
 

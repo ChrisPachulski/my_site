@@ -1,5 +1,5 @@
 ---
-title: R & Python - Comprehensive Set Up
+title: R & Python — Comprehensive Setup
 date: 2025-01-05T05:00:00.000Z
 featureImage: /R-vs-python.png
 ---
@@ -23,7 +23,7 @@ install.packages(c("tidyverse", "janitor", "lubridate", "googlesheets4", "google
 For a visually appealing and consistent coding environment, set the global theme to "Chaos":
 
 * Open RStudio → Tools → Global Options → Appearance.
-* Select the **Chaos** theme and apply the changes. (\_-Personal Preference - but I'm right of course\_\_)
+* Select the **Chaos** theme and apply the changes. (_Personal Preference - but I'm right of course_)
 
 ### Git Setup and Project Configuration
 
@@ -85,6 +85,12 @@ myenv\Scripts\activate
 
 ```bash
 source myenv/bin/activate
+```
+
+With it active, install IPython and the Jupyter kernel into it - the settings further down lean on both:
+
+```bash
+pip install ipython ipykernel
 ```
 
 Set the virtual environment as the default Python interpreter:

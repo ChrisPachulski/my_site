@@ -4,6 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>MTG card foil — workshop</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <style>
     :root {
       --bg: #0b0814;
@@ -50,6 +51,7 @@
       place-items: center;
       perspective: 1600px;
       padding: 40px 20px 120px;
+      overflow-x: clip;                          /* the blurred aura bleeds 50px past the card */
     }
 
     .stage-inner {
@@ -682,6 +684,21 @@
     .btn:hover { background: rgba(255, 255, 255, 0.12); border-color: rgba(255,255,255,0.24); }
     .btn:active { transform: translateY(1px); }
     .hint { opacity: 0.6; }
+
+    /* The back-face hold zooms the card to 1.35x and 120px toward the viewer,
+       so leave room under it or it covers the Replay row mid-play. */
+    .controls { margin-top: 96px; }
+
+    /* Card internals are sized in px for a 340px card; shrink the whole arena
+       on phones instead of letting it overflow the viewport. */
+    @media (max-width: 400px) {
+      .card-arena { zoom: 0.8; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .card-aura,
+      .card-aura-ring { animation: none; }
+    }
     kbd {
       font: inherit;
       background: rgba(255,255,255,0.08);
@@ -830,7 +847,10 @@
     const card = document.getElementById('card');
     const playBtn = document.getElementById('play');
 
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
     function trigger() {
+      if (reducedMotion.matches) return;
       card.classList.remove('playing');
       // force reflow so the animation actually restarts
       void card.offsetWidth;

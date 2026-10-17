@@ -1,6 +1,7 @@
 ---
 title: "The Model Was a Coin Flip: Rebuilding the Emerald Exchange Recommender Around the Red Dots"
 date: 2026-10-15T04:00:00.000Z
+excerpt: "The old model was tuned to the wrong question. When I finally scored it on what the household did, it couldn't tell a title you'd want from one you'd veto any better than chance."
 ---
 
 # The Model Was a Coin Flip

@@ -13,7 +13,7 @@ function ManaPip({ symbol }) {
     return <span className="gm-pip gm-pip-gen">{symbol}</span>;
   }
   return (
-    <span className={`gm-pip gm-pip-${symbol.toLowerCase()}`} aria-label={`${symbol} mana`}>
+    <span className={`gm-pip gm-pip-${symbol.toLowerCase()}`}>
       <svg viewBox="0 0 20 20" aria-hidden="true">{PIP_SVG[symbol]}</svg>
     </span>
   );
@@ -26,6 +26,26 @@ function ManaCost({ cost }) {
       {cost.map((s, i) => <ManaPip key={i} symbol={s} />)}
     </div>
   );
+}
+
+const MANA_NAME = { U: 'blue', R: 'red', W: 'white', B: 'black' };
+
+/* Rules text with ~ standing in for the card's short name. */
+const rulesText = c => c.text?.replaceAll('~', c.name.split(' ')[0]);
+
+/* Full text alternative for a face-up card: role="img" hides its children,
+   so the name alone would drop the cost, type, rules and P/T. */
+export function describeCard(card, { countered = false } = {}) {
+  const c = typeof card === 'string' ? CARDS[card] : card;
+  return [
+    c.name,
+    c.cost && `Cost ${c.cost.map(s => MANA_NAME[s] || s).join(' ')}`,
+    c.type,
+    rulesText(c),
+    c.power != null && `${c.power}/${c.toughness}`,
+    c.flavor,
+    countered && 'Countered',
+  ].filter(Boolean).map(s => (/[.!?"')]$/.test(s) ? s : `${s}.`)).join(' ');
 }
 
 /* Card art is pure CSS — each "art kind" has a gradient treatment. */
@@ -91,7 +111,7 @@ export default function Card({
   const totalTough = c.toughness != null ? c.toughness + (buffed?.t || 0) : null;
 
   return (
-    <div className={classes} role="img" aria-label={c.name}>
+    <div className={classes} role="img" aria-label={describeCard(c, { countered })}>
       <div className="gm-frame">
         <div className="gm-titlebar">
           <span className="gm-name">{c.name}</span>
@@ -103,7 +123,7 @@ export default function Card({
           {c.legendary && <span className="gm-set">◆</span>}
         </div>
         <div className="gm-text">
-          {c.text && <p className="gm-rule">{c.text.replaceAll('~', c.name.split(' ')[0])}</p>}
+          {c.text && <p className="gm-rule">{rulesText(c)}</p>}
           {c.flavor && <p className="gm-flavor">{c.flavor}</p>}
         </div>
         <div className="gm-bottom">

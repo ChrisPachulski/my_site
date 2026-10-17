@@ -42,7 +42,7 @@ The agent pushed back, and this is the moment I'm glad the policy file existed. 
 
 Looking back, the 0.75 was shaky on its own terms anyway. One annotator (me), auditing only the rows the judge had flagged, on runs that, it would turn out, had leaked IDs too. But I didn't know that yet. I said green light, do it all, and the next phase was supposed to build out labels at scale.
 
-## 1,254 sessions and a silent wall
+## 1,414 sessions and a silent wall
 
 Building labels at scale meant a three-model screen: every candidate pair judged by Claude Fable 5, Opus 4.8, and Sonnet 5, a different vendor from the Codex judge on purpose, keeping only rows where the majority agreed. On July 18 that screen launched about 1,400 Claude sessions in roughly two and a half hours, in batches of ten pairs each.
 
@@ -54,7 +54,7 @@ The fix was to make every screen fail closed: a timeout, a quota exit, a missing
 
 ## The audit that found the key
 
-The same afternoon, at 18:16 UTC, a Codex lane doing a provenance audit of the pipeline wrote the sentence that unwound two months of numbers: the IDs end in `-old`/`-new`, and *the current trial envelope sends that ID to the judge.* It called the leak "the crucial issue Claude missed," which was fair, and a little rude.
+The same afternoon, at 18:16 UTC, a Codex lane doing a provenance audit of the pipeline wrote the sentence that unwound a month of numbers: the IDs end in `-old`/`-new`, and *the current trial envelope sends that ID to the judge.* It called the leak "the crucial issue Claude missed," which was fair, and a little rude.
 
 That one finding contaminated everything:
 
@@ -147,7 +147,7 @@ And because a docs-honesty tool can't escape its own subject: release 0.8.2 foun
 - **No result is human-verified.** The labels come from a three-model majority. The repo has a human audit lane that requires three human annotators, and it has never run.
 - **There's no sealed holdout result.** The Java holdout was never unsealed, and the CoDocBench one was burned by the leak.
 - **One run each, no variance.** That's an open item in the repo, not a footnote I'm adding for modesty.
-- **The label-noise upside is a hypothesis.** One model's triage of Python's 53 false positives judged 31 of them defensible, which would put precision near 0.87. That's one model's read, of false positives only, and the session itself called it an optimistic bound. I'm not putting 0.87 in a headline.
+- **The label-noise upside is a hypothesis.** One model's triage of Python's 53 false positives judged 31 of them defensible, which would put precision near 0.82. That's one model's read, of false positives only, and the session itself called it an optimistic bound. I'm not putting 0.82 in a headline.
 
 ## Correction to the June post
 

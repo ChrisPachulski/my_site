@@ -29,7 +29,7 @@ Credit where it's due. [santifer/career-ops](https://github.com/santifer/career-
 
 ## The context-cost problem
 
-The base system reads per-evaluation context from five places: `cv.md` (the candidate's CV), `modes/_shared.md` (scoring rules and card types), `modes/_profile.md` (personal preferences and overrides), `config/profile.yml` (structured profile data), and `modes/evaluate.md` (the evaluation workflow itself). For the first ten evaluations, that's fine. For the fortieth, the wear starts to show.
+The base system reads per-evaluation context from five places: `cv.md` (the candidate's CV), `modes/_shared.md` (scoring rules and role archetypes), `modes/_profile.md` (personal preferences and overrides), `config/profile.yml` (structured profile data), and `modes/evaluate.md` (the evaluation workflow itself). For the first ten evaluations, that's fine. For the fortieth, the wear starts to show.
 
 The wear is not that context is lost (it isn't, because every session loads it fresh). The wear is that the evaluator spends a nontrivial fraction of its conversation reconstructing who I am before it can reason about the role. I am the same person at evaluation forty as at evaluation ten. Loading the same identity, the same comp floor, the same archetype preferences, and the same proof-point catalog from five separate files on every run is a waste of the only resource that's genuinely scarce inside a Claude Code session: usable context.
 

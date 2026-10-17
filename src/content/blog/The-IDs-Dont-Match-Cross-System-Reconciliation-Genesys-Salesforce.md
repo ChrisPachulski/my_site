@@ -21,12 +21,12 @@ This post is about the pattern I settled on, the six failure modes I ended up na
 
 Not every broken ID is broken in the same way. Lumping them together into "bad data" loses the signal. Here's how I categorized them:
 
-1. **Missing linkage**, Salesforce case exists, but the conversation ID field is blank. Most common. Agents in a hurry.
-2. **Orphan conversation**, Genesys conversation exists within the expected time window, but no Salesforce case references it. Second most common. The case was either never opened, or opened under a different customer record.
-3. **Format drift**, The conversation ID field is populated, but it's not a valid UUID. Typos, copy-paste of a partial ID, someone pasted the customer's phone number instead.
-4. **Media-type mismatch**, The conversation ID points to a real Genesys conversation, but the case's channel field says "voice" and the conversation was actually a chat. (Or vice versa. This one reveals routing bugs, not data bugs.)
-5. **Temporal drift**, The conversation exists, the case exists, the IDs match, but the timestamps are off by more than a tolerance window. A call from Tuesday attached to a case opened Thursday is not necessarily wrong, agents do follow-ups, but it's worth looking at.
-6. **Duplicate linkage**, The same conversation ID appears in multiple Salesforce cases. Sometimes legitimate (a single call led to two separate cases for two issues), sometimes a symptom of case-duplication bugs in the automation layer.
+1. **Missing linkage**: Salesforce case exists, but the conversation ID field is blank. Most common. Agents in a hurry.
+2. **Orphan conversation**: Genesys conversation exists within the expected time window, but no Salesforce case references it. Second most common. The case was either never opened, or opened under a different customer record.
+3. **Format drift**: The conversation ID field is populated, but it's not a valid UUID. Typos, copy-paste of a partial ID, someone pasted the customer's phone number instead.
+4. **Media-type mismatch**: The conversation ID points to a real Genesys conversation, but the case's channel field says "voice" and the conversation was actually a chat. (Or vice versa. This one reveals routing bugs, not data bugs.)
+5. **Temporal drift**: The conversation exists, the case exists, the IDs match, but the timestamps are off by more than a tolerance window. A call from Tuesday attached to a case opened Thursday is not necessarily wrong, agents do follow-ups, but it's worth looking at.
+6. **Duplicate linkage**: The same conversation ID appears in multiple Salesforce cases. Sometimes legitimate (a single call led to two separate cases for two issues), sometimes a symptom of case-duplication bugs in the automation layer.
 
 Each of these needs a different response. Missing linkage and format drift are agent-training issues. Media-type mismatches point at routing configuration. Duplicates usually mean the case-creation flow has a race condition somewhere. Building one undifferentiated "data quality report" loses the whole point.
 
@@ -98,7 +98,9 @@ def format_drift(df_cases: pd.DataFrame, df_convos: pd.DataFrame) -> pd.DataFram
     populated = df_cases[
         df_cases["conversation_id"].notna() & (df_cases["conversation_id"] != "")
     ].copy()
-    populated["valid_format"] = populated["conversation_id"].str.match(UUID_RE)
+    populated["valid_format"] = populated["conversation_id"].apply(
+        lambda x: isinstance(x, str) and UUID_RE.fullmatch(x) is not None
+    ).astype(bool)
     failures = populated[~populated["valid_format"]].copy()
     failures["failure_type"] = "format_drift"
     failures["failure_detail"] = failures["conversation_id"].apply(
@@ -135,7 +137,8 @@ And `duplicate_linkage`:
 ```python
 def duplicate_linkage(df_cases: pd.DataFrame, df_convos: pd.DataFrame) -> pd.DataFrame:
     """Same conversation_id attached to multiple cases."""
-    counts = df_cases.groupby("conversation_id").size().reset_index(name="case_count")
+    linked = df_cases[df_cases["conversation_id"] != ""]  # blanks belong to missing_linkage
+    counts = linked.groupby("conversation_id").size().reset_index(name="case_count")
     dupes = counts[counts["case_count"] > 1]["conversation_id"].tolist()
     failures = df_cases[df_cases["conversation_id"].isin(dupes)].copy()
     failures["failure_type"] = "duplicate_linkage"
@@ -145,7 +148,7 @@ def duplicate_linkage(df_cases: pd.DataFrame, df_convos: pd.DataFrame) -> pd.Dat
     return failures[["case_id", "case_created", "agent_email", "failure_type", "failure_detail"]]
 ```
 
-All three share the same shape: two DataFrames in, failures with consistent schema out. Adding `temporal_drift` and `orphan_conversation` follows the same template, I'll leave them as exercises, because if you've read this far you don't need me walking through two more for-loops.
+All three share the same shape: two DataFrames in, failures with consistent schema out. Adding `temporal_drift` and `orphan_conversation` follows the same template. I'll leave them as exercises, because if you've read this far you don't need me walking through two more for-loops.
 
 ## Running it daily
 

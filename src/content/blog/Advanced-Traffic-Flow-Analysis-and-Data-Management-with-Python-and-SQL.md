@@ -6,24 +6,26 @@ featureImage: /Python.svg_resized.png
 
 In today's data-driven advertising landscape, the ability to accurately track, manage, and optimize traffic data is paramount. This post explores two sophisticated Python scripts designed to handle complex traffic flow analysis, combining powerful SQL queries executed via Python for efficient data management and optimization.
 
-### Script Overview
+## Script Overview
 
 In two Python scripts I have recently written (`traffic_flow_backfill.py` and `traffic_flow_load.py`), they are designed to perform extensive analysis and maintain the integrity of advertising traffic data. These scripts handle critical operations such as data retrieval, conditional logic for filtering and classifying data, robust error handling, and integration with ClickHouse databases for efficient storage and querying.
 
-### Python Environment Setup
+## Python Environment Setup
 
 Both scripts utilize several important Python libraries to facilitate seamless data handling:
 
 ```python
+import os
 import pandas as pd
 import numpy as np
 from clickhouse_driver import Client
+from clickhouse_driver.errors import ServerException
 import addotnet_functions as anf
 ```
 
 These libraries streamline the tasks of data manipulation (`pandas`, `numpy`), database interactions (`clickhouse_driver`), and custom utility functions (`addotnet_functions`) **custom package I have written for internal BI team**.
 
-### Complex SQL Queries
+## Complex SQL Queries
 
 At the heart of both scripts lies an intricate SQL query crafted to extract detailed traffic data, perform transformations, and apply conditional logic for categorization:
 
@@ -57,7 +59,7 @@ FROM (
   -- More detailed column definitions and joins
 FROM {table name} e
 LEFT JOIN (...)
-WHERE e.event_date = toDate('2023-10-03')
+WHERE e.event_date = toDate('{desired_date}')
 GROUP BY dt, e.event_date, search_date, search_hour, ...
 HAVING r > 0
 ) sq
@@ -66,7 +68,7 @@ GROUP BY sq.dt, sq.event_date, sq.search_date, sq.search_hour, ...;
 
 This SQL statement intricately captures multiple dimensions of traffic data, applying sophisticated filters to handle special cases and categorize traffic effectively.
 
-### Data Handling and Error Management
+## Data Handling and Error Management
 
 Both scripts employ robust Python logic to handle large datasets efficiently. Notably, they include structured exception handling to manage common issues such as memory constraints:
 
@@ -88,7 +90,7 @@ for publisher in publishers_df['affiliate_account_name']:
 
 This strategic handling ensures consistent data availability even in resource-constrained scenarios.
 
-### Dynamic Data Insertion
+## Dynamic Data Insertion
 
 Data retrieved from ClickHouse is efficiently inserted back into the database using custom functions:
 
@@ -103,17 +105,17 @@ anf.insert_data_into_ch(
 
 This automated insertion process maintains data integrity and ensures that analytics teams always work with up-to-date, accurate datasets.
 
-### Automation and Flexibility
+## Automation and Flexibility
 
 The scripts are designed for automation, leveraging environment variables for flexible date management and execution:
 
 ```python
-airflow_date = pd.to_datetime(os.environ["PROCESS_DATE"]).strftime('%Y-%m-%d')
+date = pd.to_datetime(os.environ["PROCESS_DATE"]).strftime('%Y-%m-%d')
 ```
 
 This design choice significantly enhances the script's adaptability for continuous integration and deployment in dynamic environments.
 
-### Practical Applications
+## Practical Applications
 
 These scripts provide significant value through:
 
@@ -121,6 +123,6 @@ These scripts provide significant value through:
 * **Robust Error Handling:** Ensures continuous data flow, minimizing downtime.
 * **Efficient Database Management:** Reduces resource consumption through precise query execution and segmented data handling.
 
-### Conclusion
+## Conclusion
 
 Utilizing Python's versatility combined with sophisticated SQL querying allows businesses to perform in-depth analysis and management of advertising traffic data. The highlighted scripts showcase powerful data engineering techniques essential for driving strategic business decisions, optimizing ad spend, and ensuring data accuracy and availability.

@@ -43,34 +43,12 @@ function MagicCard() {
   return <MagicCardFace ref={ref} />;
 }
 
-/* Hook up scroll reveals for any element with `.reveal` in the tree. */
-function useRevealOnScroll() {
-  useEffect(() => {
-    const nodes = document.querySelectorAll('.reveal');
-    if (!('IntersectionObserver' in window)) {
-      nodes.forEach(n => n.classList.add('in-view'));
-      return;
-    }
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach(e => {
-        if (e.isIntersecting) {
-          e.target.classList.add('in-view');
-          io.unobserve(e.target);
-        }
-      });
-    }, { threshold: 0, rootMargin: '0px 0px -40px 0px' });
-    nodes.forEach(n => io.observe(n));
-    return () => io.disconnect();
-  }, []);
-}
-
 function HeroTerminal({ variant }) {
   // Only the MTG card — terminals removed; v2 default is 'sql' which fell through to card anyway.
   return <MagicCard />;
 }
 
 function Hero({ heroVariant }) {
-  useRevealOnScroll();
   return (
     <section className="hero" id="home">
       <div className="hero-ignite" aria-hidden="true" />

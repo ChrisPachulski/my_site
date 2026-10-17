@@ -11,7 +11,7 @@ A Claude Code session would start, and within the first few queries, the same th
 
 This is a known failure mode of naive "retrieve top-K by similarity + boost on access" systems. The feedback loop is: a memory gets surfaced, its access count goes up, its composite score goes up, it gets surfaced more. Once a memory crosses the threshold where its boost dominates its cosine similarity to the query, it becomes permanent furniture. The system stops learning. The memory store becomes a three-item archive of whatever got surfaced first.
 
-This post is about the three-layer system I built to fix that. One layer is the memory substrate itself, a DuckDB-backed vector store with a scoring function that includes an anti-stickiness term. One layer is the consolidation process that runs periodically and prunes, merges, and rebalances. One layer is the plan-directory hygiene that applies the same discipline to markdown files that accumulate the way memories do. Together they've cut my memory store by more than half, the plan directory by more than 80%, and the subjective quality of my agent's recall up considerably.
+This post is about the three-layer system I built to fix that. One layer is the memory substrate itself, a DuckDB-backed vector store with a scoring function that includes an anti-stickiness term. One layer is the consolidation process that runs periodically and prunes, merges, and rebalances. One layer is the plan-directory hygiene that applies the same discipline to markdown files that accumulate the way memories do. Together they've cut my memory store by more than half and the plan directory by more than 80%, and pushed the subjective quality of my agent's recall up considerably.
 
 The argument, short version: for long-running AI-assisted work, pruning is not a cost. It's a feature. You need it the same way gardens need it. Left untended, the weeds win.
 
@@ -53,7 +53,7 @@ class MemoryRecord(TypedDict):
     cooldown_until: str | None # snoozed until this timestamp
 ```
 
-The embedding backend is dual. OpenAI's `text-embedding-3-small` when `OPENAI_API_KEY` is set; a TF-IDF fallback when it isn't. The TF-IDF path lives inside the package and zero-pads to 1536 dimensions (the OpenAI model's output size) so the schema doesn't have to change depending on which backend was used. This matters because I don't always have an API key available, scratch VMs, offline demos, airports, and losing the memory store because my local environment can't embed is a failure mode I refuse to accept.
+The embedding backend is dual. OpenAI's `text-embedding-3-small` when `OPENAI_API_KEY` is set; a TF-IDF fallback when it isn't. The TF-IDF path lives inside the package and zero-pads to 1536 dimensions (the OpenAI model's output size) so the schema doesn't have to change depending on which backend was used. This matters because I don't always have an API key available (scratch VMs, offline demos, airports), and losing the memory store because my local environment can't embed is a failure mode I refuse to accept.
 
 ## The composite score: five factors, one formula
 
@@ -64,7 +64,7 @@ composite = cosine_sim
           * importance
           * exp(-lambda * age_days)
           * (1 + 0.1 * min(access_count, 10))
-          * 0.95 ** max(stickiness_ratio - 3.0, 0)
+          * 0.95 ** min(max(stickiness_ratio - 3.0, 0), 30)
 ```
 
 Five multiplicative factors. Each one does a specific job, and each one has a default that I've tuned after about six months of real use.
@@ -108,7 +108,7 @@ else:
 
 A memory that has been accessed often but reinforced rarely is sticky. Stickiness is accessed-over-reinforced. If I've surfaced a memory ten times and only confirmed its usefulness twice, the stickiness ratio is 5, the memory is serving up five times more often than it's useful. The decay kicks in after stickiness passes 3 (a memory can be surfaced 3× per reinforcement and still be useful; at 4+, something's off), and penalizes geometrically (0.95^N) with a cap at 30 penalty units, 0.95^30 ≈ 0.21, a 79% reduction at worst.
 
-This is the factor that breaks the positive feedback loop. Surfacing no longer gratuitously boosts future surfacing; if the user isn't engaging with the memory, it starts losing score. A memory with cosine similarity 0.7 to a query and importance 0.5 has a raw score of 0.35. If it's been surfaced 20 times but reinforced only twice, its stickiness penalty brings the composite down to roughly 0.07, it'll still surface if nothing better is available, but it won't dominate.
+This is the factor that breaks the positive feedback loop. Surfacing no longer gratuitously boosts future surfacing; if the user isn't engaging with the memory, it starts losing score. A memory with cosine similarity 0.7 to a query and importance 0.5 has a raw score of 0.35. If it's been surfaced 40 times but reinforced only once, its stickiness penalty (capped at 0.95^30) brings the composite down to roughly 0.15, from the 0.70 the access boost alone would give it, it'll still surface if nothing better is available, but it won't dominate.
 
 The `reinforced_count` field is populated explicitly. When the user confirms a memory was useful, "yes, use that", the `record_reinforcement` call bumps it. This requires the MCP memory tools to know when reinforcement has happened, which took some work at the integration layer. The payoff is that the score now reflects *useful surfacing*, not just *surfacing*.
 
@@ -144,7 +144,7 @@ The six operations, in plain language:
 
 The command takes an argument. No argument runs in project mode, scoped to the current project's `project_id`. `--all` runs system-wide, across every project, with special attention to cross-project duplicates. `--skip-files` skips a Phase 4 that also syncs file-based markdown memories into the vector store from `~/.claude/projects/{project_id}/memory/`. Useful when I want to consolidate the DuckDB store without also re-importing new markdown files.
 
-I run `dream` about once a week in project mode, and `dream --all` about once a month. Both take under a minute on a memory store in the low thousands.
+I run `dream` about once a week in project mode, and `dream --all` about once a month. Both take under a minute.
 
 ## clarity: the same discipline for plans
 
@@ -181,7 +181,7 @@ Three specific lessons worth naming.
 Not a rigorous evaluation, I haven't set up a proper eval harness for memory-recall quality, but directionally:
 
 - The memory store went from ~140 entries to ~60 over six months of running `dream` weekly.
-- The plans directory went from 107 files to ~18 after the first `clarity` pass, and has stayed in that neighborhood since.
+- The plans directory went from 107 files to 23 after the first `clarity` pass, and has hovered around 18 since.
 - Stickiness > 5.0 went from 8 offending memories at the start to 1-2 on most runs (the consolidation catches them before they accumulate).
 - Subjectively, when I ask Claude "what do you know about X?" in a new session, the top 3 results feel relevant about 80% of the time, versus roughly 40% before the system was in place.
 

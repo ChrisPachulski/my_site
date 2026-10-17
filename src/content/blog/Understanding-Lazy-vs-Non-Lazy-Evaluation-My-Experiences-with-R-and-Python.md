@@ -1,14 +1,13 @@
 ---
 title: R vs Python - Lazy vs. Non-Lazy Evaluation
 date: 2023-04-28T04:00:00.000Z
-featureImage: /images/classic-blog/R_Lazy.png
 ---
 
 ***
 
 ## What Exactly is Lazy Evaluation?
 
-##### (Spoilers - I prefer Lazy. Who doesn't prefer to be Lazy?!)
+*(Spoilers - I prefer Lazy. Who doesn't prefer to be Lazy?!)*
 
 Lazy evaluation, also known as deferred execution, is a programming concept where the evaluation of an expression is postponed until its value is actually needed. To clearly understand this, let’s first define a few basics:
 
@@ -55,7 +54,7 @@ Understanding these points has significantly improved my coding experience, part
 
 * Adaptability: Easily tweak and experiment with different filtering conditions without rewriting functions.
 * Cleaner Code: My scripts feel more intuitive and readable.
-  * Coming from a spreadsheet background originally - this approach really felt more intuitive, as calling columns by results$mpg feels a lot easier than the python equivalent syntatically.
+  * Coming from a spreadsheet background originally - this approach really felt more intuitive, as calling columns by results$mpg feels a lot easier than the python equivalent syntactically.
 
 #### Challenges I've Faced:
 
@@ -64,7 +63,7 @@ Understanding these points has significantly improved my coding experience, part
 
 ### Non-Lazy Evaluation in Python: Immediate Execution
 
-In Python, evaluation is immediate: expressions are computed as soon as they're encountered. Unlike R's approach, Python doesn't wait; it quickly processes each expression right when it sees it. This means Python requires you to explicitly define your inputs and cannot dynamically postpone evaluation.
+In Python, evaluation is immediate: expressions are computed as soon as they're encountered. Unlike R's approach, Python doesn't wait; it quickly processes each expression right when it sees it. This means function arguments get evaluated before the function ever sees them - Python can postpone work, but only when you explicitly ask it to (a lambda, a generator), where R does it by default.
 
 Here's an expanded example of how I use non-lazy evaluation in Python:
 
@@ -80,11 +79,11 @@ mtcars = pd.read_csv("mtcars.csv")
 result = filter_data(mtcars, 'mpg', 20)
 ```
 
-In this Python function, parameters like 'mpg' and 20 must be explicitly provided, and the filtering happens immediately. You can't pass conditions dynamically as easily as in R; the function must clearly specify column names and thresholds upfront.
+In this Python function, parameters like 'mpg' and 20 must be explicitly provided, and the filtering happens immediately. You can pass a condition in - `df.loc[lambda d: d['mpg'] > 20]` or `df.query('mpg > 20')` both work - but you have to wrap it yourself, where R captures the bare `mpg > 20` for you.
 
 Benefits I've noticed with Python's immediate evaluation include:
 
-* Ease of Debugging: Since expressions execute instantly, it's simpler to trace and resolve errors step-by-step. (\*\*Can't understate how much easier this is, as R really does not provide an indication of where things break if incorrectly wrapped)
+* Ease of Debugging: Since expressions execute instantly, it's simpler to trace and resolve errors step-by-step. (Can't overstate how much easier this is, as R really does not provide an indication of where things break if incorrectly wrapped)
 * Performance: Immediate execution means less overhead and often faster execution times, especially beneficial in larger datasets or intensive calculations.
 
 However, the main limitations I've faced are:

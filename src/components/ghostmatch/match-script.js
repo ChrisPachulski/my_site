@@ -33,8 +33,8 @@ export const INITIAL_STATE = {
 };
 
 /* The 4 cards the player keeps for the playable beat.
-   Mana resolves cleanly: Snowflake (U/R) + Bigquery (U) + ambient lands cover
-   {1}{U}{R} for MTGBAN with 2 blue sources still untapped for Counterflux's {U}{U}. */
+   Mana resolves cleanly: Snowflake (U/R) + ambient lands cover {1}{U}{R} for
+   MTGBAN, leaving two blue sources and a red one untapped for Counterflux's {U}{U}{R}. */
 export const MULLIGAN_OPENING = {
   you: [
     { instId: 'you-snowflake-1',   cardId: 'snowflake' },
@@ -61,6 +61,7 @@ export const SETUP_EVENTS = [
   { d: 70, type: 'LAND_DIRECT', player: 'you', cardId: 'pacific-ocean', instId: 'you-pacific-1' },
   { d: 70, type: 'LAND_DIRECT', player: 'you', cardId: 'pacific-ocean', instId: 'you-pacific-2' },
   { d: 70, type: 'LAND_DIRECT', player: 'you', cardId: 'do-droplet',    instId: 'you-droplet-1' },
+  { d: 70, type: 'LAND_DIRECT', player: 'you', cardId: 'do-droplet',    instId: 'you-droplet-2' },
 
   // Mulligan-hand lands play from hand so the player feels them land.
   { d: 90, type: 'PLAY_LAND', player: 'you', instId: 'you-bigquery-1' },
@@ -89,12 +90,13 @@ export const SETUP_EVENTS = [
 ];
 
 /* Counter beat — fires when the player clicks Counterflux.
-   Counterflux costs {U}{U}; Pacific-2 and Bigquery are still untapped after MTGBAN. */
+   Counterflux costs {U}{U}{R}; Pacific-2, Bigquery and Droplet-2 are still untapped after MTGBAN. */
 export const COUNTER_EVENTS = [
   { d: 100, type: 'CLEAR_PROMPT' },
   { d: 80, type: 'TAP', player: 'you', instId: 'you-pacific-2' },
   { d: 70, type: 'TAP', player: 'you', instId: 'you-bigquery-1' },
-  { d: 200, type: 'LOG', text: 'Chris responds. Counterflux. {U}{U}.', kind: 'beat' },
+  { d: 70, type: 'TAP', player: 'you', instId: 'you-droplet-2' },
+  { d: 200, type: 'LOG', text: 'Chris responds. Counterflux. {U}{U}{R}.', kind: 'beat' },
   { d: 200, type: 'CAST', player: 'you', instId: 'you-counterflux-1' },
   { d: 250, type: 'STACK_TARGET', sourceInstId: 'you-counterflux-1', targetInstId: 'opp-redtape-1' },
   { d: 600, type: 'LOG', text: 'Stack: Counterflux → Red Tape → MTGBAN.', kind: 'header' },

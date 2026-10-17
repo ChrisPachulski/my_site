@@ -1,5 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import usePrefersReducedMotion from './usePrefersReducedMotion.js';
+import useOnScreen from './useOnScreen.js';
+import cardLinkProps from './cardLink.js';
 import './featured.css';
 
 const NOW_PLAYING_ITEMS = [
@@ -17,17 +19,20 @@ export default function AtHomeMediaCard({ a, onOpen }) {
   const [hover, setHover] = useState(false);
   const [marqueeIdx, setMarqueeIdx] = useState(0);
   const [progress, setProgress] = useState(0.32);
+  const cardRef = useRef(null);
+  const onScreen = useOnScreen(cardRef);
+  const paused = reduced || hover || !onScreen;
 
   useEffect(() => {
-    if (reduced || hover) return;
+    if (paused) return;
     const id = setInterval(() => {
       setMarqueeIdx((i) => (i + 1) % NOW_PLAYING_ITEMS.length);
     }, 3400);
     return () => clearInterval(id);
-  }, [hover, reduced]);
+  }, [paused]);
 
   useEffect(() => {
-    if (reduced || hover) return;
+    if (paused) return;
     const id = setInterval(() => {
       setProgress((p) => {
         const next = p + 0.015;
@@ -35,24 +40,16 @@ export default function AtHomeMediaCard({ a, onOpen }) {
       });
     }, 600);
     return () => clearInterval(id);
-  }, [hover, reduced]);
-
-  const open = () => onOpen(a.slug);
-  const onKey = (e) => {
-    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); }
-  };
+  }, [paused]);
 
   return (
-    <article
+    <a
+      ref={cardRef}
       className={`featured-tile featured at-home-media-card${hover ? ' is-hover' : ''}`}
-      role="button"
-      aria-haspopup="dialog"
       aria-label={`Read: ${a.title}`}
-      onClick={open}
-      onKeyDown={onKey}
+      {...cardLinkProps(a.slug, onOpen)}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
-      tabIndex={0}
       data-accent-override="amber"
     >
       <div className="flair-bg">
@@ -63,7 +60,7 @@ export default function AtHomeMediaCard({ a, onOpen }) {
 
       <div className="badge">HOME THEATER · S01E11</div>
       <div className="cats">{a.cats}</div>
-      <h4 className="amh-title" data-text={a.title}>{a.title}</h4>
+      <h3 className="amh-title" data-text={a.title}>{a.title}</h3>
 
       <div className="now-playing" aria-hidden="true">
         <span className="np-label">NOW PLAYING</span>
@@ -87,6 +84,6 @@ export default function AtHomeMediaCard({ a, onOpen }) {
         <span>{a.read} read</span>
         <span style={{ marginLeft:'auto', color:'var(--accent)' }}>Play ►</span>
       </div>
-    </article>
+    </a>
   );
 }

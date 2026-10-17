@@ -388,6 +388,29 @@
     link.href = canvas.toDataURL('image/png');
   }
 
-  tick();
-  setInterval(tick, 80); // ~12fps — plenty for a tab, light on battery
+  // Animate only while the tab is visible and the visitor has not asked for
+  // reduced motion; otherwise put the static SVG icon back.
+  var staticHref = link.getAttribute('href');
+  var staticType = link.getAttribute('type');
+  var reduce = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
+  var timer = 0;
+
+  function sync() {
+    var run = !(reduce && reduce.matches) && !document.hidden;
+    if (run && !timer) {
+      link.type = 'image/png';        // frames are PNG data URLs
+      tick();
+      timer = setInterval(tick, 80);  // ~12fps — plenty for a tab, light on battery
+    } else if (!run && timer) {
+      clearInterval(timer);
+      timer = 0;
+      if (staticType) link.type = staticType;
+      else link.removeAttribute('type');
+      if (staticHref) link.href = staticHref;
+    }
+  }
+
+  sync();
+  document.addEventListener('visibilitychange', sync);
+  if (reduce && reduce.addEventListener) reduce.addEventListener('change', sync);
 })();

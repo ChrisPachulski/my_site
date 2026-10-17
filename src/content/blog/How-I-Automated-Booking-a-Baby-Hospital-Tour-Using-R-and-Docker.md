@@ -6,7 +6,7 @@ featureImage: /st-lukes-hospital_resized.png
 
 ## Automated Baby Appointment Scheduling with R
 
-When expecting our first child, my wife and I quickly realized just how fast appointments for hospital tours filled up, often within minutes of becoming available. My wife had her heart set on one hospital in particular and it was a fun realization that I could help out here. To ensure we didn't miss out (Classic FOMO), I developed an automated solution to ensure the booking process.
+When expecting our first child, my wife and I quickly realized just how fast appointments for hospital tours filled up, often within minutes of becoming available. My wife had her heart set on one hospital in particular and it was a fun realization that I could help out here. To ensure we didn't miss out (Classic FOMO), I developed an automated solution to secure a booking.
 
 ### What Does the Script Do?
 
@@ -74,6 +74,7 @@ if(successfully_scheduled$is_scheduled[1] == "No"){
 
                 successfully_scheduled = as_tibble(data.frame(is_scheduled = "yes"))
                 successfully_scheduled %>% write_csv('/home/cujo253/mines_of_moria/saint_lukes_baby_scheduling/confirmation.csv')
+                break # one tour is plenty - stop before booking the rest
             }
         }
     }
@@ -94,13 +95,13 @@ sudo apt update
 sudo apt install docker.io
 ```
 
-1. **Pull the Selenium Docker image**:
+2. **Pull the Selenium Docker image**:
 
 ```bash
 docker pull selenium/standalone-chrome:latest
 ```
 
-1. **Run the Selenium Docker container**:
+3. **Run the Selenium Docker container**:
 
 ```bash
 docker run -d -p 4445:4444 selenium/standalone-chrome:latest

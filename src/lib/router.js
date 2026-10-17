@@ -42,5 +42,5 @@ export function useRoute() {
 }
 
 export function articlePath(slug) {
-  return `${WRITING_PREFIX}${slug}`;
+  return `${WRITING_PREFIX}${slug}/`;
 }

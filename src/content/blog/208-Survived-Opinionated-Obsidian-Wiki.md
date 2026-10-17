@@ -37,7 +37,7 @@ The wiki isn't a second copy of documentation. It's the place the gaps between c
 
 ## Enforcing the rule at session boundaries
 
-A rule on paper is decoration. The enforcement is a Stop hook, `functional-test-gate.sh`, that fires whenever a session ends after a wiki article was touched. The hook reminds Claude to run the type-specific quality test for that article before exiting, and either the article passes the test or it gets edited before the session closes.
+A rule on paper is decoration. The enforcement is a Stop hook, `functional-test-gate.sh`, that fires every time Claude finishes a response after a wiki article was touched. The hook reminds Claude to run the type-specific quality test for that article before stopping, and either the article passes the test or it gets edited before Claude can stop.
 
 The hook is context-aware. If a research loop is running (a `.research-loop-active` flag file exists) or a Ralph Loop iteration is mid-execution, the reminder is suppressed, those loops have their own completion gates and fighting them creates noise. In normal single-session work the hook fires, the test runs, and the cull happens continuously rather than in a once-a-year audit.
 

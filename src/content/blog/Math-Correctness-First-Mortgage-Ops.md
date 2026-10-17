@@ -42,7 +42,7 @@ None of these are theoretical. Every one is something I observed during a single
 
 ## The shell-out contract
 
-The mechanics that enforce the rule are mundane. The skill is a router and a narrator. When the user asks a question, the skill determines the mode (`evaluate`, `compare`, `refinance`, `affordability`, `stress`, `amortize`, `arm`), collects the inputs in free-form English, writes a JSON file to a tempfile, and invokes a Python script:
+The mechanics that enforce the rule are mundane. The skill is a router and a narrator. When the user asks a question, the skill determines the mode (`evaluate`, `compare`, `refinance`, `affordability`, `stress`, `amortize`, `arm`, `points`, `property`), collects the inputs in free-form English, writes a JSON file to a tempfile, and invokes a Python script:
 
 ```bash
 python ${CLAUDE_SKILL_DIR}/scripts/amortize.py --input /tmp/mortgage-ops-input-<uuid>.json
@@ -50,16 +50,16 @@ python ${CLAUDE_SKILL_DIR}/scripts/amortize.py --input /tmp/mortgage-ops-input-<
 
 The script reads the JSON, validates it with Pydantic v2 in strict mode, computes the result with deterministic Python, and writes JSON to stdout. The skill reads the stdout JSON, decides whether the response was a success or a structured error, and narrates the answer to the user in English. The skill never reads the script's source. The skill never holds a number in its own context that it did not get from a script.
 
-The error contract is uniform across every script. When a Pydantic validation fails (the user supplied a float where a Decimal was required, or omitted a required field, or supplied an out-of-range value), the script emits a six-key envelope to stderr and exits with a non-zero code:
+The error contract is uniform across every script. When validation fails (the user supplied a JSON number where a Decimal string was required, or omitted a required field, or supplied an out-of-range value), the script emits a six-key envelope to stderr and exits with a non-zero code. The JSON-number case never actually reaches Pydantic - strict mode happily accepts a JSON number for a `Decimal` field when it parses JSON - so a small float gate in `scripts/_cli_helpers.py` pre-parses the input and builds the same envelope Pydantic would:
 
 ```json
 [{
   "type": "decimal_type",
   "loc": ["loan", "principal"],
-  "msg": "Input should be a valid Decimal",
-  "input": 400000.00,
-  "ctx": {"class_name": "Decimal"},
-  "url": "https://errors.pydantic.dev/2.13/v/decimal_type"
+  "msg": "Input should be a valid decimal \u2014 JSON string required for money/rate fields per D-19 (JSON numbers are rejected at the boundary)",
+  "input": "400000.00",
+  "url": "https://errors.pydantic.dev/2.13/v/decimal_type",
+  "ctx": {"class": "Decimal", "field_path": "loan.principal"}
 }]
 ```
 
@@ -89,7 +89,7 @@ def quantize_cents(value: Decimal) -> Decimal:
 
 The rules these helpers encode are explicit:
 
-1. **Decimals are constructed from strings, never from Python floats.** The string `"0.065"` is exact; the float literal `0.065` is the IEEE-754 approximation `0.064999999999999997...`. A `Decimal(0.065)` (note the float arg) silently inherits the float's imprecision and the Decimal carries it through the rest of the calculation. The fix is `Decimal("0.065")`. The codebase rejects the float form at the type level (`mypy --strict`) and at the boundary (Pydantic v2 `condecimal(max_digits=14, decimal_places=2)`).
+1. **Decimals are constructed from strings, never from Python floats.** The string `"0.065"` is exact; the float literal `0.065` is the IEEE-754 approximation `0.06500000000000000222...`. A `Decimal(0.065)` (note the float arg) silently inherits the float's imprecision and the Decimal carries it through the rest of the calculation. The fix is `Decimal("0.065")`. The codebase rejects the float form at the type level (`mypy --strict`) and at the boundary (Pydantic v2 `condecimal(max_digits=14, decimal_places=2)`).
 2. **Rounding happens once, at end-of-period, with `ROUND_HALF_UP`.** Banker's rounding (Python's default) is correct for accounting averages because over many independent calculations the half-cases distribute evenly and the net rounding bias is zero. Mortgage amortization is not many independent calculations; it is a single recursive schedule where the half-cases stack. US consumer-mortgage software uses ROUND_HALF_UP, so the schedules I produce match the schedules a real lender will produce.
 3. **The `MONEY_CONTEXT` is applied via `localcontext`, not by mutating the global Decimal context.** Mutating the global context is a footgun: it changes the rounding behavior for code outside this module, including test fixtures and library calls. The `with localcontext(...)` block scopes the change to the quantization itself.
 
@@ -122,7 +122,7 @@ The most mathematically rigorous calculation in the project is the *estimated AP
 
 APR under Regulation Z is defined by the unit-period equation in 12 CFR Part 1026 Appendix J. The equation is implicit: APR is the rate `i` such that the present value of all payments equals the amount financed, where "amount financed" is `loan.principal - finance_charges`. There is no closed-form solution. The implementation is Newton-Raphson, seeded from `numpy_financial.rate` and refined.
 
-The Decimal arithmetic is unavoidable. The unit-period equation involves fractional exponents (`(1 + i)^(-t - f)` where `f` is the odd-first-period fraction), and Python's `Decimal.__pow__` requires integer exponents. The workaround in `_decimal_pow`:
+The Decimal arithmetic is unavoidable. The unit-period equation involves fractional exponents (`(1 + i)^(-t - f)` where `f` is the odd-first-period fraction), and the engine routes every one of them through `Decimal.ln` and `Decimal.exp` inside `MONEY_CONTEXT`, so the precision and rounding are pinned in one place instead of riding on whatever the ambient context happens to be. The helper, `_decimal_pow`:
 
 ```python
 def _decimal_pow(base: Decimal, exponent: Decimal) -> Decimal:
@@ -140,7 +140,7 @@ The solver itself runs under three explicit constraints:
 2. **A 50-iteration hard cap.** If the solver does not converge in 50 iterations, it raises `APRConvergenceError` *before* constructing the response. The 50-iteration limit is also enforced at the Pydantic boundary via `Field(ge=1, le=50)` on `APRResponse.iterations`, so a future bug that tries to emit a malformed response with `iterations > 50` would fail validation before the response leaves the model layer. Defense in depth.
 3. **A literal-text invariant on the response summary.** `APRResponse.summary` must contain the literal substring `"estimated APR"`, enforced by a `@model_validator(mode="after")` on the Pydantic model. The validator also forbids any bare `APR` word outside the allowed phrases `"estimated APR"` and `"APR tolerance"`. The reason is regulatory: mortgage-ops is a personal-use tool, not a commercial creditor, so it does not make Reg Z APR disclosures. The literal-text guard pins that fact at the deepest possible boundary, so a future LLM-narrated summary cannot accidentally produce a sentence that reads like a regulated disclosure.
 
-The cross-validation regime for the APR engine is twenty-plus capture fixtures from the CFPB's HMDA Platform (the canonical open-source APR reference, the same one the agency uses for its Home Mortgage Disclosure Act submission validation). Each fixture is a `(request, expected_apr)` pair captured from the HMDA tool. The engine must match each fixture exactly within the convergence tolerance.
+The cross-validation regime for the APR engine is twenty pinned `(request, expected_apr)` fixtures in `tests/fixtures/apr/oracle/`, and they deserve an honest label: the engine emitted every one of them. The twelve plain cases are cross-checked against the Wikipedia mortgage formula (with no finance charges and no odd first period, the APR collapses to the note rate); the eight odd-first-period and finance-charge cases are only pinned so they cannot drift. The external oracle is the FFIEC's APR tool, which computes APR from loan terms (the HMDA Platform's rate-spread tool takes APR as an input, so it cannot be one), and that capture session has not happened yet. The engine must match each fixture exactly within the convergence tolerance.
 
 The Reg Z Appendix J §(b)(5)(iii) odd-first-period fraction `f` depends on the day-count convention the creditor used. The three v1-supported conventions are documented in the engine, with their formulas:
 
@@ -180,7 +180,7 @@ The pattern composes into a directory full of single-citation modules:
 ```
 lib/rules/
   atr_qm.py            (12 CFR §1026.43(e)(2))
-  conventional_pmi.py  (HUD/PMI dropoff rules)
+  conventional_pmi.py  (Homeowners Protection Act PMI termination)
   fannie_eligibility.py (Fannie Mae Selling Guide)
   fha_mip.py           (FHA Mortgage Insurance Premium tables)
   freddie_eligibility.py (Freddie Mac AUS)
@@ -204,7 +204,7 @@ The YAML files in `data/reference/` are not casual. Each is required to declare 
 source: "https://www.fhfa.gov/news/news-release/fhfa-announces-conforming-loan-limit-values-for-2026"
 effective: 2026-01-01
 notes: |
-  FHFA news release of 2025-12-04: "FHFA Announces Conforming Loan Limit Values
+  FHFA news release of 2025-11-25: "FHFA Announces Conforming Loan Limit Values
   for 2026." Effective for loans with pool issue dates on or after 2026-01-01.
   Baseline 1-unit = $832,750; ceiling 1-unit = $1,249,125 (= 150% x baseline).
 limits:
@@ -268,7 +268,7 @@ Rules:
      (gap-fill required).
 ```
 
-Rule 3 is the load-bearing rule of the entire carve-out. Sonnet is allowed to handle money fields as long as it emits them as JSON strings rather than JSON numbers. The next stage of the pipeline is a Pydantic v2 model with `model_config = ConfigDict(strict=True)`. Strict mode rejects JSON floats for `Decimal` fields with a clean validation error. The moment Sonnet's output crosses the Pydantic boundary, control transfers to deterministic Decimal Python and the arithmetic-allergic part of the project takes over.
+Rule 3 is the load-bearing rule of the entire carve-out. Sonnet is allowed to handle money fields as long as it emits them as JSON strings rather than JSON numbers. The next stage of the pipeline is a Pydantic v2 model with `model_config = ConfigDict(strict=True)`, validated through `model_validate_json`. That path does not reject a JSON float for a `Decimal` field - Pydantic's JSON parser coerces it - and the property pipeline has no float gate in front of it, so rule 3 is held by the prompt alone. The moment Sonnet's output crosses the Pydantic boundary, control transfers to deterministic Decimal Python and the arithmetic-allergic part of the project takes over.
 
 The carve-out is bounded in three additional ways:
 
@@ -304,7 +304,7 @@ It writes the JSON to a tempfile:
 }
 ```
 
-Note the strings around `"500000.00"` and `"0.066250"`. These are intentional; the Pydantic v2 strict-mode validator at the boundary rejects JSON floats for `Decimal` fields with a six-key envelope on stderr. If the skill emitted unquoted numerics it would never reach the engine.
+Note the strings around `"500000.00"` and `"0.066250"`. These are intentional; the float gate at the boundary rejects JSON numbers for `Decimal` fields with a six-key envelope on stderr. If the skill emitted unquoted numerics it would never reach the engine.
 
 It invokes the script:
 
@@ -312,7 +312,7 @@ It invokes the script:
 python ${CLAUDE_SKILL_DIR}/scripts/amortize.py --input /tmp/mortgage-ops-input-7c4f.json
 ```
 
-The script lazy-imports `numpy_financial`, the Pydantic models, and the engine; argparse handles `--help` before any of those imports run, so `--help` returns under 100ms even though the full engine takes longer. The full call on a 360-month schedule returns in under 50ms.
+The script lazy-imports `numpy_financial`, the Pydantic models, and the engine; argparse handles `--help` before any of those imports run, so `--help` returns under 100ms even though the full engine takes longer. The full call on a 360-month schedule returns in about 150ms.
 
 The engine wraps `npf.pmt`, `npf.ipmt`, and `npf.ppmt` per period, quantizes each line to cents with `quantize_cents`, applies any extra-principal entries against the period balance, and reconciles the cents-drift in the final period so that `payments[-1].balance == Decimal("0.00")` exactly and `sum(principal + extra_principal) == original_principal` exactly. Both invariants are asserted by `assert_schedule_invariants` in the test suite and would fail loudly if the engine ever drifted.
 
@@ -320,17 +320,17 @@ The script writes a response to stdout:
 
 ```json
 {
-  "monthly_pi": "3200.99",
-  "total_interest": "652356.40",
-  "total_paid": "1152356.40",
+  "monthly_pi": "3201.55",
+  "total_interest": "652563.27",
+  "final_payment_adjusted": true,
   "payments": [
-    {"period": 1, "payment": "3200.99", "principal": "440.95",
-     "interest": "2760.04", "balance": "499559.05",
-     "cumulative_interest": "2760.04"},
+    {"period": 1, "payment": "3201.55", "principal": "441.13",
+     "interest": "2760.42", "balance": "499558.87",
+     "cumulative_interest": "2760.42"},
     ...
-    {"period": 360, "payment": "3200.99", "principal": "3183.32",
-     "interest": "17.67", "balance": "0.00",
-     "cumulative_interest": "652356.40"}
+    {"period": 360, "payment": "3206.82", "principal": "3189.21",
+     "interest": "17.61", "balance": "0.00",
+     "cumulative_interest": "652563.27"}
   ]
 }
 ```
@@ -339,29 +339,29 @@ Every dollar field is a JSON string. Every dollar field traces to a `Decimal` qu
 
 The skill reads the JSON, parses it into a narration, and answers:
 
-> On a 500,000 loan at 6.625 percent over 30 years, your monthly principal and interest is 3,200.99. Over the full term you pay 652,356.40 in interest, for a total of 1,152,356.40. The first month is mostly interest (2,760.04 of the 3,200.99 payment); by the 360th month, almost all of it (3,183.32) goes to principal. Want me to show you the schedule, run the same numbers with biweekly payments, or compare against a 15-year term?
+> On a 500,000 loan at 6.625 percent over 30 years, your monthly principal and interest is 3,201.55. Over the full term you pay 652,563.27 in interest. The first month is mostly interest (2,760.42 of the 3,201.55 payment); by the 360th month, almost all of it (3,189.21) goes to principal. Want me to show you the schedule, run the same numbers with biweekly payments, or compare against a 15-year term?
 
-Every number in that sentence came from the stdout JSON. The skill did not compute any of them. If you ask the skill to repeat the same question with a different rate, it writes a new tempfile and invokes the script again. The cost of an extra invocation is a few hundred milliseconds; the cost of letting the model improvise was paid once, in the design of the contract, and is now zero.
+Every number in that sentence came from the stdout JSON. The skill did not compute any of them. If you ask the skill to repeat the same question with a different rate, it writes a new tempfile and invokes the script again. The cost of an extra invocation is about 150 milliseconds; the cost of letting the model improvise was paid once, in the design of the contract, and is now zero.
 
 ## The other engines: refi NPV, stress sweeps, points breakeven
 
 The amortization engine is the simplest. The other six engines each have their own discipline and their own subagent in the Claude Code subagent layer.
 
-**Refi NPV (`scripts/refi_npv.py` + `refi-npv-agent` on Sonnet).** Given the current loan and 2-5 competing refinance offers (rate, term, points, lender fees, escrow handling, expected hold period), the engine computes the NPV of each offer's cash flows from the borrower's perspective and ranks them. The math is `pyxirr.xnpv` over the dated cash-flow stream of each offer minus the dated cash-flow stream of the current loan, both terminated at the borrower's expected hold horizon (default sixty months, configurable). `pyxirr` is a Rust + PyO3 implementation that handles batch scenarios faster than `numpy_financial.xnpv`, which matters when the stress engine runs thousands of NPV evaluations in a parameter sweep. The ranked output is a markdown table the user can read at a glance; the underlying Decimal arithmetic is exact.
+**Refi NPV (`scripts/refi_npv.py` + `refi-npv-agent` on Sonnet).** Given the current loan and 2-5 competing refinance offers (rate, term, points, lender fees, escrow handling, expected hold period), the engine computes the NPV of each offer's cash flows from the borrower's perspective and ranks them. The math is `numpy_financial.npv` over the monthly cash-flow stream of each offer minus the cash-flow stream of the current loan, both terminated at the borrower's expected hold horizon (default the new loan's full term, configurable). `pyxirr` (Rust + PyO3, much faster on big batches) is earmarked for a later batch-ranking path, but it computes in f64, so the engine stays on `numpy_financial.npv`, which returns a `Decimal` when fed `Decimal`. The ranked output is a markdown table the user can read at a glance; the underlying arithmetic stays in Decimal.
 
 **Stress test (`scripts/stress_test.py` + `stress-test-agent` on Haiku).** Given a base scenario and a parameter grid (rate paths × loan amounts × points × hold horizons), the engine runs the cartesian product and emits a summary capped at one thousand tokens. The Haiku subagent exists because stress sweeps can produce >5 scenarios per request and the outer skill's context budget should not blow up on grid output. The summary is the median plus the percentile bands plus the worst case; the full grid is persisted to DuckDB for later inspection.
 
 **Points breakeven (`lib/points.py`).** Given a loan with a points-buydown option (typically 0.25% rate reduction per 1 point, but configurable per lender), the engine computes the breakeven month, which is the month at which the cumulative interest savings from the lower rate equals the upfront points cost. The breakeven is reported alongside the user's expected hold horizon, so the recommendation is contextual: if breakeven is at month 47 and you plan to hold for 36 months, points are a loss; if breakeven is at month 47 and you plan to hold for 120 months, points are a win.
 
-**Affordability (`lib/affordability.py`).** Given household income, monthly debts, downpayment, target rate and term, and a desired front/back DTI ceiling, the engine computes the maximum loan amount (and therefore maximum home price) that fits. The same engine, run in reverse, validates a target home price against the household's DTI capacity. The DTI definitions are tied to ATR/QM (12 CFR §1026.43) by reference; the configurable PMI dropoff at 78% LTV is tied to HUD Mortgagee Letter rules by reference.
+**Affordability (`lib/affordability.py`).** Given household income, monthly debts, downpayment, target rate and term, and a desired front/back DTI ceiling, the engine computes the maximum loan amount (and therefore maximum home price) that fits. The same engine, run in reverse, validates a target home price against the household's DTI capacity. The DTI definitions are tied to ATR/QM (12 CFR §1026.43) by reference; the configurable PMI dropoff at 78% LTV is tied to the Homeowners Protection Act (12 U.S.C. §4902(b)) by reference.
 
 **ARM simulation (`lib/arm.py`).** Given a starting rate, an index (typically SOFR), a margin, periodic and lifetime rate caps, and a rate path (deterministic or stochastic), the engine simulates the ARM's payment trajectory across resets. The locked decisions around floor-rate behavior, look-back periods, and biweekly mode interactions live in the docstring; each is pinned to a fixture.
 
-**Estimated APR (`lib/apr.py`).** Already covered. The Newton-Raphson under Reg Z Appendix J is the same shape as the other engines: deterministic Python, Decimal everywhere, Pydantic boundary, tests pinned to oracles (twenty-plus HMDA Platform fixtures in this case).
+**Estimated APR (`lib/apr.py`).** Already covered. The Newton-Raphson under Reg Z Appendix J is the same shape as the other engines: deterministic Python, Decimal everywhere, Pydantic boundary, tests pinned to oracles (twenty engine-emitted fixtures in this case, twelve of them cross-checked).
 
-Six engines, one discipline. Each engine wraps the part of `numpy_financial` (or `pyxirr` for batched XIRR/XNPV) that handles the underlying numerical kernel. None of them reimplements PMT/IPMT/PPMT/NPV/IRR; the `numpy_financial` library has been around long enough that its edge cases (issues #130 and #131 in particular) are documented, and reimplementing would inherit a different set of edge cases that are not. The wrap-do-not-reimplement rule is itself a discipline; the `CLAUDE.md` explicitly forbids the alternatives (`mortgage` PyPI, `mortgage` jbmohler, `amortization` PyPI, all of which are abandoned, float-based, or unlicensed) and pins the choice to `numpy_financial` because it is the maintained Excel-equivalent.
+Seven engines, one discipline. Each engine wraps the part of `numpy_financial` that handles the underlying numerical kernel. None of them reimplements PMT/IPMT/PPMT/NPV/IRR; the `numpy_financial` library has been around long enough that its edge cases (issues #130 and #131 in particular) are documented, and reimplementing would inherit a different set of edge cases that are not. The wrap-do-not-reimplement rule is itself a discipline; the `CLAUDE.md` explicitly forbids the alternatives (`mortgage` PyPI, `mortgage` jbmohler, `amortization` PyPI, all of which are abandoned, float-based, or unlicensed) and pins the choice to `numpy_financial` because it is the maintained Excel-equivalent.
 
-The skill routes to the right engine, the engine computes, the skill narrates. Eight modes, one contract.
+The skill routes to the right engine, the engine computes, the skill narrates. Nine modes, one contract.
 
 ## The smaller disciplines that hold the line
 

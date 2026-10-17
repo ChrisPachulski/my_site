@@ -5,7 +5,7 @@ date: 2026-07-29T04:00:00.000Z
 
 # The Gate Wins
 
-Three days after I published a 60-minute post about autoloop, I renamed it.
+Three days after I published a 38-minute post about autoloop, I renamed it.
 
 Commit `b619116f`, July 11: *refactor: rename autoloop to starforge.* The directory moved, the env vars and tmux prefix and launchd label all changed, old `.autoloop/` state migrates itself on first run, and a shim at `~/.local/bin/autoloop` still works for muscle memory. The name comes from KOTOR's Star Forge, an autonomous, self-improving factory, and it sits next to the other Star Wars names in my shell (the lightsaber forms are already taken by my Claude and Codex launchers).
 

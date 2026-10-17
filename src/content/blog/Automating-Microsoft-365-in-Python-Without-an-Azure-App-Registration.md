@@ -5,7 +5,7 @@ date: 2025-12-30T05:00:00.000Z
 
 # Automating Microsoft 365 in Python Without an Azure App Registration
 
-At my previous gig, I had the luxury of an Azure app registration. Service principal, client secret, `https://graph.microsoft.com/.default` scope, app-level permissions for `Mail.Send`, `Mail.ReadWrite.Shared`, `Sites.ReadWrite.All`, and a couple dozen others the admin had graciously approved. Every scheduled Python job that touched Microsoft 365, roughly twenty ETLs on daily, weekly, and monthly cadences, authenticated headlessly via client credentials, never prompted a human, and ran for a year without a single auth-related failure.
+At my previous gig, I had the luxury of an Azure app registration. Service principal, client secret, `https://graph.microsoft.com/.default` scope, app-level permissions for `Mail.Send`, `Mail.ReadWrite`, `Sites.ReadWrite.All`, and a couple dozen others the admin had graciously approved. Every scheduled Python job that touched Microsoft 365, roughly twenty ETLs on daily, weekly, and monthly cadences, authenticated headlessly via client credentials, never prompted a human, and ran for a year without a single auth-related failure.
 
 At my current gig I asked for the same thing. My current security team said no.
 
@@ -78,7 +78,7 @@ AUTHORITY = "https://login.microsoftonline.com/organizations"
 # token and satisfies narrower scope requests from it.
 GRAPH_SCOPES = [
     "Mail.Send", "Mail.ReadWrite",
-    "Calendar.ReadWrite", "Calendars.Read.Shared",
+    "Calendars.ReadWrite", "Calendars.Read.Shared",
     "Chat.ReadWrite", "Chat.Create",
     "ChannelMessage.Send", "Channel.ReadBasic.All",
     "Team.ReadBasic.All",
@@ -153,7 +153,7 @@ The cache lives at `~/.ms365_utils/.msal_token_cache.json`. It's a JSON file. It
 - A refresh token (it's a long opaque string, not literally encrypted, MSAL relies on filesystem permissions to keep it private)
 - A recently-issued access token, which expires in an hour and gets rotated automatically
 
-If you leak this file, you've leaked your own Microsoft identity for up to the refresh token lifetime, which is up to 90 days by default. Treat it like SSH private keys, not in a repo, not in a shared folder, not on a USB drive, not in an unencrypted backup.
+If you leak this file, you've leaked your own Microsoft identity for as long as the refresh token keeps getting used. The default 90-day lifetime is a rolling window that restarts on every use, so in practice that means until something revokes it. Treat it like SSH private keys, not in a repo, not in a shared folder, not on a USB drive, not in an unencrypted backup.
 
 A separate metadata file sits alongside it tracking when the user last went through the interactive flow:
 
@@ -164,21 +164,26 @@ A separate metadata file sits alongside it tracking when the user last went thro
 }
 ```
 
-`last_interactive_auth` is the field that matters for observability. The refresh token is valid for roughly 90 days from that timestamp (give or take tenant conditional access rules). When it's been 83 days, I want my scripts warning me. When it's been 90, they should fail loudly so I don't lose a day wondering why a scheduled job stopped producing output.
+`last_interactive_auth` is the field that matters for observability. The refresh token itself doesn't run out on that clock, a job that refreshes daily never hits Microsoft's 90-day inactivity window. What forces the re-auth is tenant policy, conditional access sign-in frequency or a password reset, and sign-in frequency counts from the last interactive login. The window below is a setting, 90 by default, so set it to whatever your tenant actually enforces, and if silent auth keeps working past it the check says so instead of crying wolf. When it's been 83 days, I want my scripts warning me. When it's been 90, they should fail loudly so I don't lose a day wondering why a scheduled job stopped producing output.
 
 ```python
+SIGN_IN_WINDOW_DAYS = 90  # your tenant's sign-in frequency, not a token lifetime
+
 def check_token_health() -> dict:
     meta = _load_auth_meta(CACHE_DIR)
     last = meta.get("last_interactive_auth")
     if last is None:
         return {"status": "unknown", "days_remaining": None, "last_auth": None}
 
-    from datetime import datetime, timezone
+    from datetime import datetime, timedelta, timezone
     dt = datetime.fromisoformat(last)
     days_since = (datetime.now(timezone.utc) - dt).days
-    remaining = 90 - days_since
+    remaining = SIGN_IN_WINDOW_DAYS - days_since
+    silent = meta.get("last_silent_auth")
 
-    if remaining <= 0:
+    if silent and datetime.fromisoformat(silent) > dt + timedelta(days=SIGN_IN_WINDOW_DAYS):
+        status = "unknown"  # silent auth outlived the window, so the window is set wrong
+    elif remaining <= 0:
         status = "expired"
     elif remaining <= 7:
         status = "warning"
@@ -218,11 +223,11 @@ The operational implications are not small.
 
 **Sending from a shared mailbox.** Previously, all ETL notifications came from `analytics-notifications@example.com`, a dedicated mailbox the admin had provisioned. Clean separation between "email from the system" and "email from a human." Now, all ETL notifications come from me. If I leave, they go with me. I work around this by having the recipients set up an Outlook rule that flags my ETL-sent emails into a separate folder, which is worse than a service mailbox but is what I can do inside the constraints.
 
-**Reading shared mailboxes.** Previously, reading an ops-team shared mailbox was `/users/ops-shared@example.com/messages` with `Mail.Read.Shared` app permission. Now, reading any mailbox that isn't mine requires someone explicitly delegating Full Access or Folder Access to my user account in Outlook, and then the Graph calls go through `/users/ops-shared@example.com/messages` with user-delegated auth. It works, but the delegation has to be set up per mailbox, by the owner, with admin involvement in some cases.
+**Reading shared mailboxes.** Previously, reading an ops-team shared mailbox was `/users/ops-shared@example.com/messages` with the `Mail.Read` app permission, fenced to the mailboxes the admin whitelisted by an application access policy. Now, reading any mailbox that isn't mine requires someone explicitly delegating Full Access or Folder Access to my user account in Outlook, and then the Graph calls go through `/users/ops-shared@example.com/messages` with user-delegated auth. It works, but the delegation has to be set up per mailbox, by the owner, with admin involvement in some cases.
 
 **Teams notifications.** Incoming webhook URLs are being deprecated by Microsoft anyway, so the shift was inevitable for anyone with webhooks in their stack. The current wrapper uses `/chats/{id}/messages` and `/teams/{id}/channels/{id}/messages` with user-delegated auth, the message shows up as from me. That's fine for most use cases and mildly awkward for a few (the ETL-failure notification looks like I personally wrote it at 3 AM, which, depending on how your colleagues read subtext, may create the wrong impression).
 
-**Unattended operation.** The 90-day re-auth window is the most annoying downgrade. For the first month it felt like nothing, because I hadn't hit the threshold yet. The first time a scheduled job failed at the three-month mark because the refresh token had finally expired, I understood in a visceral way why service-principal auth exists.
+**Unattended operation.** The 90-day re-auth window is the most annoying downgrade. For the first month it felt like nothing, because I hadn't hit the threshold yet. The first time a scheduled job failed at the three-month mark because the tenant finally demanded a fresh interactive login, I understood in a visceral way why service-principal auth exists.
 
 ## The trade-offs, laid out
 
@@ -239,7 +244,7 @@ The operational implications are not small.
 | Can act on behalf of other users | Yes | No, only as you |
 | Shared-mailbox access | Via app permission | Via user delegation |
 | Headless server operation | Native | Awkward (initial consent needs a browser) |
-| Failure mode | Client-secret rotation or revocation | Refresh-token expiry |
+| Failure mode | Client-secret rotation or revocation | Forced re-auth (refresh token rejected) |
 | Recovery time from failure | Rotate secret, restart | Re-run device code flow |
 
 The previous column is strictly better on every production-automation dimension that matters. The current column is strictly better on every organizational-constraint dimension that matters. You pick the one you can actually use.

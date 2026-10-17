@@ -28,9 +28,9 @@ featureImage: /plex.png
 
 ## 1) Eweka: What, Why & How
 
-**Lay definition.** Usenet is a global message network where files are posted as many small "articles." An **Usenet access provider** sells you a login to their big server farm that stores those articles. A **news server** is simply that storage and retrieval system. When a downloader requests an NZB, it pulls the listed articles from the provider and reassembles the file.
+**Lay definition.** Usenet is a global message network where files are posted as many small "articles." A **Usenet access provider** sells you a login to their big server farm that stores those articles. A **news server** is simply that storage and retrieval system. When a downloader requests an NZB, it pulls the listed articles from the provider and reassembles the file.
 
-**Why I use Eweka.** Two things: **performance** and **privacy**. Performance comes from high retention, high completion, many connections, and fast EU backbones. Privacy comes from mandatory TLS so my ISP sees only encrypted traffic to Eweka, not the filenames or groups.
+**Why I use Eweka.** Two things: **performance** and **privacy**. Performance comes from high retention, high completion, many connections, and fast EU backbones. Privacy comes from TLS (SSL on, port 563 below) so my ISP sees only encrypted traffic to Eweka, not the filenames or groups.
 
 **Practical value.** Fast (and I mean - really, really fast) sustained downloads, fewer failed jobs, and minimal ISP interference.
 
@@ -59,13 +59,13 @@ featureImage: /plex.png
 **Quick start: SABnzbd**
 
 1. Folders: `incomplete` and `complete` on the WD drive
-2. Categories: `tv` → `complete/tv`, `movies` → `complete/movies`
+2. Categories: `tv` → `tv`, `movies` → `movies` (relative to `complete`)
 3. Post‑processing: Unpack, Delete after success
 
 **Quick start: Sonarr**
 
 1. Root folder: `/Volumes/Media Empire/tv_shows`
-2. Indexers: add Torznab/Newznab feeds (from your indexers) with TV categories
+2. Indexers: add Newznab feeds (from your Usenet indexers) with TV categories
 3. Download client: add SABnzbd, category `tv`
 4. **Quality profile (my recommendation)**
 
@@ -116,7 +116,7 @@ featureImage: /plex.png
 
 **Set up**
 
-* Create accounts on two or more Torznab/Newznab‑compatible indexers
+* Create accounts on two or more Newznab‑compatible (Usenet) indexers
 * In Sonarr/Radarr, add each indexer with API key and the correct categories
 * Keep API rates conservative to avoid throttling
 
@@ -141,23 +141,6 @@ featureImage: /plex.png
 **Note on shucking**
 
 * Shucking = removing the bare HDD from a USB enclosure to mount inside a NAS/DAS. Pros: lower cost per TB. Cons: warranty risk and possible 3.3V pin issues. I prefer a ThunderBay migration instead
-
-**File system and layout**
-
-* APFS on macOS. Share via SMB if containers or other hosts need access
-* Directory plan remains:
-
-```
-/Volumes/Media Empire/
-  tv_shows/
-  movies/
-  downloads/
-    sabnzbd/
-      incomplete/
-      complete/
-```
-
----
 
 **File system and layout**
 
@@ -261,18 +244,16 @@ featureImage: /plex.png
 4. Sonarr/Radarr import and rename into Plex libraries
 5. Plex scans and serves to clients locally and over Tailscale or via its remote access
 
-```mermaid
-flowchart TD
-  U[User intent]
-  U-->SR[Sonarr / Radarr]
-  SR-->IDX[Indexers]
-  IDX-->NZB[NZB URL]
-  NZB-->SAB[SABnzbd]
-  SAB-->EWE[Eweka News Server]
-  SAB-->STG[Completed Folder on WD 20TB]
-  STG-->IMP[Import/Rename]
-  IMP-->PLEX[Plex Library]
-  PLEX-->CLIENTS[Clients via Tailscale or Port‑forward]
+```text
+User intent
+  -> Sonarr / Radarr
+  -> Indexers
+  -> NZB URL
+  -> SABnzbd  <->  Eweka News Server
+  -> Completed Folder on WD 20TB
+  -> Import/Rename
+  -> Plex Library
+  -> Clients via Tailscale or Port‑forward
 ```
 
 ---
@@ -282,12 +263,12 @@ flowchart TD
 **SABnzbd**
 
 * Server: Eweka host, SSL on, 12–20 connections
-* Categories: `tv` → `/downloads/complete/tv`, `movies` → `/downloads/complete/movies`
+* Categories: `tv` → `tv`, `movies` → `movies` (relative to `complete`)
 * Unpack, Repair, Delete after success: enabled
 
 **Sonarr**
 
-* Indexers: 2+ Torznab sources with TV categories only
+* Indexers: 2+ Newznab sources with TV categories only
 * Quality profile: set cutoff
 * Release profiles: preferred and reject terms
 * Root folder: `/Volumes/Media Empire/tv_shows`
@@ -333,7 +314,7 @@ flowchart TD
 - IPTVX: $2.42/mo ($28.99/yr), Apple TV client for M3U and XMLTV
 - SABnzbd: $0, Open source
 - Sonarr/Radarr: $0, Open source
-- Plex Pass Lifetime: ~$120 one-time, Lifetime license
+- Plex Pass Lifetime: $249.99 one-time, Lifetime license (was $119.99 until April 29, 2025)
 - Tailscale: $0, Personal tier
 - Indexers: $0, Free (paid options $5-$20/mo total)
 
@@ -442,9 +423,9 @@ next_ep(){
   find "$d" -maxdepth 1 -type f \( -iname '*.mp4' -o -iname '*.m4v' \) -print0 2>/dev/null \
   | xargs -0 -n1 basename 2>/dev/null \
   | while IFS= read -r b; do
-      n="$(echo "$b" | sed -nE 's/.*S[0-9]{2}E([0-9]{2,3}).*/\1/p')"
-      [ -z "$n" ] && n="$(echo "$b" | sed -nE 's/.*Episode[[:space:]]+([0-9]{2,3})[[:space:]]-.*/\1/p')"
-      [ -n "$n" ] && [ "$n" -gt "$max" ] && max="$n"
+      n="$(echo "$b" | sed -nE 's/.*S[0-9]{2}E([0-9]+).*/\1/p')"
+      [ -z "$n" ] && n="$(echo "$b" | sed -nE 's/.*Episode[[:space:]]+([0-9]+)[[:space:]]-.*/\1/p')"
+      [ -n "$n" ] && n=$((10#$n)) && [ "$n" -gt "$max" ] && max="$n"
       echo "$max"
     done | tail -n1 | { read v || v="0"; echo $(( ${v:-0} + 1 )); }
 }
@@ -478,11 +459,10 @@ embed_tags(){
   fi
   if have exiftool; then
     local args=( -overwrite_original -Title="$title" -TVShow="$show"
-                 -TVSeason="$season" -TVSeasonNum="$season"
-                 -TVEpisode="$ep_str" -TVEpisodeNum="$ep" -TrackNumber="$ep"
-                 -ContentType="TV Show" )
-    [ -n "$art" ] && args+=( -CoverArt="$art" )
-    exiftool "${args[@]}" "$file" >/dev/null 2>&1 || true
+                 -TVSeason="$season" -TVEpisode="$ep" -TVEpisodeID="$ep_str"
+                 -TrackNumber="$ep" -MediaType="TV Show" )
+    [ -n "$art" ] && args+=( "-CoverArt<=$art" )
+    exiftool "${args[@]}" "$file" >/dev/null || true
   fi
 }
 
@@ -498,9 +478,9 @@ resolve_channel_title(){
   echo "$t"
 }
 
-echo "📂 Source: $SRC_ROOT"
-echo "📦 Dest  : $DEST_ROOT"
-have yt-dlp || { echo "❌ yt-dlp not found"; exit 1; }
+echo "Source: $SRC_ROOT"
+echo "Dest  : $DEST_ROOT"
+have yt-dlp || { echo "FAILED: yt-dlp not found"; exit 1; }
 mkdir -p "$DEST_ROOT"
 
 season2="$(printf '%02d' "$SEASON")"
@@ -510,9 +490,9 @@ for channel_dir in "$SRC_ROOT"/*; do
   channel_id="$(basename "$channel_dir")"
 
   sample="$(ls "$channel_dir"/*.mp4 2>/dev/null | head -n 1)"
-  [ -n "$sample" ] || { echo "📺 $channel_id — ⚠️ No videos, skipping"; continue; }
+  [ -n "$sample" ] || { echo "$channel_id — WARNING: No videos, skipping"; continue; }
   sample_id="$(basename "$sample" .mp4)"
-  is_ytid "$sample_id" || { echo "📺 $channel_id — ⚠️ Not YT ID layout, skipping"; continue; }
+  is_ytid "$sample_id" || { echo "$channel_id — WARNING: Not YT ID layout, skipping"; continue; }
 
   chan_title_raw="$(resolve_channel_title "$channel_id" "$sample_id")"
   chan_title="$(echo "$chan_title_raw" | sed 's/ - .*//')"
@@ -540,18 +520,19 @@ for channel_dir in "$SRC_ROOT"/*; do
   done < <(find "$channel_dir" -maxdepth 1 -type f -name '*.mp4' -print0)
 
   # Nothing to do?
-  [ -s "$tmp" ] || { echo "📺 $show — nothing to move"; rm -f "$tmp"; continue; }
+  [ -s "$tmp" ] || { echo "$show — nothing to move"; rm -f "$tmp"; continue; }
 
   # Start at next available episode in destination
-  ep="$(next_ep "$dest_dir")"
-  echo "📺 $show  → Season $season2  next=E$(printf '%02d' "$ep")  (sorted by upload date)"
+  ep="$(next_ep "$dest_dir")" && \
+    echo "$ep" | grep -Eq '^[0-9]+$' || { echo "  Could not read episode numbers in $dest_dir, skipping"; rm -f "$tmp"; continue; }
+  echo "$show  → Season $season2  next=E$(printf '%02d' "$ep")  (sorted by upload date)"
 
   # Process in chronological order
   LC_ALL=C sort -t $'\t' -k1,1n "$tmp" | \
   while IFS=$'\t' read -r up f title secs vid; do
     # duration filter
     if [ -n "$secs" ] && [ "$secs" -gt 0 ] && [ "$secs" -lt "$MIN_SECS" ]; then
-      echo "  🗑️  <${MIN_SECS}s: $(basename "$f")"
+      echo "  Delete <${MIN_SECS}s: $(basename "$f")"
       rm -f -- "$f"
       continue
     fi
@@ -561,12 +542,12 @@ for channel_dir in "$SRC_ROOT"/*; do
     outfile="$dest_dir/$show - S${season2}E${ep2} - $pretty_title.mp4"
 
     if [ -e "$outfile" ]; then
-      echo "  ⏩ Exists: $(basename "$outfile")"
+      echo "  Exists: $(basename "$outfile")"
       rm -f -- "$f" 2>/dev/null || true
       continue
     fi
 
-    echo "  ➡️  Move: $(basename "$f")  →  $(basename "$outfile")"
+    echo "  Move: $(basename "$f")  →  $(basename "$outfile")"
     mv -- "$f" "$outfile"
 
     artbase="${outfile%.*}"
@@ -579,5 +560,5 @@ for channel_dir in "$SRC_ROOT"/*; do
   rm -f "$tmp"
 done
 
-echo "✅ Done."
+echo "Done."
 ```

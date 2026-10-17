@@ -1,5 +1,5 @@
-import { useEffect, useReducer, useRef, useState, useMemo, useCallback } from 'react';
-import Card from './Card.jsx';
+import { useEffect, useLayoutEffect, useReducer, useRef, useState, useMemo, useCallback } from 'react';
+import Card, { describeCard } from './Card.jsx';
 import { CARDS } from './cards.js';
 import {
   INITIAL_STATE,
@@ -177,6 +177,23 @@ function reducer(state, ev) {
   }
 }
 
+/* 60-card deck minus every card the player owns in another zone. */
+function libraryCount(state, p) {
+  const { hand, graveyard, battlefield: bf } = state[p];
+  const onStack = state.stack.filter(s => s.owner === p).length;
+  return 60 - hand.length - graveyard.length - bf.lands.length - bf.creatures.length - bf.other.length - onStack;
+}
+
+/* The tile unmounts with the match, so hand focus to the section the page
+   continues with. Runs after the overlay's inert cleanup has committed. */
+function focusAbout(scroll) {
+  const target = document.getElementById('about');
+  if (!target) return;
+  if (!target.hasAttribute('tabindex')) target.setAttribute('tabindex', '-1');
+  target.focus({ preventScroll: true });
+  if (scroll) target.scrollIntoView({ block: 'start' });
+}
+
 /* ── Tease tile (default render — lives in document flow) ──────── */
 function TeaseTile({ onPlay }) {
   return (
@@ -210,7 +227,7 @@ function MulliganStage({ cards, onKeep, onSkip }) {
   });
 
   return (
-    <div className="gm-mulligan" role="dialog" aria-label="Mulligan">
+    <div className="gm-mulligan" role="group" aria-label="Mulligan">
       <div className="gm-mulligan-header">
         <div className="gm-mulligan-eyebrow">Mulligan · 4 cards</div>
         <h2 className="gm-mulligan-title">
@@ -231,7 +248,7 @@ function MulliganStage({ cards, onKeep, onSkip }) {
               style={{ '--n': i }}
               onClick={() => flip(c.instId)}
               aria-pressed={isFlipped}
-              aria-label={isFlipped ? CARDS[c.cardId].name : `Card ${i + 1}, face down`}
+              aria-label={isFlipped ? describeCard(c.cardId) : `Card ${i + 1}, face down`}
             >
               <div className="gm-mulligan-flipper">
                 <div className="gm-mulligan-back">
@@ -276,8 +293,8 @@ function CounterPrompt({ remainingMs, paused, onCounter }) {
     ? `Cast Counterflux. Paused at ${seconds} seconds. Engage to resume.`
     : `Cast Counterflux. ${seconds} seconds remaining.`;
   return (
-    <div className="gm-counter-prompt" role="alert" data-paused={paused ? 'true' : 'false'}>
-      <div className="gm-counter-text">
+    <div className="gm-counter-prompt" data-paused={paused ? 'true' : 'false'}>
+      <div className="gm-counter-text" role="alert">
         <div className="gm-counter-headline">Your move.</div>
         <div className="gm-counter-sub">
           Cast Counterflux. Click or press Enter.
@@ -455,6 +472,10 @@ function LogPanel({ log, phase, ended, expired }) {
 
 /* ── Victory screen ────────────────────────────────────────────── */
 function VictoryScreen({ onContinue, expired }) {
+  const ctaRef = useRef(null);
+  useEffect(() => {
+    ctaRef.current?.focus({ preventScroll: true });
+  }, []);
   return (
     <div className="gm-victory" role="dialog" aria-label="Match complete">
       <div className="gm-victory-inner">
@@ -468,9 +489,9 @@ function VictoryScreen({ onContinue, expired }) {
         <div className="gm-victory-tags">
           <span>WotC Senior Economic Analyst</span>
           <span>MTGBAN co-founder · $1.2M ARR</span>
-          <span>8 yrs shipping data systems</span>
+          <span>7+ yrs shipping data systems</span>
         </div>
-        <button type="button" className="gm-victory-cta" onClick={onContinue}>
+        <button ref={ctaRef} type="button" className="gm-victory-cta" onClick={onContinue}>
           Explore the portfolio <span aria-hidden="true">↓</span>
         </button>
       </div>
@@ -505,6 +526,8 @@ export default function GhostMatch({ onComplete }) {
   const [setupSpeed, setSetupSpeed] = useState(1);
   const setupIndexRef = useRef(0);
   const setupTimerRef = useRef(null);
+  const rootRef = useRef(null);
+  const open = stage !== 'tile';
 
   const reduceMotion = useMemo(
     () => typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches,
@@ -519,17 +542,13 @@ export default function GhostMatch({ onComplete }) {
   /* Skip / close at any stage. */
   const handleClose = useCallback(() => {
     onComplete?.();
+    requestAnimationFrame(() => focusAbout(false));
   }, [onComplete]);
 
   /* Victory continue: scroll to #about so the page picks up where the tile left off. */
   const handleVictoryContinue = useCallback(() => {
-    const target = document.getElementById('about');
     onComplete?.();
-    if (target) {
-      requestAnimationFrame(() => {
-        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      });
-    }
+    requestAnimationFrame(() => focusAbout(true));
   }, [onComplete]);
 
   /* Mulligan → setup. */
@@ -546,12 +565,33 @@ export default function GhostMatch({ onComplete }) {
     setStage('resolving');
   }, []);
 
-  /* Lock body scroll while overlay is open. */
+  /* Modal containment while the overlay is open. Scroll locks on <html>:
+     html sets overflow-x: clip, so body overflow never reaches the viewport.
+     Everything outside the overlay, up to <body>, goes inert so Tab cannot
+     leave the match. Layout effect so the cleanup commits with the unmount,
+     before handleClose moves focus back to the page. */
+  useLayoutEffect(() => {
+    if (!open) return;
+    const html = document.documentElement;
+    const prevOverflow = html.style.overflow;
+    html.style.overflow = 'hidden';
+    const inerted = [];
+    for (let el = rootRef.current; el && el !== document.body; el = el.parentElement) {
+      for (const sib of el.parentElement.children) {
+        if (sib !== el && !sib.inert) { sib.inert = true; inerted.push(sib); }
+      }
+    }
+    return () => {
+      html.style.overflow = prevOverflow;
+      inerted.forEach(sib => { sib.inert = false; });
+    };
+  }, [open]);
+
+  /* Keep focus in the match: opening unmounts the tile, and Keep / the
+     counter controls unmount on stage change, each dropping focus to <body>. */
   useEffect(() => {
-    if (stage === 'tile') return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => { document.body.style.overflow = prev; };
+    const root = rootRef.current;
+    if (root && !root.contains(document.activeElement)) root.focus({ preventScroll: true });
   }, [stage]);
 
   /* ESC closes the overlay from any stage. */
@@ -586,10 +626,13 @@ export default function GhostMatch({ onComplete }) {
         setStage('counter');
         return;
       }
-      const ev = SETUP_EVENTS[setupIndexRef.current++];
+      // Advance the index only when the event dispatches, so an Instant flush
+      // that cancels this timer still replays the pending event.
+      const ev = SETUP_EVENTS[setupIndexRef.current];
       const userSpeed = typeof speedRef.current === 'number' ? speedRef.current : 1;
       const delay = Math.max(20, ((ev.d || 0) * baseFactor) / userSpeed);
       setupTimerRef.current = setTimeout(() => {
+        setupIndexRef.current++;
         dispatch(ev);
         runNext();
       }, delay);
@@ -694,9 +737,15 @@ export default function GhostMatch({ onComplete }) {
   const showCounterPrompt = stage === 'counter' && state.prompt === 'counter' && !state.ended;
   const interactiveInst = showCounterPrompt ? COUNTER_CARD_INST : null;
 
+  /* A div, not a section: the after-hours theme pins every page <section> to
+     position: relative, which would drop the dialog back into the page flow. */
   return (
-    <section
+    <div
+      ref={rootRef}
       className="gm-root"
+      role="dialog"
+      aria-modal="true"
+      tabIndex={-1}
       aria-label="Ghost match"
       data-stage={stage}
       data-ended={state.ended ? 'true' : 'false'}
@@ -732,7 +781,7 @@ export default function GhostMatch({ onComplete }) {
               </div>
               <div className="gm-pile">
                 <div className="gm-pile-label">Library</div>
-                <div className="gm-pile-count">{60 - state.opp.graveyard.length - state.opp.battlefield.lands.length - state.opp.battlefield.creatures.length - state.opp.battlefield.other.length - state.opp.hand.length}</div>
+                <div className="gm-pile-count">{libraryCount(state, 'opp')}</div>
               </div>
             </div>
             <HandRow hand={state.opp.hand} side="opp" focus={state.focus} />
@@ -764,7 +813,7 @@ export default function GhostMatch({ onComplete }) {
               </div>
               <div className="gm-pile">
                 <div className="gm-pile-label">Library</div>
-                <div className="gm-pile-count">{60 - state.you.graveyard.length - state.you.battlefield.lands.length - state.you.battlefield.creatures.length - state.you.battlefield.other.length - state.you.hand.length}</div>
+                <div className="gm-pile-count">{libraryCount(state, 'you')}</div>
               </div>
             </div>
           </div>
@@ -817,6 +866,6 @@ export default function GhostMatch({ onComplete }) {
           {state.ended && <VictoryScreen onContinue={handleVictoryContinue} expired={expired} />}
         </>
       )}
-    </section>
+    </div>
   );
 }

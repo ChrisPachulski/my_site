@@ -6,7 +6,7 @@ featureImage: /Salesforce.com_logo.svg_resized.png
 
 Efficiently managing Salesforce data often requires powerful, automated solutions. Leveraging Python and Salesforce Object Query Language (SOQL), rather than traditional SQL, provides robust capabilities for data extraction, transformation, and reporting. This blog post explores a comprehensive approach to Salesforce integration using Python, emphasizing setup details, distinguishing between SOQL and standard SQL, illustrating practical applications, including handling attachments, and ensuring anonymity for sensitive object names and details.
 
-### Setting Up Salesforce Integration in Python
+## Setting Up Salesforce Integration in Python
 
 The foundation for interacting with Salesforce through Python relies heavily on secure and efficient setup:
 
@@ -31,7 +31,7 @@ sf = Salesforce(
 
 Proper setup significantly streamlines subsequent data operations and maintains secure, efficient workflows.
 
-### Understanding SOQL vs. SQL
+## Understanding SOQL vs. SQL
 
 Salesforce uses its own querying language, SOQL, which differs from traditional SQL in key ways:
 
@@ -42,12 +42,12 @@ Salesforce uses its own querying language, SOQL, which differs from traditional 
 Example of a basic SOQL query:
 
 ```python
-query_result = sf.query("SELECT Id, Name FROM Account WHERE CreatedDate = LAST_MONTH")
+query_result = sf.query_all("SELECT Id, Name FROM Account WHERE CreatedDate = LAST_MONTH")
 ```
 
 Understanding these differences helps optimize Salesforce data queries and workflows, leveraging SOQL's strengths for efficient data retrieval and analysis.
 
-### Practical Data Extraction and Transformation
+## Practical Data Extraction and Transformation
 
 Python scripts efficiently manage Salesforce data through structured and automated SOQL queries:
 
@@ -60,31 +60,32 @@ Example data transformation using Pandas:
 import pandas as pd
 
 accounts = query_result['records']
-df = pd.DataFrame(accounts)
-df = df.drop(columns=['attributes'])
+df = pd.DataFrame(accounts, columns=['Id', 'Name'])  # drops 'attributes', keeps the columns on an empty result
 ```
 
 * **Automation**: Scripts automate routine data retrieval, significantly reducing manual efforts and improving consistency across data handling processes.
 
-### Automating Salesforce Attachments Retrieval
+## Automating Salesforce Attachments Retrieval
 
 One powerful feature of Salesforce integration via Python is the ability to automate the retrieval of attachments linked to Salesforce records, significantly reducing manual workloads:
 
 ```python
-attachments = sf.query("SELECT Id, Name, Body FROM Attachment WHERE ParentId = 'RECORD_ID'")['records']
+attachments = sf.query_all("SELECT Id, Name, Body FROM Attachment WHERE ParentId = 'RECORD_ID'")['records']
 
 import requests
+from urllib.parse import urljoin
 
 for attachment in attachments:
-    body_url = sf.base_url + attachment['Body']
+    body_url = urljoin(sf.base_url, attachment['Body'])  # Body is already a /services/data/... path
     response = requests.get(body_url, headers={'Authorization': 'Bearer ' + sf.session_id})
+    response.raise_for_status()
     with open(f"{attachment['Name']}", 'wb') as file:
         file.write(response.content)
 ```
 
 This automation enhances efficiency by quickly downloading necessary attachments for analysis or archiving.
 
-### Real-World Use Cases: Automating Salesforce Data Processes
+## Real-World Use Cases: Automating Salesforce Data Processes
 
 Several Python scripts illustrate practical examples of automating Salesforce interactions:
 
@@ -94,14 +95,14 @@ Several Python scripts illustrate practical examples of automating Salesforce in
 Example report extraction and formatting:
 
 ```python
-report_data = sf.query("SELECT Id, CreatedDate, Name FROM Opportunity WHERE CloseDate = THIS_MONTH")['records']
-report_df = pd.DataFrame(report_data).drop(columns=['attributes'])
-report_df['CreatedDate'] = pd.to_datetime(report_df['CreatedDate']).dt.tz_convert(None)
+report_data = sf.query_all("SELECT Id, CreatedDate, Name FROM Opportunity WHERE CloseDate = THIS_MONTH")['records']
+report_df = pd.DataFrame(report_data, columns=['Id', 'CreatedDate', 'Name'])
+report_df['CreatedDate'] = pd.to_datetime(report_df['CreatedDate'], utc=True).dt.tz_convert(None)
 ```
 
 * **Integration with Other Platforms**: Python enables seamless integration between Salesforce data and external systems, like SharePoint or Excel, streamlining comprehensive data management.
 
-### Key Findings and Benefits
+## Key Findings and Benefits
 
 Using Python with Salesforce offers substantial operational benefits:
 
@@ -110,7 +111,7 @@ Using Python with Salesforce offers substantial operational benefits:
 * **Reduced Human Error**: Automated data handling and validation significantly reduce the potential for human error.
 * **Scalability and Flexibility**: Python scripts are adaptable, easily scalable, and customizable to evolving data management needs.
 
-### Challenges and Considerations
+## Challenges and Considerations
 
 Despite the benefits, several considerations should be kept in mind:
 
@@ -118,6 +119,6 @@ Despite the benefits, several considerations should be kept in mind:
 * **Rate Limits**: Salesforce enforces API limits, necessitating efficient query designs and batch processing to avoid reaching request caps.
 * **Security Management**: Robust handling and encryption of sensitive credentials and tokens are crucial for security compliance.
 
-### Conclusion
+## Conclusion
 
 Integrating Python with Salesforce via SOQL significantly enhances data management capabilities, automates previously manual processes, and provides strategic, data-driven insights. By understanding the differences between SOQL and traditional SQL, setting up secure and efficient Python environments, and leveraging automation, including attachment retrieval, organizations can optimize their Salesforce interactions, drive operational efficiencies, and improve decision-making processes securely and effectively.

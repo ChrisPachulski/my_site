@@ -1,11 +1,11 @@
 import { Fragment, useState, useEffect, useRef } from 'react';
 import { POSTS } from '../lib/blog.js';
-import { articlePath } from '../lib/router.js';
 import usePrefersReducedMotion from './featured/usePrefersReducedMotion.js';
 import ResearchLoopCard from './featured/ResearchLoopCard.jsx';
 import AtHomeMediaCard from './featured/AtHomeMediaCard.jsx';
 import EmeraldExchangeCard from './featured/EmeraldExchangeCard.jsx';
 import AutoloopCard from './featured/AutoloopCard.jsx';
+import cardLinkProps from './featured/cardLink.js';
 import MagicShowcaseCard from './MagicShowcaseCard.jsx';
 
 function useInView(threshold = 0.2) {
@@ -56,10 +56,10 @@ const PROJECTS = [
     title: 'MTGBAN: Collectibles Pricing & Forecasting Platform',
     tag: 'Co-founder · 2017 – 2025',
     stack: ['R', 'tidyverse', 'BigQuery', 'H2O AutoML', 'Prophet', 'RSelenium', 'Docker', 'Digital Ocean', 'Go'],
-    desc: 'Eight years of continuous shipping. 38+ production R scripts (~26K LOC) running a multi-TCG pricing, forecasting, and distribution platform for 500+ paying subscribers.',
+    desc: 'Eight years of continuous shipping. 38+ production R scripts (~26K LOC) that ran a multi-TCG pricing, forecasting, and distribution platform for 500+ paying subscribers.',
     href: 'https://www.mtgban.com/', category: 'founded',
     challenge: 'Collectibles markets fragment across 20+ marketplaces, six different trading-card games, and multiple grading authorities (PSA, Beckett). Pricing data is dirty, latent, and sold piecemeal. Serious traders, stores, and speculators lose spread to information asymmetry.',
-    solution: "Built the full stack from scratch. A BigQuery warehouse (gaeas-cradle) anchors the data layer. RSelenium + httr/rvest scrapers pull every major vendor: TCGplayer, Card Kingdom, Cardsphere, CK Buylist, MTGJSON, Scryfall. They cover MTG, Pokemon, Yu-Gi-Oh, One Piece, Lorcana, and Flesh and Blood, plus PSA and Beckett for graded cards. Forecasting is an H2O AutoML ensemble (GBM + Deep Learning) alongside Prophet for time-series. Community sentiment on Discord is mined with tidytext + NRC. A Twitter bot auto-distributes signals, MTGBAN's own API feeds paying subscribers, and a Go dashboard surfaces it all. Dockerized and running 24/7 on Digital Ocean since 2017.",
+    solution: "Built the full stack from scratch. A BigQuery warehouse (gaeas-cradle) anchored the data layer. RSelenium + httr/rvest scrapers pulled every major vendor: TCGplayer, Card Kingdom, Cardsphere, CK Buylist, MTGJSON, Scryfall. They covered MTG, Pokemon, Yu-Gi-Oh, One Piece, Lorcana, and Flesh and Blood, plus PSA and Beckett for graded cards. Forecasting was an H2O AutoML ensemble (GBM + Deep Learning) alongside Prophet for time-series. Community sentiment on Discord was mined with tidytext + NRC. A Twitter bot auto-distributed signals, MTGBAN's own API fed paying subscribers, and a Go dashboard surfaced it all. Dockerized and ran 24/7 on Digital Ocean from 2017 to 2025.",
     metrics: [
       { v: '$1.2M', k: 'Annual revenue' }, { v: '500+', k: 'Paying subscribers' },
       { v: '8 yrs', k: 'In continuous production' }, { v: '6', k: 'TCGs covered' },
@@ -88,26 +88,26 @@ const PROJECTS = [
     title: 'card-ops: Credit Card Portfolio AI Agent',
     tag: 'Open source · 2026',
     stack: ['Claude Code', 'Python', 'Node', 'YAML', 'PDF parsing'],
-    desc: 'Claude Code skill that evaluates card offers, compares cards, scans statements, and optimizes a personal credit-card portfolio, all with personal financial data kept local-only.',
+    desc: 'Claude Code skill that evaluates card offers, compares cards, scans statements, and optimizes a personal credit-card portfolio, with personal financial data kept in gitignored local files.',
     href: 'https://github.com/ChrisPachulski/card-ops', category: 'open',
-    challenge: 'Credit-card strategy is expert-level and fragmented across blogs (Doctor of Credit, The Points Guy, Frequent Miler). Every card offer takes 20–30 min to research against shifting issuer rules, and the personal financial data required to evaluate properly should never leave your machine.',
-    solution: 'Five structured modes routed automatically by a `/card-ops` skill: evaluate, compare, scan, optimize, tracker. Reference docs codify 25+ issuer rules (Chase 5/24, Amex pop-up jail, Citi 48-month, Barclays 6/24, etc.), points valuations, and application timing. Strict .gitignore data contract separates user data (profile, statements, reports, cards.md) from the committed system layer (modes, docs, scripts, templates).',
+    challenge: 'Credit-card strategy is expert-level and fragmented across blogs (Doctor of Credit, The Points Guy, Frequent Miler). Every card offer takes 20–30 min to research against shifting issuer rules, and the personal financial data required to evaluate properly has no business in a repo.',
+    solution: 'Five structured modes routed automatically by a `/card-ops` skill: evaluate, compare, scan, optimize, tracker. Reference docs codify 25+ issuer rules (Chase 5/24, Amex pop-up jail, Citi 48-month, Barclays 6/24, etc.), points valuations, and application timing. Strict .gitignore data contract separates user data (profile, statements, reports, cards.md) from the committed system layer (modes, docs, scripts, templates). That contract keeps the data out of git, not out of the model: whatever the agent reads still goes to the model provider for inference.',
     metrics: [
       { v: '5', k: 'Routed modes' }, { v: '25+', k: 'Issuer rules codified' },
-      { v: '0', k: 'Cloud calls for PII' }, { v: 'MIT', k: 'License' },
+      { v: '0', k: 'User data files in git' }, { v: 'MIT', k: 'License' },
     ],
   },
   {
     title: 'session-sounds: Identity for Parallel AI Sessions',
     tag: 'Open source · 2026',
-    stack: ['Python (stdlib)', 'WAV', 'PowerShell', 'zsh/bash', 'VS Code'],
-    desc: 'Every Claude Code / Codex session gets a named terminal tab + a unique notification sound, deduplicated across concurrent sessions, so you can run five in parallel and always know which one finished.',
+    stack: ['Rust', 'Herdr plugin', 'WAV', 'afplay', 'PipeWire / PulseAudio / ALSA'],
+    desc: 'A Herdr plugin that gives every parallel Claude, Codex, or other detected agent session its own stable tone, so you can run five at once and hear which one finished or needs you.',
     href: 'https://github.com/ChrisPachulski/session-sounds', category: 'open',
     challenge: 'Terminal tab naming is the #1 UX pain point for Claude Code power users running parallel sessions (tracked in anthropics/claude-code#7229). Generic notification tools focus on gamification rather than the actual problem: telling your sessions apart.',
-    solution: 'Hook-driven session identity: names the terminal tab, plays per-response sounds, deduplicates assignments across concurrent sessions, and ships event-type variants for completion, error, and approval prompts. Zero runtime dependencies (Python stdlib only), one-command installer for Windows, macOS, and Linux, and supports both Claude Code and Codex (including Codex on Windows, which almost no tools do).',
+    solution: 'Started as a standalone, hook-driven Claude Code / Codex integration (frozen as v0.9.0-legacy); v1.0 is a Rust plugin for Herdr. It listens to Herdr agent events, gives the first seven concurrent sessions distinct bundled tones, and plays a session\'s tone only when its background work finishes or newly blocks. Visible panes stay silent, a per-session debounce drops duplicates, and the agent label shows the assigned sound name. Supported on macOS and Linux; Windows is a preview build.',
     metrics: [
-      { v: '0', k: 'Runtime deps' }, { v: '3', k: 'OSes supported' },
-      { v: '2', k: 'Agents (CC + Codex)' }, { v: 'MIT', k: 'License' },
+      { v: '7', k: 'Distinct bundled tones' }, { v: '2', k: 'OSes supported' },
+      { v: '0', k: 'Telemetry' }, { v: 'MIT', k: 'License' },
     ],
   },
   {
@@ -161,7 +161,7 @@ const PROJECTS = [
   },
   {
     title: 'Python Utility Toolkit',
-    tag: 'Open source · 2021',
+    tag: 'Open source · 2025',
     stack: ['Python', 'GCP', 'Salesforce', 'Genesys', 'SharePoint'],
     desc: 'A batteries-included library for my day-job: GCP, Salesforce, SharePoint, Genesys API, all in one import.',
     href: 'https://github.com/ChrisPachulski/py_toolkit', category: 'open',
@@ -243,7 +243,7 @@ export function Projects() {
   return (
     <section id="portfolio">
       <div className="wrap">
-        <div className="section-label reveal"><span className="num">03</span> / case studies &nbsp; <span className="mute">// where I've delivered value</span></div>
+        <div className="section-label reveal"><span className="num">03</span> <span style={{ whiteSpace: 'nowrap' }}>/ case studies &nbsp;</span> <span className="mute">// where I've delivered value</span></div>
         <div className="about-grid" style={{ marginBottom: 40 }}>
           <div>
             <h2 className="reveal section-headline">
@@ -397,7 +397,7 @@ const EXPERIENCE = [
   { hash:'a1f3e4c', role:'Co-Founder', company:'MTGBAN', time:'2017 to 2025', bullets:[
     {t:'Hobby-turned-business: built a Magic: The Gathering arbitrage engine while working day-jobs'},
     {t:'500+ paying customers using aggregated pricing', k:'500+'},
-    {t:'Drove over $1.2M annual revenue for Magic: the Gathering products', k:'$1.2M'},
+    {t:'Drove over $1.2M annual revenue for Magic: The Gathering products', k:'$1.2M'},
     {t:'Designed and implemented BigQuery warehouse from the ground up'},
   ]},
 ];
@@ -407,7 +407,7 @@ const EDUCATION = [
   { hash:'edu25a', role:'Google Data Analytics Certification', company:'Google', time:'2025', bullets:[{t:'Foundations of data analysis and BI tooling'}] },
   { hash:'edu22a', role:'Full R Track Certifications', company:'Business Science University', time:'2022', bullets:[{t:'Shiny apps, time-series forecasting, tidymodels'}] },
   { hash:'edu19a', role:'Master of Business Administration (MBA)', company:'Hofstra University', time:'2019', bullets:[] },
-  { hash:'edu17a', role:'BA, Classical Languages & Biology', company:'Creighton University', time:'2017', bullets:[{t:'Yes, really: Latin, Greek, and biochem.'}] },
+  { hash:'edu17a', role:'BS – Biological Sciences & Classical Studies', company:'Creighton University', time:'2017', bullets:[{t:'Yes, really: Latin, Greek, and biochem.'}] },
 ];
 
 /* Individual commit card — watches for itself coming into view for the reveal. */
@@ -505,14 +505,14 @@ export function Resume() {
   return (
     <section id="resume" className="flow">
       <div className="wrap">
-        <div className="section-label reveal"><span className="num">04</span> / resume &nbsp; <span className="mute">// git log --oneline --graph career</span></div>
+        <div className="section-label reveal"><span className="num">04</span> <span style={{ whiteSpace: 'nowrap' }}>/ resume &nbsp;</span> <span className="mute">// git log --oneline --graph career</span></div>
         <div className="about-grid" style={{ marginBottom: 40 }}>
           <div>
             <h2 className="reveal section-headline tight">
               Seven years of <em>shipping</em>.
             </h2>
             <p className="dim reveal section-lede" data-delay="1">
-              A git log of the work. Most recent at top, origin/HEAD marked. Financial services, digital marketing, CPG, tech, plus my own startup since 2017.
+              A git log of the work. Most recent at top, HEAD marked. Government contracting, adtech, browser telemetry, CPG retail panel, and equity research, plus the startup I co-founded and ran from 2017 to 2025.
             </p>
           </div>
           <div className="reveal" data-delay="2">
@@ -560,27 +560,16 @@ function ArticleCard({ a, onOpen }) {
     el.style.setProperty('--mx', `${((e.clientX - r.left) / r.width) * 100}%`);
     el.style.setProperty('--my', `${((e.clientY - r.top) / r.height) * 100}%`);
   };
-  const handle = (e) => {
-    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button > 0) return;
-    e.preventDefault();
-    onOpen(a.slug);
-  };
-  const onKey = (e) => {
-    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onOpen(a.slug); }
-  };
   return (
     <a
-      href={articlePath(a.slug)}
       className="article"
-      aria-haspopup="dialog"
       ref={ref}
       onMouseMove={onMove}
-      onClick={handle}
-      onKeyDown={onKey}
+      {...cardLinkProps(a.slug, onOpen)}
     >
       {a.stamp && <div className="card-stamp" aria-hidden="true">{a.stamp}</div>}
       <div className="cats">{a.cats}</div>
-      <h4>{a.title}</h4>
+      <h3>{a.title}</h3>
       <div className="meta">
         <span>{a.date}</span>
         <span>·</span>
@@ -605,7 +594,7 @@ export function Writing({ onArticleOpen }) {
   return (
     <section id="writing" className="flow">
       <div className="wrap">
-        <div className="section-label reveal"><span className="num">05</span> / writing &nbsp; <span className="mute">// {POSTS.length} posts</span></div>
+        <div className="section-label reveal"><span className="num">05</span> <span style={{ whiteSpace: 'nowrap' }}>/ writing &nbsp;</span> <span className="mute">// {POSTS.length} posts</span></div>
         <div style={{ maxWidth: 720, marginBottom: 40 }}>
           <h2 className="reveal section-headline tight">
             Field notes from the <em>warehouse.</em>

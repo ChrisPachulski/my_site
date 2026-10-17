@@ -61,6 +61,8 @@ More sheepishly: hardening this surfaced two real holes I'd left open — a devi
 
 The May recommender was, honestly, "ask Claude with the library distribution and some red/green feedback." The June one is a real system: a local-first FastAPI service with a `sqlite-vec` scoring sidecar, built so that household viewing signals never leave the NAS. I put it through a six-iteration leave-one-out research loop against nDCG@10 and it converged at roughly **10.4 times the baseline** through multi-feature fusion and a neighbor-cap refinement.
 
+*Correction, October 2026: that 10.4x is the research loop, not what shipped. Production ran the iteration-3 port, roughly 5x, and the 10.4x was nDCG@10 going from 0.0021 to 0.0219. Ten times almost nothing. The rebuild, and the full correction, is in [The Model Was a Coin Flip](/writing/the-model-was-a-coin-flip/).*
+
 And because I run these loops to tell the truth and not to flatter me, the log records what *failed* right next to what worked: an item-based kNN A/B left the headline metric unmoved (deep recall improved 69%, but representation was the ceiling); a co-engagement re-scoring pass failed outright and, in failing, proved a retrieval-gate hypothesis; the novel-recommendation stratum stayed stubbornly at zero, and I wrote "honest" next to it rather than hiding it. Also — a production bug worth the confession — for a stretch the KNN `k` was exceeding `sqlite-vec`'s 4096-neighbor cap, which meant **every single scoring call was returning a 500.** The recommender was silently dead until I clamped it. Measured wins are worth more when you also publish the measured losses.
 
 ## What I'm not pretending is done

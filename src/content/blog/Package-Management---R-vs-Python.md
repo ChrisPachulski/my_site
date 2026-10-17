@@ -6,7 +6,7 @@ featureImage: /R-vs-python.png
 
 I have always tried to mirror my package creations in both R & Python whenever I set out to solidify overarching scripts for the rest of my team. When working with R and Python, one major difference that quickly becomes apparent is their approach to packages and file structures. Understanding these differences helps manage your projects more effectively and improves collaboration within teams.
 
-### R Packages and File Structure
+## R Packages and File Structure
 
 In R, a package is essentially a collection of functions, data, documentation, and tests bundled together. Packages follow a clearly defined structure that typically looks like this:
 (Admittedly - best practice requires there should also be a man & tests folder as well - but I have never had the need for them.)
@@ -17,7 +17,7 @@ addotnet_functions_r/
 ├── NAMESPACE
 ├── R/
 │   ├── clickhouse_functions.R
-│   └── ChatGPT_Interaction.R
+│   ├── ChatGPT_Interaction.R
 │   └── addotnet_rev_numbers.R
 ├── data/
 │   └── dataset.rda
@@ -28,20 +28,21 @@ addotnet_functions_r/
 * DESCRIPTION file: Specifies metadata like the package name, version, author, and dependencies.
 * NAMESPACE file: Lists functions exposed to users.
 * R directory: Contains the actual R scripts with functions.
-  * man directory: Holds documentation files generated using R's documentation system.
-  * tests directory: Includes unit tests, usually leveraging packages like testthat.
-  * data directory: Optional, contains example datasets.
+* man directory: Holds documentation files generated using R's documentation system.
+* tests directory: Includes unit tests, usually leveraging packages like testthat.
+* data directory: Optional, contains example datasets.
 * vignettes directory: Stores tutorials or detailed explanations in R Markdown.
 
 R packages are installed either from CRAN, GitHub, or locally, providing reproducibility and ease of sharing within the R community.
 
-### Python Packages and File Structure
+## Python Packages and File Structure
 
 Python package structures are more flexible but commonly follow standardized conventions, often looking like this:
 (Borrowing the structure from my [py\_toolkit](https://github.com/ChrisPachulski/py_toolkit?tab=readme-ov-file#project-structure) project)
 
 ```python
 py_toolkit/ 
+├── LICENSE
 ├── README.md
 ├── google_oauth_token.json
 ├── google_oauth_access_token.json
@@ -92,24 +93,24 @@ py_toolkit/
     └── test_sharepoint_utility.py
 ```
 
-* setup.py: Specifies metadata and dependencies for package installation. **Poetry** may well deprecate this approach.
+* pyproject.toml: Specifies metadata and dependencies for package installation. It has largely replaced the old setup.py approach - **Poetry** builds straight off of it.
 * requirements.txt: Lists all dependencies explicitly for easy environment setup.
-* init.py: Signals Python that the directory is a package and allows for importing modules easily.
+* `__init__.py`: Signals Python that the directory is a package and allows for importing modules easily.
 * README.md and LICENSE: Commonly used for providing basic package information and licensing.
 * tests: Typically uses pytest or unittest frameworks.
-* docs: Frequently contains user documentation or instructions in markdown format.
+* docs: Frequently contains user documentation or instructions in markdown format (py\_toolkit just leans on the README).
 
 Python packages are typically installed from PyPI or GitHub using tools like pip, enabling efficient dependency management and distribution.
 
-### Key Differences
+## Key Differences
 
 **Standardization:** R has stricter and more clearly standardized structures required by CRAN. Python structures are more flexible and less enforced by PyPI.
 
 **Documentation:** R uses the built-in documentation system with .Rd files, whereas Python commonly leverages markdown-based docs or tools like Sphinx.
 
-**Dependency Management:** R specifies dependencies explicitly in the DESCRIPTION file, while Python commonly utilizes requirements.txt or setup.py.
+**Dependency Management:** R specifies dependencies explicitly in the DESCRIPTION file, while Python commonly utilizes requirements.txt or pyproject.toml.
 
-#### Choosing the Right Structure
+### Choosing the Right Structure
 
 The choice between R and Python packaging structures depends on your project goals:
 
@@ -120,4 +121,4 @@ In my experience - if you're collaborating with another team (usually some form 
 
 As I also come from a scripting coding background - I have largely found the tests required as best practice to be largely a waste of time and an annoyance - however both languages do allow this measure to be skipped.
 
-As such, given that the main goal in package creation is for shared use I have largely stopped creating R packages unless for my personal.
+As such, given that the main goal in package creation is for shared use I have largely stopped creating R packages unless for my personal use.

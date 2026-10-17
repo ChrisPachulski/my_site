@@ -7,7 +7,7 @@ date: 2026-06-28T04:00:00.000Z
 
 The second baby was due the second week of June. My wife and I were about to disappear into the newborn fog for a while — the sleepless, hour-blurred stretch where two functioning adults become one and a half — and someone we trust was going to step in and run the house: keep our three-year-old fed and napped and happy, and keep three dogs alive and un-marked. That person is Raine. Raine is family, not paid help. She treats the kids and the dogs like her own.
 
-So I built her a website. One link. Open it on a phone, and you can run my house. This is the story of that build, and — more to the point — the recipe, because the whole thing cost a free account, a domain, and an afternoon, and anyone reading this can make one for the person who's about to hold *their* house together.
+So I built her a website. One link. Open it on a phone, and you can run my house. This is the story of that build, and — more to the point — the recipe, because a version of it costs a free account, a domain, and an afternoon, and anyone reading this can make one for the person who's about to hold *their* house together.
 
 ## The take, first
 
@@ -120,7 +120,7 @@ Total cost: a free hosting account, a domain if you want a pretty link, and an a
 
 The baby came. The house kept running. Raine ran it — fed the kid, kept the dogs apart, decoded the private language, never once had to text us "wait, where's the—" while we were somewhere between a hospital and no sleep. The handbook did its job, which was never really "store information." It was to let one tired, generous person walk into a house that isn't hers and feel, immediately, like she had a map and a hand on her shoulder.
 
-That's the thing I'd leave you with. The code here is trivial. The screenshots are cute. But the reason to build one of these isn't the build — it's that somewhere out there is a person about to hold your whole world together for a few weeks while you're underwater, and you can hand them one link that says, in your own voice, *you've got this, and here's everything you need, and none of it will make you feel dumb.* An afternoon for that is the best trade I made all year.
+That's the thing I'd leave you with. The code here is trivial. The screenshots are cute. But the reason to build one of these isn't the build — it's that somewhere out there is a person about to hold your whole world together for a few weeks while you're underwater, and you can hand them one link that says, in your own voice, *you've got this, and here's everything you need, and none of it will make you feel dumb.* Three and a half weeks for that is the best trade I made all year.
 
 Cheers,
 Chris

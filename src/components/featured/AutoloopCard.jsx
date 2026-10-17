@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import usePrefersReducedMotion from './usePrefersReducedMotion.js';
+import cardLinkProps from './cardLink.js';
 import './featured.css';
 
 // A git-graph headline: autonomous `auto/*` feature branches sprout from the
@@ -30,30 +31,21 @@ export default function AutoloopCard({ a, onOpen }) {
     return () => io.disconnect();
   }, [reduced]);
 
-  const open = () => onOpen(a.slug);
-  const onKey = (e) => {
-    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); }
-  };
-
   return (
-    <article
+    <a
       ref={cardRef}
       className={
         'featured-tile featured autoloop-card'
         + (inView ? ' in-view' : '')
         + (hover ? ' is-hover' : '')
       }
-      role="button"
-      aria-haspopup="dialog"
       aria-label={`Read: ${a.title}`}
-      onClick={open}
-      onKeyDown={onKey}
+      {...cardLinkProps(a.slug, onOpen)}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
-      tabIndex={0}
     >
       <div className="flair-bg">
-        <svg viewBox="0 0 240 200" preserveAspectRatio="xMidYMid slice" aria-hidden="true" className="autoloop-svg">
+        <svg viewBox="0 0 240 200" preserveAspectRatio="xMidYMid meet" aria-hidden="true" className="autoloop-svg">
           {/* main — the human gate, quiet and straight */}
           <line x1="20" y1="150" x2="220" y2="150" className="al-main" />
           {/* integration lane — where verified auto work compounds */}
@@ -97,13 +89,13 @@ export default function AutoloopCard({ a, onOpen }) {
 
       <div className="badge">{a.read?.toUpperCase()} · DEEP READ</div>
       <div className="cats">{a.cats}</div>
-      <h4>{a.title}</h4>
+      <h3>{a.title}</h3>
       <div className="meta">
         <span>{a.date}</span>
         <span>·</span>
         <span>{a.read} read</span>
         <span style={{ marginLeft: 'auto', color: 'var(--accent)' }}>Open the loop ›</span>
       </div>
-    </article>
+    </a>
   );
 }

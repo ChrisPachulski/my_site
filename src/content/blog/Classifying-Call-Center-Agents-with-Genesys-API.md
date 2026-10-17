@@ -18,6 +18,7 @@ Every second of an agent's logged-in shift lands in one of a small number of sta
 - **Interacting**, on a call, in a chat, handling an email.
 - **Not Responding (NRT)**, routed to but unavailable. The agent was offered an interaction and didn't pick up.
 - **Idle**, available to receive routing, not currently engaged.
+- **Communicating**, on a non-ACD call that Genesys counts like a queue call. Easy to miss, since it only shows up when utilization is set to block routing during non-ACD calls.
 - **On Queue Away / Meeting / Training**, away for a structured reason.
 - **Off Queue / Break**, unavailable by choice (break, lunch, system time).
 
@@ -35,7 +36,7 @@ occupancy = interacting / (interacting + idle)
 
 Notice what's not in that denominator. Not NRT, because NRT is its own red flag, and you don't want to dilute the occupancy signal by mixing it with availability signal. Not meeting, training, or break, because those are scheduled, structured time and shouldn't affect the productivity ratio.
 
-What you're measuring is: of the time this agent was *available for work on the queue*, how much of it was actually spent doing the work. High occupancy can mean two things, the agent is getting a lot of interactions routed to them, or the queue is brutal and the agent is being crushed. Low occupancy can mean the agent is fast and clearing the queue, or the queue is under-provisioned and the agent is waiting. Neither interpretation is automatic from the number alone.
+What you're measuring is: of the time this agent was *available for work on the queue*, how much of it was actually spent doing the work. High occupancy can mean two things, the agent is getting a lot of interactions routed to them, or the queue is brutal and the agent is being crushed. Low occupancy can mean the agent is fast and clearing the queue, or the queue is over-provisioned and the agent is waiting. Neither interpretation is automatic from the number alone.
 
 The coaching value is in the *distribution* of occupancy across agents in the same queue with similar tenure. One agent at 95% occupancy in a queue where the median is 60% is telling you something. One agent at 30% occupancy in the same queue is telling you something else.
 
@@ -65,6 +66,10 @@ df_pivot = df_raw.pivot_table(
     fill_value=0,
 ).reset_index()
 
+# a status nobody hit in the window gets no column at all
+for status in ["INTERACTING", "IDLE", "NOT_RESPONDING"]:
+    df_pivot[status] = df_pivot.get(status, 0)
+
 df_pivot["occupancy"] = df_pivot["INTERACTING"] / (
     df_pivot["INTERACTING"] + df_pivot["IDLE"]
 )
@@ -90,13 +95,18 @@ The heuristic I use: pull the agent's routing-status events, sort by timestamp, 
 
 ```python
 def split_into_shifts(df_events: pd.DataFrame, gap_minutes: int = 90) -> pd.DataFrame:
-    df = df_events.sort_values("event_time").copy()
-    df["gap_min"] = df["event_time"].diff().dt.total_seconds().div(60)
-    df["shift_id"] = (df["gap_min"] > gap_minutes).cumsum()
+    df = df_events.sort_values(["userid", "event_time"]).copy()
+    user = df["userid"]
+    # a status holds until the agent's next event; only INTERACTING / IDLE count as activity
+    active = df["routing_status"].isin(["INTERACTING", "IDLE"])
+    active_end = df.groupby("userid")["event_time"].shift(-1).where(active)
+    last_active_end = active_end.groupby(user).ffill().groupby(user).shift()
+    df["gap_min"] = (df["event_time"] - last_active_end).dt.total_seconds().div(60)
+    df["shift_id"] = (active & (df["gap_min"] > gap_minutes)).groupby(user).cumsum()
     return df
 ```
 
-Then occupancy calculations happen per `(user_id, shift_id)` and roll up to a weighted daily or weekly figure.
+Then occupancy calculations happen per `(userid, shift_id)` and roll up to a weighted daily or weekly figure.
 
 ## Percentile-based bucketing
 
@@ -153,9 +163,9 @@ Getting these three right is the difference between a bucketing system that gets
 A few things the Genesys Cloud docs do not emphasize:
 
 - The `analytics/users/aggregates/query` endpoint returns intervals, not totals. If you set a 30-day window with daily granularity, you get 30 rows per user per status. Sum yourself.
-- Rate limits on this endpoint are stricter than on most other analytics endpoints. Page in 10,000-row chunks with a 500 ms delay between pages and you won't hit throttling.
+- Rate limits on this endpoint are stricter than on most other analytics endpoints, and there's no paging, the whole answer comes back in one response. Keep each query small by splitting the date range or batching user IDs in the filter, and when you do get a 429, back off and honor `Retry-After` instead of trusting a fixed delay.
 - The `routingStatus` enum in the response uses SCREAMING_SNAKE_CASE (`INTERACTING`, `IDLE`, `NOT_RESPONDING`). The filter field in the request uses camelCase (`routingStatus`). Don't ask me why.
-- Time zones are UTC in every response. If you're reporting by agent shift, convert to local time *after* the aggregation, not before. Doing it before is how you end up with an event that straddles midnight and gets double-counted.
+- Time zones default to UTC. If you're reporting by local day, set `timeZone` on the query (it handles DST too) so the intervals get cut on local-day boundaries. Converting daily UTC totals afterward can't move an evening call back onto the right local day, once it's summed into the wrong bucket, it stays there.
 - The routing-status stream has occasional duplicate events at interval boundaries. Dedupe on `(userid, event_time, routing_status)` before you sum.
 
 ## The one-line takeaway

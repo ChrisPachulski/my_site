@@ -8,6 +8,7 @@ colors:
   ink-cool: "oklch(0.92 0.04 270)"
   ink-dim: "oklch(0.65 0.08 270)"
   ink-mute: "oklch(0.60 0.07 275)"
+  ink-mute-office: "#6a6357"           # Office hours (data-theme="light") register
   line-quiet: "oklch(0.22 0.06 280)"  # intent; ships as #141128 = oklch(0.195 0.045 287)
   line-bright: "oklch(0.30 0.08 280)"
   plasma-violet: "oklch(0.70 0.26 300)"
@@ -22,6 +23,7 @@ colors:
   success: "oklch(0.72 0.13 150)"
   warn: "oklch(0.72 0.13 65)"
   danger: "oklch(0.68 0.18 25)"
+  danger-office: "oklch(0.50 0.18 25)"  # Office hours (data-theme="light") register
 typography:
   display:
     fontFamily: "Orbitron, sans-serif"
@@ -159,7 +161,7 @@ This system explicitly rejects the category-reflex aesthetic. It is not a Vercel
 **Key Characteristics:**
 - Dark + cool: deep purple base, cool-white ink, violet primary accent.
 - Aurora-layered: continuous color field underneath, translucent panels in front. No hard drop-shadows.
-- Editorial typography: Instrument Serif headlines (italic accents on the operative word) over Inter Tight body, with JetBrains Mono carrying every label, hash, and code fragment. Orbitron arrives for cyberpunk-mode display headers.
+- Editorial typography: Instrument Serif headlines (italic accents on the operative word) over Inter Tight body, with JetBrains Mono carrying every label, hash, and code fragment. Orbitron arrives for cyberpunk-mode display numerals.
 - Izzet duality: sapphire + fire as a paired signature on the two largest content cards (About = blue-dominant, Skills = red-dominant), with violet as the permanent base hue between them.
 - Sharp geometry: cards are flat panels with 0–8px radii. No bevels, no embossment, no glassmorphism in the macOS sense — just translucency + halo.
 - Motion is agency-bound: every animation responds to mouse, scroll, click, or focus. The three breathing auras — both Izzet cards and the hero MTG card — are the only autoplay, and they are deliberately slow and color-only.
@@ -186,6 +188,7 @@ The palette runs cool by default, with two warm signal flares (Solar Red, Solar 
 - **Ink Cool** (`oklch(0.92 0.04 270)`): Primary text. A cool white tinted toward periwinkle.
 - **Ink Dim** (`oklch(0.65 0.08 270)`): Secondary text — body paragraphs, fact-list values, project descriptions.
 - **Ink Mute** (`oklch(0.60 0.07 275)`): Tertiary text — labels, hashes, captions, idle states. Lightness holds ≥4.5:1 (WCAG AA) on bg-card; it also carries project-row descriptions, so it can never drop below AA.
+  Office hours (`data-theme="light"`) ships `#6a6357`: 5.18:1 on the `#f4efe4` paper and 4.73:1 on the `#ebe5d6` elevated surface. The earlier `#8c8476` measured 3.23:1 and failed AA, and `#6f685c` still falls to 4.39:1 on the elevated surface. The same register darkens Danger to `oklch(0.50 0.18 25)` (5.75:1 on paper) for the contact-form error text.
 - **Line Quiet** (`oklch(0.22 0.06 280)` as intent; the cyberpunk register ships `#141128` = `oklch(0.195 0.045 287)`, and the base register ships a warm `#221f1a`): Default divider.
 - **Line Bright** (`oklch(0.30 0.08 280)`): Strong divider, default border on flat surfaces, idle button border.
 
@@ -197,17 +200,19 @@ The palette runs cool by default, with two warm signal flares (Solar Red, Solar 
 
 **The Tinted-Black Rule.** No `#000`. Every dark surface is tinted toward 280° (deep violet). The page background reads as charcoal-with-aurora, never as void.
 
+**The Muted-Ink AA Floor.** Ink Mute carries project descriptions, form labels and article metadata, so it holds WCAG AA (4.5:1) in both registers: `oklch(0.60 0.07 275)` after hours, `#6a6357` in office hours.
+
 ## 3. Typography
 
-**Display Font:** Orbitron (with sans-serif fallback). Used only in cyberpunk-mode headers — uppercase, weight 600, letter-spacing tightish.
+**Display Font:** Orbitron (with sans-serif fallback). Used only in cyberpunk mode, and only on display numerals (KPI and metric values, the GhostMatch life totals) — weight 600, letter-spacing tightish. Headlines never switch to it.
 **Headline / Title Font:** Instrument Serif (with Source Serif Pro, Georgia, serif fallback). The page's primary voice.
 **Body Font:** Inter Tight (with system-sans fallback).
 **Label / Mono Font:** JetBrains Mono (with ui-monospace, SFMono-Regular, Menlo fallback).
 
-**Character.** A serif/sans/mono trio with strict role separation. Serif is for argument (headlines, project titles, commit roles, blog content). Sans is for prose (body paragraphs, lede). Mono is for evidence (hashes, labels, code, stack tags, navigation indices). Orbitron arrives only in cyberpunk mode and only on h2-class headers, signaling "this is a frame, not a document." The trio is the site's tone of voice — playful seriousness, technical confidence, editorial restraint.
+**Character.** A serif/sans/mono trio with strict role separation. Serif is for argument (headlines, project titles, commit roles, blog content). Sans is for prose (body paragraphs, lede). Mono is for evidence (hashes, labels, code, stack tags, navigation indices). Orbitron arrives only in cyberpunk mode and only on display numerals, signaling "this is a readout, not a document." The trio is the site's tone of voice — playful seriousness, technical confidence, editorial restraint.
 
 ### Hierarchy
-- **Display** (Orbitron 600, `clamp(26px, 3.2vw, 42px)`, line-height 1.08, uppercase): Cyberpunk-mode section titles. Used in place of the serif headline when `data-vibe="cyberpunk"`. Example: the section h2 inside `.izzet-card` re-renders as Orbitron uppercase.
+- **Display** (Orbitron 600, letter-spacing −0.01em): Cyberpunk-mode display numerals only: the MTGBAN KPI values and the project-detail metric values (`.feature .kpi .v`, `.project-detail .metrics .v`). Section titles, including the h2 inside `.izzet-card`, stay Instrument Serif in every mode (see the headline note in `src/styles.css`).
 - **Headline** (Instrument Serif 400, `clamp(32px, 4vw, 60px)`, line-height 1.05, letter-spacing −0.02em): Hero only. Italic span on the operative word (e.g. *data*, *shipping*). Never repeated on the page.
 - **Title** (Instrument Serif 400, 22–28px, line-height 1.15, letter-spacing −0.015em): Project rows, commit roles, blog modal h1, feature h3.
 - **Body** (Inter Tight 400, 16px, line-height 1.55, max-width 65–75ch via 520–560px container caps): Paragraph prose, hero lede, about copy, project descriptions.
@@ -221,7 +226,7 @@ The palette runs cool by default, with two warm signal flares (Solar Red, Solar 
 
 **The Mono-Carries-Evidence Rule.** Anything that needs to read as machine-recorded — git hashes, file paths, stack tags, schedule cadences, line numbers, indices — is JetBrains Mono. Anything written by a person is sans (body) or serif (headline). The font is the truth-claim.
 
-**The Display Font Is Cyberpunk-Only.** Orbitron only fires under `data-vibe="cyberpunk"`. In light mode or default vibe, headlines stay in Instrument Serif. The display font is a costume the site wears when it's in cyberpunk register, not a baseline.
+**The Display Font Is Cyberpunk-Only.** Orbitron only fires under `data-vibe="cyberpunk"`, and only on display numerals. Headlines stay in Instrument Serif in every mode. The display font is a costume the site wears when it's in cyberpunk register, not a baseline.
 
 ## 4. Elevation: Aurora Layering
 
@@ -310,7 +315,7 @@ There are exactly three drop-shadow uses in the system, all on the literal MTG c
 - **Do** make every animation respond to a user input — mouse, scroll, click, focus. The three breathing halo auras (both Izzet cards, the hero MTG card) are the only autoplay; all are color-only and slow.
 - **Do** respect `prefers-reduced-motion: reduce`. Halt aurora drift, breathing halos, hero card tilt, particle drift, scroll reveals. Reduce all animation durations to 1ms. New components must follow.
 - **Do** translucent panels with `backdrop-filter` blur and a `color-mix` alpha background. The aurora is part of the component — let it bleed through.
-- **Do** use Instrument Serif for argument, Inter Tight for prose, JetBrains Mono for evidence. Orbitron only in cyberpunk-mode display headers.
+- **Do** use Instrument Serif for argument, Inter Tight for prose, JetBrains Mono for evidence. Orbitron only on cyberpunk-mode display numerals.
 - **Do** keep cards flat at rest. Affordance arrives on `:hover` or `:focus-within` as a 1px violet ring + violet wash, not as a permanent border-or-shadow.
 - **Do** preserve the Izzet pair (Sapphire + Fire) as a single signature on About + Skills + the hero card only. Never separate them, never extend them.
 

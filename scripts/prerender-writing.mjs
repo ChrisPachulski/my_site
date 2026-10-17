@@ -3,7 +3,7 @@ import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { marked } from 'marked';
 import { CATALOG, UNLISTED } from '../src/lib/catalog.js';
-import { renderOgCards } from './render-og.mjs';
+import { renderOgCards, splitPivot } from './render-og.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname  = path.dirname(__filename);
@@ -11,6 +11,10 @@ const ROOT       = path.resolve(__dirname, '..');
 const CONTENT    = path.join(ROOT, 'src', 'content', 'blog');
 
 const SITE_URL = 'https://chrispachulski.com';
+
+// Netlify serves each prerendered article at /writing/<slug>/ and 301s the
+// slashless form, so every emitted URL uses the trailing slash.
+const postPath = (slug) => `/writing/${slug}/`;
 
 function escapeHtml(s = '') {
   return String(s)
@@ -41,44 +45,52 @@ function parseFrontmatter(raw) {
   return { frontmatter: fm, body: m[2] };
 }
 
+// Plain text of marked tokens: keeps literal characters (`snake_case`, `sh\*t`)
+// that regex stripping mangled, and drops images and raw HTML.
+function plainText(tokens = []) {
+  let out = '';
+  for (const t of tokens) {
+    if (t.type === 'image' || t.type === 'html') continue;
+    if (t.items) out += ` ${t.items.map(i => plainText(i.tokens)).join(' ')} `;
+    else if (t.tokens) out += plainText(t.tokens);
+    else out += t.text ?? '';
+  }
+  return out;
+}
+
+const PROSE_BLOCKS = new Set(['paragraph', 'blockquote', 'list']);
+
 function deriveExcerpt(body) {
   if (!body) return '';
-  const stripped = body
-    .replace(/^#.*$/gm, '')
-    .replace(/```[\s\S]*?```/g, '')
-    .replace(/!\[.*?\]\(.*?\)/g, '')
-    .replace(/\[(.*?)\]\(.*?\)/g, '$1')
-    .replace(/[*_`>#]+/g, '')
-    .trim();
-  const para = stripped.split(/\n\s*\n/).find(p => p.trim().length > 80) || stripped;
-  const flat = para.replace(/\s+/g, ' ').trim();
-  return flat.length > 180 ? flat.slice(0, 177) + '…' : flat;
+  const blocks = marked.lexer(body)
+    .filter(t => PROSE_BLOCKS.has(t.type))
+    .map(t => plainText([t]).replace(/\s+/g, ' ').trim());
+  const flat = blocks.find(b => b.length > 80) || blocks.join(' ');
+  if (flat.length <= 180) return flat;
+  // Cut at the last word boundary, never mid-word.
+  const cut = flat.slice(0, 180);
+  return cut.slice(0, cut.lastIndexOf(' ')).replace(/[\s,;:.\-–—]+$/, '') + '…';
+}
+
+// Reading time at 230 wpm over every word of the body, code included, image
+// syntax excluded. The catalog's `read` is checked against this at build.
+export function readMinutes(body) {
+  const words = body.replace(/!\[[^\]]*\]\([^)]*\)/g, ' ').split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.round(words / 230));
 }
 
 function dateToISO(s) {
-  // "Mar 2024" -> "2024-03-15"; gracefully default to first of month.
+  // Fallback for posts without a frontmatter date: "Mar 2024" -> "2024-03-15"
+  // (mid-month, since the catalog only knows the month).
   const months = { Jan:'01', Feb:'02', Mar:'03', Apr:'04', May:'05', Jun:'06', Jul:'07', Aug:'08', Sep:'09', Oct:'10', Nov:'11', Dec:'12' };
   const m = String(s).match(/^([A-Za-z]+)\s+(\d{4})$/);
   if (!m) return new Date().toISOString().slice(0, 10);
   return `${m[2]}-${months[m[1]] || '01'}-15`;
 }
 
-function italicTitle(title) {
-  // Mirror Article.jsx ItalicTitle. Italicize the segment after the first
-  // colon when present; otherwise the last 1–2 words.
-  const colonSplit = title.split(/:\s+/);
-  if (colonSplit.length >= 2) {
-    const head = escapeHtml(colonSplit[0]);
-    const tail = escapeHtml(colonSplit.slice(1).join(': '));
-    return `${head}: <em>${tail}</em>`;
-  }
-  const words = title.split(/\s+/);
-  if (words.length <= 3) {
-    const last = words.pop();
-    return `${escapeHtml(words.join(' '))}${words.length ? ' ' : ''}<em>${escapeHtml(last)}</em>`;
-  }
-  const tail = words.slice(-2).join(' ');
-  return `${escapeHtml(words.slice(0, -2).join(' '))} <em>${escapeHtml(tail)}</em>`;
+function italicTitle(title, pivot) {
+  const [lead, em, tail] = splitPivot(title, pivot);
+  return `${escapeHtml(lead)}${em ? `<em>${escapeHtml(em)}</em>` : ''}${escapeHtml(tail)}`;
 }
 
 function articleHtml(post, bodyHtml) {
@@ -87,8 +99,8 @@ function articleHtml(post, bodyHtml) {
   const next = i < 0 ? null : CATALOG[i - 1];
   const adjacent = `
     <div class="article-adjacent">
-      ${prev ? `<a href="/writing/${prev.slug}" class="article-adj"><span class="article-adj-label mono">Older</span><span class="article-adj-title">${escapeHtml(prev.title)}</span></a>` : ''}
-      ${next ? `<a href="/writing/${next.slug}" class="article-adj article-adj-next"><span class="article-adj-label mono">Newer</span><span class="article-adj-title">${escapeHtml(next.title)}</span></a>` : ''}
+      ${prev ? `<a href="${postPath(prev.slug)}" class="article-adj"><span class="article-adj-label mono">Older</span><span class="article-adj-title">${escapeHtml(prev.title)}</span></a>` : ''}
+      ${next ? `<a href="${postPath(next.slug)}" class="article-adj article-adj-next"><span class="article-adj-label mono">Newer</span><span class="article-adj-title">${escapeHtml(next.title)}</span></a>` : ''}
     </div>`;
   return `
 <main class="article-shell" data-screen-label="Field Notes">
@@ -96,7 +108,7 @@ function articleHtml(post, bodyHtml) {
     <header class="article-head">
       <a href="/#writing" class="article-back mono"><span class="back-arrow" aria-hidden="true">←</span> writing</a>
       <div class="article-eyebrow mono">Field Notes</div>
-      <h1 id="article-title" class="article-title">${italicTitle(post.title)}</h1>
+      <h1 id="article-title" class="article-title">${italicTitle(post.title, post.pivot)}</h1>
       <div class="article-meta">
         <span class="article-chip mono">${escapeHtml(post.date)}</span>
         <span class="article-chip mono">${escapeHtml(post.read)}</span>
@@ -118,7 +130,7 @@ function homePageHtml(posts) {
   // it as the initial HTML response, which is what fixes "empty SPA shell"
   // indexing. Copy mirrors what the live React UI shows; no cloaking.
   const writingItems = posts.map(p =>
-    `<li><a href="/writing/${p.slug}">${escapeHtml(p.title)}</a> <span class="prerender-meta">${escapeHtml(p.date)} · ${escapeHtml(p.read)} · ${escapeHtml(p.cats)}</span></li>`
+    `<li><a href="${postPath(p.slug)}">${escapeHtml(p.title)}</a> <span class="prerender-meta">${escapeHtml(p.date)} · ${escapeHtml(p.read)} · ${escapeHtml(p.cats)}</span></li>`
   ).join('\n        ');
 
   return `
@@ -169,7 +181,7 @@ function homePageHtml(posts) {
 
 function notFoundHtml(featured) {
   const rows = featured.map(p => `
-    <a href="/writing/${p.slug}" class="notfound-row">
+    <a href="${postPath(p.slug)}" class="notfound-row">
       <span class="notfound-meta mono">${escapeHtml(p.date)} · ${escapeHtml(p.read)}</span>
       <span class="notfound-title">${escapeHtml(p.title)}</span>
       <span class="notfound-arrow" aria-hidden="true">→</span>
@@ -188,32 +200,40 @@ function notFoundHtml(featured) {
 </main>`;
 }
 
+// Every content-bearing replacement below passes a function, not a string:
+// String.replace expands `$&`, `$'` etc. in a replacement string, and escaped
+// code like `$&#39;` would otherwise splice the matched tag into the page.
 function injectMeta(template, meta) {
   // Replace head meta + title; rewrite/insert canonical, og:url, og:title,
   // og:description, og:image, og:type, twitter:title, twitter:description,
   // twitter:image. Inject Article JSON-LD before </head>.
   let html = template;
 
-  html = html.replace(/<title>[\s\S]*?<\/title>/, `<title>${escapeHtml(meta.title)}</title>`);
-  html = html.replace(/<meta\s+name="description"[^>]*>/i, `<meta name="description" content="${escapeAttr(meta.description)}" />`);
+  html = html.replace(/<title>[\s\S]*?<\/title>/, () => `<title>${escapeHtml(meta.title)}</title>`);
+  html = html.replace(/<meta\s+name="description"[^>]*>/i, () => `<meta name="description" content="${escapeAttr(meta.description)}" />`);
+  if (meta.author) html = html.replace(/<meta\s+name="author"[^>]*>/i, () => `<meta name="author" content="${escapeAttr(meta.author)}" />`);
 
   const replaceOrInsert = (re, replacement) => {
     if (re.test(html)) {
-      html = html.replace(re, replacement);
+      html = html.replace(re, () => replacement);
     } else {
-      html = html.replace('</head>', `    ${replacement}\n  </head>`);
+      html = html.replace('</head>', () => `    ${replacement}\n  </head>`);
     }
   };
 
-  replaceOrInsert(/<link\s+rel="canonical"[^>]*>/i, `<link rel="canonical" href="${escapeAttr(meta.url)}" />`);
+  // No url (the 404 page) drops canonical and og:url instead of pointing them
+  // at the template's homepage values.
+  const setOrDrop = (re, tag) => (meta.url ? replaceOrInsert(re, tag) : (html = html.replace(re, '')));
+
+  setOrDrop(/<link\s+rel="canonical"[^>]*>/i, `<link rel="canonical" href="${escapeAttr(meta.url)}" />`);
   if (meta.noindex) replaceOrInsert(/<meta\s+name="robots"[^>]*>/i, `<meta name="robots" content="noindex" />`);
   replaceOrInsert(/<meta\s+property="og:type"[^>]*>/i,        `<meta property="og:type" content="article" />`);
   replaceOrInsert(/<meta\s+property="og:title"[^>]*>/i,       `<meta property="og:title" content="${escapeAttr(meta.title)}" />`);
   replaceOrInsert(/<meta\s+property="og:description"[^>]*>/i, `<meta property="og:description" content="${escapeAttr(meta.description)}" />`);
-  replaceOrInsert(/<meta\s+property="og:url"[^>]*>/i,         `<meta property="og:url" content="${escapeAttr(meta.url)}" />`);
+  setOrDrop(/<meta\s+property="og:url"[^>]*>/i,               `<meta property="og:url" content="${escapeAttr(meta.url)}" />`);
   replaceOrInsert(/<meta\s+property="og:image"[^>]*>/i,       `<meta property="og:image" content="${escapeAttr(meta.image)}" />`);
-  replaceOrInsert(/<meta\s+property="og:image:width"[^>]*>/i, `<meta property="og:image:width" content="1200" />`);
-  replaceOrInsert(/<meta\s+property="og:image:height"[^>]*>/i,`<meta property="og:image:height" content="630" />`);
+  replaceOrInsert(/<meta\s+property="og:image:width"[^>]*>/i, `<meta property="og:image:width" content="${meta.imageWidth ?? 1200}" />`);
+  replaceOrInsert(/<meta\s+property="og:image:height"[^>]*>/i,`<meta property="og:image:height" content="${meta.imageHeight ?? 630}" />`);
   replaceOrInsert(/<meta\s+property="og:image:alt"[^>]*>/i,   `<meta property="og:image:alt" content="${escapeAttr(meta.title)}" />`);
 
   replaceOrInsert(/<meta\s+name="twitter:title"[^>]*>/i,       `<meta name="twitter:title" content="${escapeAttr(meta.title)}" />`);
@@ -224,22 +244,24 @@ function injectMeta(template, meta) {
     // Replace existing Person JSON-LD with article JSON-LD.
     const ldRe = /<script\s+type="application\/ld\+json">[\s\S]*?<\/script>/;
     const articleLd = `<script type="application/ld+json">\n${JSON.stringify(meta.jsonLd, null, 2)}\n</script>`;
-    if (ldRe.test(html)) html = html.replace(ldRe, articleLd);
-    else html = html.replace('</head>', `    ${articleLd}\n  </head>`);
+    if (ldRe.test(html)) html = html.replace(ldRe, () => articleLd);
+    else html = html.replace('</head>', () => `    ${articleLd}\n  </head>`);
   }
 
   return html;
 }
 
 function injectRoot(template, innerHtml) {
-  return template.replace(/<div\s+id="root"><\/div>/, `<div id="root">${innerHtml}</div>`);
+  return template.replace(/<div\s+id="root"><\/div>/, () => `<div id="root">${innerHtml}</div>`);
 }
 
 function buildSitemap(slugs) {
+  // No <lastmod>: nothing records when a post was last edited, and a made-up
+  // date is worse than none.
   const urls = [
     `<url><loc>${SITE_URL}/</loc><changefreq>monthly</changefreq><priority>1.0</priority></url>`,
     ...slugs.map(s =>
-      `<url><loc>${SITE_URL}/writing/${s.slug}</loc><lastmod>${dateToISO(s.date)}</lastmod><changefreq>yearly</changefreq><priority>0.7</priority></url>`
+      `<url><loc>${SITE_URL}${postPath(s.slug)}</loc><changefreq>yearly</changefreq><priority>0.7</priority></url>`
     ),
   ];
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join('\n')}\n</urlset>\n`;
@@ -257,9 +279,14 @@ async function loadPosts(entries) {
       continue;
     }
     const { frontmatter, body } = parseFrontmatter(raw);
+    const minutes = readMinutes(body);
+    if (c.read !== `${minutes} min`) {
+      console.warn(`[prerender] ${c.slug}: catalog read '${c.read}' but the body reads in ${minutes} min; update src/lib/catalog.js`);
+    }
     out.push({
       ...c,
       excerpt: frontmatter.excerpt || deriveExcerpt(body),
+      published: frontmatter.date?.match(/^\d{4}-\d{2}-\d{2}/)?.[0] || dateToISO(c.date),
       body,
     });
   }
@@ -301,38 +328,40 @@ export function writingPrerender() {
       const ogDir = path.join(dist, 'og');
       await fs.mkdir(ogDir, { recursive: true });
       try {
-        await renderOgCards(pages.map(p => ({ slug: p.slug, title: p.title, date: p.date, read: p.read, cats: p.cats })), ogDir);
+        await renderOgCards(pages.map(p => ({ slug: p.slug, title: p.title, pivot: p.pivot, date: p.date, read: p.read, cats: p.cats })), ogDir);
         console.log(`[prerender] wrote ${pages.length} OG cards to dist/og/`);
       } catch (err) {
         console.warn(`[prerender] OG card generation failed: ${err.message}`);
       }
 
-      // Per-post HTML. Unlisted pages carry no Article JSON-LD: it would name
-      // Chris as author of text he may not have written.
+      // Per-post HTML. Unlisted pages carry Article JSON-LD only when the
+      // catalog names their author; otherwise it would credit Chris with text
+      // he may not have written.
       for (const post of pages) {
-        const url = `${SITE_URL}/writing/${post.slug}`;
+        const author = post.author || 'Chris Pachulski';
+        const url = `${SITE_URL}${postPath(post.slug)}`;
         const description = post.excerpt;
         const ogImage = `${SITE_URL}/og/${post.slug}.png`;
 
         const meta = {
-          title: `${post.title} — Chris Pachulski`,
+          title: `${post.title} — ${author}`,
+          author,
           description,
           url,
           image: ogImage,
           noindex: post.unlisted,
-          jsonLd: post.unlisted ? null : {
+          jsonLd: post.unlisted && !post.author ? null : {
             '@context': 'https://schema.org',
             '@type': 'Article',
             headline: post.title,
             description,
             url,
-            datePublished: dateToISO(post.date),
+            datePublished: post.published,
             image: ogImage,
-            author: {
-              '@type': 'Person',
-              name: 'Chris Pachulski',
-              url: SITE_URL,
-            },
+            author: post.author
+              ? { '@type': 'Person', name: post.author }
+              : { '@type': 'Person', name: author, url: SITE_URL },
+            ...(post.source && { isBasedOn: post.source }),
             publisher: {
               '@type': 'Person',
               name: 'Chris Pachulski',
@@ -343,7 +372,13 @@ export function writingPrerender() {
         };
 
         const bodySource = post.body.replace(/^[\s\n]*#\s+[^\n]+\n+/, '');
-        const bodyHtml = marked.parse(bodySource, { mangle: false, headerIds: false });
+        // Same scroll wrapper and lazy images Article.jsx renders, so the
+        // prerendered first paint matches the hydrated page.
+        const bodyHtml = marked.parse(bodySource, { mangle: false, headerIds: false })
+          .replace(/<table>/g, '<div class="table-scroll" tabindex="0"><table>')
+          .replace(/<\/table>/g, '</table></div>')
+          .replace(/<pre>/g, '<pre tabindex="0">')
+          .replace(/<img /g, '<img loading="lazy" decoding="async" ');
         const inner = articleHtml(post, bodyHtml);
         const html = injectRoot(injectMeta(template, meta), inner);
         await writeFileEnsured(path.join(dist, 'writing', post.slug, 'index.html'), html);
@@ -354,8 +389,11 @@ export function writingPrerender() {
       const nfMeta = {
         title: 'No such field note — Chris Pachulski',
         description: 'That writing slug does not match any published field note.',
-        url: `${SITE_URL}/writing/_not-found/`,
+        url: null,
         image: `${SITE_URL}/hero-portrait.jpg`,
+        imageWidth: 336,
+        imageHeight: 508,
+        noindex: true,
         jsonLd: null,
       };
       const nfHtml = injectRoot(injectMeta(template, nfMeta), notFoundHtml(featured));
@@ -383,7 +421,7 @@ export function writingPrerender() {
       const rootTag = homeMode === 'hydrated'
         ? `<div id="root" data-hydrate="home">${homeInner}</div>`
         : `<div id="root">${homeInner}</div>`;
-      const homeHtml = template.replace(/<div\s+id="root"><\/div>/, rootTag);
+      const homeHtml = template.replace(/<div\s+id="root"><\/div>/, () => rootTag);
       await fs.writeFile(indexPath, homeHtml);
 
       console.log(`[prerender] wrote ${posts.length} article pages + ${unlisted.length} unlisted + 404 + sitemap + home (${homeMode})`);

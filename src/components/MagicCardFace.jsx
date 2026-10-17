@@ -10,22 +10,33 @@ import { forwardRef } from 'react';
  *
  * Returns the `.mtg-card` root + `.mtg-frame` content tree. ForwardRef
  * lets the Hero attach its cursor-tracking tilt to the same DOM element.
- * Other consumers (showcase card) can ignore the ref.
+ * Other consumers (showcase card) can ignore the ref. `loading` passes
+ * through to the art <img>, so below-the-fold copies can lazy-load it.
+ *
+ * role="img" makes the card's text presentational, so CARD_LABEL carries
+ * that text for screen readers. Keep it in sync with the markup below.
  */
-const MagicCardFace = forwardRef(function MagicCardFace(_props, ref) {
+const CARD_LABEL =
+  'Chris Pachulski, a custom Magic-style card. Mana cost: 2, blue, red. '
+  + 'Art: Chris Pachulski painted as an Izzet wizard. '
+  + 'Legendary Creature — Human Wizard. Python, SQL, R. Protection from Data. '
+  + 'Whenever an opponent makes a claim, you may draw a card unless that player cites a source. '
+  + 'Flavor text: “Don’t just have an idea—have all of them.” —Niv-Mizzet. Power/toughness 2/3.';
+
+const MagicCardFace = forwardRef(function MagicCardFace({ loading }, ref) {
   return (
     <div
       ref={ref}
       className="mtg-card"
       role="img"
-      aria-label="Chris Pachulski: a custom Magic-style card"
+      aria-label={CARD_LABEL}
     >
       <div className="mtg-frame">
         <div className="mtg-titlebar mtg-stage" style={{ '--d': '0.10s' }}>
           <div className="mtg-name">Chris Pachulski</div>
           <div className="mtg-mana">
             <span className="mtg-pip pip-gen mtg-stage" style={{ '--d': '0.55s' }}>2</span>
-            <span className="mtg-pip pip-u mtg-stage" style={{ '--d': '0.65s' }} aria-label="Blue mana">
+            <span className="mtg-pip pip-u mtg-stage" style={{ '--d': '0.65s' }}>
               <svg viewBox="0 0 20 20" aria-hidden="true">
                 <path
                   d="M10 2.5 C 10 2.5, 4.5 8.5, 4.5 12.5 C 4.5 16, 7 18, 10 18 C 13 18, 15.5 16, 15.5 12.5 C 15.5 8.5, 10 2.5, 10 2.5 Z"
@@ -33,7 +44,7 @@ const MagicCardFace = forwardRef(function MagicCardFace(_props, ref) {
                 />
               </svg>
             </span>
-            <span className="mtg-pip pip-r mtg-stage" style={{ '--d': '0.75s' }} aria-label="Red mana">
+            <span className="mtg-pip pip-r mtg-stage" style={{ '--d': '0.75s' }}>
               <svg viewBox="0 0 20 20" aria-hidden="true">
                 <path
                   d="M10 2.5 C 11 5, 13.5 6, 13.5 9 C 13.5 10.5, 12.8 11.5, 12 12 C 13.5 11, 15 10, 15.5 8 C 16.5 11, 16 14.5, 13.5 16.5 C 11.5 18, 8.5 18, 6.5 16.5 C 4 14.5, 3.5 11, 4.5 8 C 5 10, 6.5 11, 8 12 C 7.2 11.5, 6.5 10.5, 6.5 9 C 6.5 6, 9 5, 10 2.5 Z"
@@ -48,6 +59,7 @@ const MagicCardFace = forwardRef(function MagicCardFace(_props, ref) {
           <img
             src="/hero-art.webp"
             alt="Chris Pachulski, painted as an Izzet wizard"
+            loading={loading}
             draggable="false"
             onError={(e) => e.currentTarget.parentElement.classList.add('mtg-art-fallback')}
           />

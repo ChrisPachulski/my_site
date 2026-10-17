@@ -50,7 +50,7 @@ export function About() {
                 Five industries before this: government contracting, adtech, browser telemetry, CPG retail panel, equity research. Now collectibles economics at Wizards. Stack rotates. Discipline doesn't.
               </p>
               <p className="reveal" data-delay="3">
-                Outside of it: my daughter, my son, three dachshunds, the perennial heartbreak of the Toronto Maple Leafs, and tinkering with Magic: the Gathering collections.
+                Outside of it: my daughter, my son, three dachshunds, the perennial heartbreak of the Toronto Maple Leafs, and tinkering with Magic: The Gathering collections.
               </p>
             </div>
             <div className="reveal" data-delay="2">
@@ -59,7 +59,7 @@ export function About() {
                 <div className="fact"><span>current</span><span>Wizards of the Coast, Magic: The Gathering</span></div>
                 <div className="fact"><span>experience</span><span>7+ yrs shipping data systems · 5 industries</span></div>
                 <div className="fact"><span>previously</span><span>The Providencia Group · Ad.Net · Mozilla · Spins LLC · Consumer Edge Research</span></div>
-                <div className="fact"><span>education</span><span>MBA, Hofstra · BA Classics + Biology, Creighton</span></div>
+                <div className="fact"><span>education</span><span>MBA, Hofstra · BS – Biological Sciences &amp; Classical Studies, Creighton University</span></div>
                 <div className="fact"><span>location</span><span>Seattle, WA · Remote</span></div>
               </div>
             </div>
@@ -85,7 +85,7 @@ export function Skills() {
     <section id="skills">
       <div className="wrap">
         <div className="section-label reveal">
-          <span className="num">02</span> / skills &nbsp; <span className="mute">// SELECT * FROM tools ORDER BY depth DESC;</span>
+          <span className="num">02</span> <span style={{ whiteSpace: 'nowrap' }}>/ skills &nbsp;</span> <span className="mute">// SELECT * FROM tools ORDER BY depth DESC;</span>
         </div>
         <div ref={cardRef} className={`izzet-card izzet-red${cardInView ? ' in-view' : ''}`}>
           <svg className="izzet-seal" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
@@ -116,7 +116,7 @@ export function Skills() {
                   <div className="name">{r.name} {r.daily && <span className="accent" title="Daily driver">●</span>}</div>
                   <div className="use">{r.use}</div>
                   <div className="yrs">{r.yrs}</div>
-                  <div className="skill-bar">
+                  <div className="skill-bar" role="meter" aria-label={`${r.name} depth`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={r.depth}>
                     <div className="skill-bar-fill" style={{ '--depth': inView ? r.depth / 100 : 0, transitionDelay: `${i * 90}ms` }}/>
                   </div>
                 </div>
@@ -174,19 +174,19 @@ export function Feature() {
           <div className="feature-grid">
             <div>
               <span className="tag">featured</span>
-              <h3>MTGBAN. I co-founded a <em>$1.2M</em> arbitrage engine for Magic: the Gathering.</h3>
+              <h3>MTGBAN. I co-founded a <em>$1.2M</em> arbitrage engine for Magic: The Gathering.</h3>
               <p className="dim">
-                500+ paying customers use our aggregated pricing to buy, sell, and hedge across a fragmented collectibles market. I designed the BigQuery warehouse from scratch, and the entire pipeline runs on Digital Ocean droplets + the R tidyverse.
+                500+ paying customers used our aggregated pricing to buy, sell, and hedge across a fragmented collectibles market. I designed the BigQuery warehouse from scratch, and the entire pipeline ran on Digital Ocean droplets + the R tidyverse.
               </p>
-              <p className="dim">Time-series ML forecasts price movements. A Go dashboard surfaces it all.</p>
+              <p className="dim">Time-series ML forecast price movements. A Go dashboard surfaced it all.</p>
               <p className="feature-evidence">
-                <strong>$1.2M</strong> ARR <span aria-hidden="true">·</span> <strong>500+</strong> paying subs <span aria-hidden="true">·</span> <strong>24/7</strong> since 2017
+                <strong>$1.2M</strong> ARR <span aria-hidden="true">·</span> <strong>500+</strong> paying subs <span aria-hidden="true">·</span> <strong>24/7</strong> from 2017 to 2025
               </p>
             </div>
             <div>
               <div
                 className="pipe"
-                role="list"
+                role="group"
                 aria-label="MTGBAN daily pipeline: tap, hover, or focus a step to advance"
                 ref={pipeRef}
               >
@@ -197,7 +197,7 @@ export function Feature() {
                   <Fragment key={i}>
                     <div
                       className={`pipe-node${active === i ? ' active' : ''}`}
-                      role="listitem"
+                      role="button"
                       tabIndex={0}
                       aria-current={active === i ? 'step' : undefined}
                       onMouseEnter={() => claim(i)}
@@ -205,7 +205,7 @@ export function Feature() {
                       onClick={() => claim(i)}
                       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); claim(i); } }}
                     >
-                      <span className="glyph">{n.glyph}</span>
+                      <span className="glyph" aria-hidden="true">{n.glyph}</span>
                       <div>
                         <div className="nm">{n.nm}</div>
                         <div className="ss">{n.ss}</div>

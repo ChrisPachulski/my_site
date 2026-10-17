@@ -1,5 +1,5 @@
 ---
-title: 'The Canon Was the Scaffolding: 298 Philosophers, a Homelab, and One Question About Opaque AI'
+title: 'The Canon Was the Scaffolding: 298 Works, a Homelab, and One Question About Opaque AI'
 date: 2026-06-26T04:00:00.000Z
 ---
 
@@ -55,7 +55,7 @@ Seventeen of the fifty are flagged as core must-reads; the rest are context. Tha
 
 ## Where it's pointing: the AI paper
 
-The last thing I did that weekend was pull eight recent AI-ethics papers into a staging folder. I'll give you the filenames, because they're real, locatable works and they draw the line by themselves: *Of Opaque Oracles*. *Beyond Transparency*. *The Verification Bottleneck*. *Four Responsibility Gaps*. Elish's *Moral Crumple Zones*. Nguyen's *Transparency is Surveillance*. Durán on grounds for trust in machine learning.
+The last thing I did that weekend was pull eight recent AI-ethics papers into a staging folder. I'll give you the filenames, because they're real, locatable works and they draw the line by themselves: *Of Opaque Oracles*. *Beyond Transparency*. *The Verification Bottleneck*. *Four Responsibility Gaps*. Elish's *Moral Crumple Zones*. Nguyen's *Transparency is Surveillance*. Koskinen's *We Have No Satisfactory Social Epistemology of AI-Based Science*. Durán on grounds for trust in machine learning.
 
 Put those next to a 50-work survey on justification-to-others and the through-line is not subtle. If the wrong-making feature of an act is that you couldn't justify it to the person affected, then an opaque model that produces a decision *and cannot say why* isn't a smaller version of a moral agent. It's a different kind of thing, one that breaks the mechanism morality was supposed to run on. That's the paper. The canon is how I earn the right to make that argument without hand-waving.
 

@@ -6,7 +6,9 @@ featureImage: /1_QVT9gViHRegADGJ8IlUHSQ.png
 
 # Comprehensive Guide to Building a Robust Twitter Bot in R
 
-In today's post, we'll dive deep into an R script designed to [automate Twitter interactions comprehensively](\[https://github.com/ChrisPachulski/Twitter-Content-Bot/blob/main/twitter_bot.R]\(https://github.com/ChrisPachulski/Twitter-Content-Bot/blob/main/twitter_bot.R\)). The script integrates various R packages and demonstrates advanced data handling, automated tweeting, and systematic file management. Let's explore exactly what the script does step-by-step, clearly outlining its technical processes and analytical functionalities.
+In today's post, we'll dive deep into an R script designed to [automate Twitter interactions comprehensively](https://github.com/ChrisPachulski/Twitter-Content-Bot/blob/main/twitter_bot.R). The script integrates various R packages and demonstrates advanced data handling, automated tweeting, and systematic file management. Let's explore exactly what the script does step-by-step, clearly outlining its technical processes and analytical functionalities.
+
+(Update, Oct 2026: fair warning - the snippets below are a cleaned-up sketch of the scheduling and recycling pattern, not lifted from the linked twitter\_bot.R. The real script is a lot less tidy - it pulls MTG market data out of BigQuery, picks the day's content, charts it with ggplot2 and posts one tweet with that chart attached, keys read from a local JSON file. The code here also targets 2022-era packages - current gmailr only ships the `gm_` versions (`gm_mime()`, `gm_send_message()`), and rtweet 2.0 retired the API v1.1 calls like `post_tweet()` and `create_token()`, so posting now goes through `tweet_post()`.)
 
 ## Overview of the Script
 

@@ -1,12 +1,24 @@
 import { useEffect, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { getAdjacent, loadPostBody } from '../lib/blog.js';
+import { getAdjacent, getCachedBody, loadPostBody } from '../lib/blog.js';
 import { articlePath } from '../lib/router.js';
 
 function stripLeadingH1(body) {
   return body.replace(/^[\s\n]*#\s+[^\n]+\n+/, '');
 }
+
+// Wide tables scroll inside their own box instead of being clipped by the
+// page's overflow-x: clip. Scrollers get tabIndex so keyboard users in
+// browsers that do not focus scroll containers on their own can still scroll.
+// node={undefined} keeps react-markdown's hast node off the DOM element.
+const MD_COMPONENTS = {
+  table: (props) => (
+    <div className="table-scroll" tabIndex={0}><table {...props} node={undefined} /></div>
+  ),
+  pre: (props) => <pre tabIndex={0} {...props} node={undefined} />,
+  img: (props) => <img loading="lazy" decoding="async" {...props} node={undefined} />,
+};
 
 // Italic Pivot Rule (DESIGN.md): exactly one operative word per headline is
 // italicized and tinted plasma-violet. Each post may declare its `pivot` in
@@ -38,11 +50,13 @@ function ItalicTitle({ title, pivot }) {
 export default function Article({ post, mode = 'page', onNavigate }) {
   const articleRef = useRef(null);
   const adjacent = getAdjacent(post.slug);
-  const [body, setBody] = useState(null); // null = loading, '' = missing
+  // null = loading, '' = missing. main.jsx preloads the first article's body,
+  // so the first render shows it at once instead of a "Loading…" swap.
+  const [body, setBody] = useState(() => getCachedBody(post));
 
   useEffect(() => {
     let cancelled = false;
-    setBody(null);
+    setBody(getCachedBody(post));
     loadPostBody(post).then((b) => {
       if (!cancelled) setBody(b);
     });
@@ -58,7 +72,7 @@ export default function Article({ post, mode = 'page', onNavigate }) {
   }, [post.slug, mode]);
 
   const handleNav = (e, path) => {
-    if (!onNavigate) return;
+    if (!onNavigate || e.metaKey || e.ctrlKey || e.shiftKey || e.button > 0) return;
     e.preventDefault();
     onNavigate(path);
   };
@@ -104,7 +118,7 @@ export default function Article({ post, mode = 'page', onNavigate }) {
         {body === null ? (
           <p className="dim">Loading…</p>
         ) : body ? (
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>{stripLeadingH1(body)}</ReactMarkdown>
+          <ReactMarkdown remarkPlugins={[remarkGfm]} components={MD_COMPONENTS}>{stripLeadingH1(body)}</ReactMarkdown>
         ) : (
           <p className="dim">Article body not found.</p>
         )}

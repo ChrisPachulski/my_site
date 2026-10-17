@@ -73,7 +73,7 @@ gaeas_cradle <- function() {
 Retrieves card data from BigQuery:
 
 ```r
-statement <- "SELECT scryfall_id, tcg_id, card, set, rarity FROM `gaeas-cradle.roster.mtgjson`"
+statement <- "SELECT scryfall_id, tcg_id, card, `set`, rarity FROM `gaeas-cradle.roster.mtgjson`"
 roster <- dbSendQuery(con, statement) %>% dbFetch(n = -1)
 ```
 
@@ -123,7 +123,7 @@ cleansed_ck_sales_data <- CK_Prices_df %>%
 
 **Special Note:** The `ck_adjusted_rank` is a crucial metric that adjusts the ranking of best-selling cards based on revenue by considering the relative volume sold. This effectively balances cards with high individual sale prices against those selling at high volumes but lower prices, providing a more comprehensive and actionable view of market performance.
 
-*Most sites want to show off what generates them revenue - not what will drive inventory churn which is generally desired for smaller entities (like me)*\*
+*Most sites want to show off what generates them revenue - not what will drive inventory churn which is generally desired for smaller entities (like me)*
 
 ### 7. Comprehensive Market Analysis & Reporting
 
@@ -148,7 +148,7 @@ Final processed datasets are automatically exported to Google Sheets and BigQuer
 
 ```r
 sheet_write(high_margin_fast_sellers, ss = drive_get("ck_margin_winners"), sheet = "margin_winners")
-bq_table_upload(x=mybq, values = bq_table_data, source_format = "CSV", write_disposition = "WRITE_TRUNCATE")
+bq_table_upload(x=mybq, values = bq_table_data, write_disposition = "WRITE_TRUNCATE")
 ```
 
 ***
@@ -157,4 +157,4 @@ bq_table_upload(x=mybq, values = bq_table_data, source_format = "CSV", write_dis
 
 This script significantly accelerates the process of trading card market analytics, providing robust, automated data retrieval, complex transformations, precise analyses, and streamlined reporting. Such detailed automation is invaluable, reducing hours of manual work into minutes of automated precision.
 
-And it makes me look really cool in 5 minutes in a chat room when I can glean market insights so quickly and with little to no preparations.
+And it makes me look really cool in 5 minutes in a chat room when I can glean market insights so quickly and with little to no preparation.
