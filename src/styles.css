@@ -2232,4 +2232,12 @@ html[data-vibe="cyberpunk"] .izzet-card.izzet-blue .fact-list .fact .accent {
   /* Printing never fires the reveal observer, so unscrolled sections would
      print blank. */
   .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
+  /* Screen-only chrome: the fixed nav (and the skip link inside it) would be
+     stamped over the text of every printed page. */
+  .nav, .article-modal-close { display: none !important; }
+  .article-shell { padding-top: 0; }
+  .article-shell ~ .contact { display: none; }
+  /* Paper cannot scroll: wrap long code lines and show whole tables. */
+  .article-content pre { white-space: pre-wrap; overflow-wrap: anywhere; overflow: visible; }
+  .article-content .table-scroll { overflow: visible; }
 }
