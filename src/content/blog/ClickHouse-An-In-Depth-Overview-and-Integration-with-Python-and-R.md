@@ -4,7 +4,7 @@ date: 2022-03-25T04:00:00.000Z
 featureImage: /ch-logo_resized.png
 ---
 
-In the my new role, a database technology call Clickhouse is used, and I wanted to get a better understanding of what it is & how to interact with it from R & Python. ClickHouse has emerged as a powerful database, specifically optimized for analytical queries and real-time data processing. This article provides a thorough exploration of ClickHouse, discussing its strengths, potential drawbacks, and methods of integrating it as I have with hundreds of Python and R Scripts.
+In my new role, a database technology called ClickHouse is used, and I wanted to get a better understanding of what it is & how to interact with it from R & Python. ClickHouse has emerged as a powerful database, specifically optimized for analytical queries and real-time data processing. This article provides a thorough exploration of ClickHouse, discussing its strengths, potential drawbacks, and methods of integrating it as I have with hundreds of Python and R Scripts.
 
 ### What is ClickHouse?
 
