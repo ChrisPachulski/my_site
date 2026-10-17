@@ -17,6 +17,7 @@ from clickhouse_driver import Client
 import gspread_pandas as gp
 import custom_analytics_functions as caf
 import os
+import sys
 ```
 
 These libraries are critical for the seamless automation of data analytics processes.
@@ -27,23 +28,25 @@ At the core of these scripts are sophisticated SQL queries, precisely crafted to
 
 ```sql
 SELECT 
-    event_date AS day, 
-    SUM(ae.revenue) AS spend, 
-    SUM(fb_purchases) AS purchases,
+    event_date, 
+    spend, 
+    fb_purchases AS purchases,
     CASE WHEN ROUND(spend/purchases,2) IN (Inf, -Inf) OR isNaN(ROUND(spend/purchases,2)) THEN 0 ELSE ROUND(spend/purchases,2) END AS cpa,
-    SUM(fb_checkouts) AS add_to_carts,
-    CASE WHEN (spend/add_to_carts) = Inf THEN 0 ELSE ROUND(spend/add_to_carts,2) END AS cost_per_atc
-FROM 
-    {table_name} ae
+    fb_checkouts AS checkouts,
+    CASE WHEN ROUND(spend/checkouts,2) IN (Inf, -Inf) OR isNaN(ROUND(spend/checkouts,2)) THEN 0 ELSE ROUND(spend/checkouts,2) END AS cost_per_checkout
+FROM (
+    SELECT event_date, SUM(revenue) AS spend
+    FROM {table_name}
+    GROUP BY event_date
+) ae
 LEFT JOIN (
     SELECT event_date, SUM(mb_website_purchases) AS fb_purchases, SUM(mb_checkouts_initiated) AS fb_checkouts
     FROM {facebook_table}
     WHERE event_date BETWEEN '2022-11-01' AND '{airflow_date}'
     AND mb_campaign_id LIKE '238XXXXXXXXXXXXXXX'
     GROUP BY event_date
-) fs ON ae.event_date = fs.event_date
-GROUP BY day
-ORDER BY day;
+) fs USING (event_date)
+ORDER BY event_date;
 ```
 
 This query structure allows accurate aggregation of spend, conversions, and performance metrics essential for informed decision-making.
@@ -67,7 +70,7 @@ Python's powerful pandas library facilitates complex data merging, critical for 
 merged_df = pd.merge(current_df, historical_df, on='event_date', how='left')
 
 merged_df['spend'] = merged_df.apply(
-    lambda row: row['historical_spend'] if row['spend'] != row['historical_spend'] and row['event_date'] < pd.Timestamp('2024-06-01') else row['spend'], axis=1
+    lambda row: row['historical_spend'] if pd.notna(row['historical_spend']) and row['spend'] != row['historical_spend'] and row['event_date'] < pd.Timestamp('2024-06-01') else row['spend'], axis=1
 )
 ```
 
@@ -98,7 +101,7 @@ Scripts incorporate rigorous error checking and data validation measures, protec
 
 ```python
 if df.empty:
-    sys.exit("Error: Data retrieval resulted in an empty dataset. Exiting.", 1)
+    sys.exit("Error: Data retrieval resulted in an empty dataset. Exiting.")
 else:
     df.to_csv('/secure/path/report.csv', index=False)
 ```
