@@ -71,7 +71,7 @@ There's also a rung-4 move I'm fond of for claims that reading can't settle. If 
 
 ## The benchmark, and killing my own perfect score
 
-*Correction, October 2026: the 332-pair results below are invalid. The judge prompt carried the pair ID, and the ID gave away the label. The clean numbers, and how I found out, are in [The Answer Key Was in the ID](/writing/the-answer-key-was-in-the-id/).*
+*Correction, October 2026: the 332-pair results below are invalid, and so are the multi-language numbers after them — all contaminated. The judge prompt carried the pair ID, and the ID gave away the label. The clean numbers, and how I found out, are in [The Answer Key Was in the ID](/writing/the-answer-key-was-in-the-id/).*
 
 Here's where I have to be careful, because this is the part where it would be easy to lie by omission.
 
