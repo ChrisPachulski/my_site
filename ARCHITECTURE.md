@@ -14,8 +14,8 @@ mutating a post object does not write back into `src/lib/catalog.js`.
 Array order is whatever `catalog.js` declares; nothing sorts it at runtime
 (`blog.js:7`). That order is load-bearing — `getAdjacent` derives prev/next
 from array position alone. The order is broadly newest-first but not strictly:
-index 12 is `Sep 2025` (`catalog.js:21`) while index 13 is `Mar 2026`
-(`catalog.js:22`).
+`at-home-media` (`Sep 2025`) sits directly before `four-terminals-four-sounds`
+(`Mar 2026`).
 
 <!-- seed:gap — author: what rule governs catalog order, given it is not strictly reverse-chronological? -->
 
@@ -83,16 +83,16 @@ including on a cold load or a hard refresh, where the previous mode is lost.
 ### `renderOgCards(posts, outDir)`
 
 Writes one PNG per post into `outDir`, named `<post.slug>.png`
-(`render-og.mjs:223`) — the return value is not the output; the files are.
+(`render-og.mjs:231`) — the return value is not the output; the files are.
 `outDir` is not created by this function.
 
-Cards render at a fixed 1200×630 (`render-og.mjs:218`).
+Cards render at a fixed 1200×630 (`render-og.mjs:226`).
 
-**System fonts are disabled** (`render-og.mjs:221`), so only the fonts loaded by
-`loadFonts()` (`render-og.mjs:215`) can render; a glyph outside them will not
+**System fonts are disabled** (`render-og.mjs:229`), so only the fonts loaded by
+`loadFonts()` (`render-og.mjs:223`) can render; a glyph outside them will not
 fall back to an installed face.
 
-Category strings are truncated to the first two items (`render-og.mjs:211`),
+Category strings are truncated to the first two items (`render-og.mjs:219`),
 so a three-category post loses its third on the card but not on the page.
 
 <!-- seed:gap — author: why must system fonts be disabled here — reproducibility across machines, or a specific rendering defect? -->
