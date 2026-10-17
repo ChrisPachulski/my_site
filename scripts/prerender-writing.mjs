@@ -45,18 +45,31 @@ function parseFrontmatter(raw) {
   return { frontmatter: fm, body: m[2] };
 }
 
+// Plain text of marked tokens: keeps literal characters (`snake_case`, `sh\*t`)
+// that regex stripping mangled, and drops images and raw HTML.
+function plainText(tokens = []) {
+  let out = '';
+  for (const t of tokens) {
+    if (t.type === 'image' || t.type === 'html') continue;
+    if (t.items) out += ` ${t.items.map(i => plainText(i.tokens)).join(' ')} `;
+    else if (t.tokens) out += plainText(t.tokens);
+    else out += t.text ?? '';
+  }
+  return out;
+}
+
+const PROSE_BLOCKS = new Set(['paragraph', 'blockquote', 'list']);
+
 function deriveExcerpt(body) {
   if (!body) return '';
-  const stripped = body
-    .replace(/^#.*$/gm, '')
-    .replace(/```[\s\S]*?```/g, '')
-    .replace(/!\[.*?\]\(.*?\)/g, '')
-    .replace(/\[(.*?)\]\(.*?\)/g, '$1')
-    .replace(/[*_`>#]+/g, '')
-    .trim();
-  const para = stripped.split(/\n\s*\n/).find(p => p.trim().length > 80) || stripped;
-  const flat = para.replace(/\s+/g, ' ').trim();
-  return flat.length > 180 ? flat.slice(0, 177) + '…' : flat;
+  const blocks = marked.lexer(body)
+    .filter(t => PROSE_BLOCKS.has(t.type))
+    .map(t => plainText([t]).replace(/\s+/g, ' ').trim());
+  const flat = blocks.find(b => b.length > 80) || blocks.join(' ');
+  if (flat.length <= 180) return flat;
+  // Cut at the last word boundary, never mid-word.
+  const cut = flat.slice(0, 180);
+  return cut.slice(0, cut.lastIndexOf(' ')).replace(/[\s,;:.\-–—]+$/, '') + '…';
 }
 
 function dateToISO(s) {
