@@ -78,7 +78,7 @@ Inside the SPA, four tabs:
 - **Watch** opens Plex, the only place the dashboard hands off, because it does not try to be a player.
 - **TV** is a Sonarr-backed search-as-you-type surface with an *In Library* badge that breaks the poster corner, an AddSeriesModal with quality-profile and root-folder defaults pre-populated from the existing Sonarr config, and a remove flow that gates behind the confirmation modal.
 - **Movies** is the Radarr mirror of TV.
-- **Downloads** is the SAB queue with pause, resume, and cancel actions, polling at 3 Hz when the tab is visible and pausing the polling when it is not.
+- **Downloads** is the SAB queue with pause, resume, and cancel actions, polling every three seconds when the tab is visible and pausing the polling when it is not.
 
 That was V1. A static dashboard at `http://theemeraldexchange.local:8085`, one bookmark on every device in the house, replacing the operator chrome of five surfaces with one. It worked. The text messages stopped.
 
@@ -143,7 +143,7 @@ The shape: a horizontal row of poster cards above the search input, populated wi
 
 The constraints I cared about were five:
 
-1. **Bring your own key.** Each user pastes their own Anthropic API key into a small settings panel. The key never leaves their device's session; the dashboard proxies the call through its backend but uses the per-user key, not a shared one. Usage is tracked per user and visible to them in an Admin diagnostic panel.
+1. **Bring your own key.** Each user pastes their own Anthropic API key into a small settings panel. The key only ever goes to the household's own backend; the dashboard proxies the call through its backend but uses the per-user key, not a shared one. Usage is tracked per user and visible to them in an Admin diagnostic panel.
 2. **Learn from rejection persistently.** Red dots persist across sessions, per user. The reject list is sent into the Claude prompt as context every time, so the model never suggests something already declined. Greens persist similarly, as a likes list.
 3. **Mirror the household's library distribution.** Without that constraint the model recommends from the long tail of what it knows; with it, the recommendations feel like they came from someone who actually understands what we already own. The library is sampled by genre proportion, fed into the prompt, and the model is asked to suggest in the same distribution.
 4. **Validate and retry on tool use.** The first version of the recommender used a one-shot tool call to TMDB. About a quarter of the responses came back with hallucinated IDs or titles that did not exist. The fix was to enforce tool use as a validate-and-retry loop: the model proposes, the backend validates each proposed title against TMDB by name match, and rejections feed back into the next call as constraints. After the change, the trending strip stopped going empty.
@@ -193,7 +193,7 @@ Each of those cuts is a feature I built or scoped and then walked away from. The
 
 ## The per-feature cost
 
-The Emerald Exchange is a four-tab dashboard for a two-adult household, with one brother on a mutual-backup arrangement to come. Beneath that surface is: a static SPA with self-hosted Space Grotesk and a hand-built OKLCH design system; an Nginx-then-Hono backend that proxies five upstream services and injects their API keys; a Plex SSO flow with admin and household role gating; a Cloudflare Tunnel splitting the public SPA from the LAN-only backend; a recommendation system that uses each user's Anthropic key with persistent red and green feedback and library-genre-mirrored prompts; a video walkthrough that ships as the unauthed landing; a Discord webhook notifier for new arrivals; an observability backbone with a persistent grab log and an admin diagnostic panel.
+The Emerald Exchange is a four-tab dashboard for a two-adult household, with one brother on a mutual-backup arrangement to come. Beneath that surface is: a static SPA with self-hosted Space Grotesk and a hand-built OKLCH design system; an Nginx-then-Hono backend that proxies five upstream services and injects their API keys; a Plex SSO flow with admin and household role gating; a Cloudflare Tunnel splitting the public SPA from the NAS-hosted backend; a recommendation system that uses each user's Anthropic key with persistent red and green feedback and library-genre-mirrored prompts; a video walkthrough that ships as the unauthed landing; a Discord webhook notifier for new arrivals; an observability backbone with a persistent grab log and an admin diagnostic panel.
 
 That shipped in nine days, from the initial commit on May 8 to this post on May 17, written by an econometrics analyst whose day job is models and warehouses, not React and Runway and Cloudflare.
 
