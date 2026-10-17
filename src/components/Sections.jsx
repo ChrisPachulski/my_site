@@ -243,7 +243,7 @@ export function Projects() {
   return (
     <section id="portfolio">
       <div className="wrap">
-        <div className="section-label reveal"><span className="num">03</span> / case studies &nbsp; <span className="mute">// where I've delivered value</span></div>
+        <div className="section-label reveal"><span className="num">03</span> <span style={{ whiteSpace: 'nowrap' }}>/ case studies &nbsp;</span> <span className="mute">// where I've delivered value</span></div>
         <div className="about-grid" style={{ marginBottom: 40 }}>
           <div>
             <h2 className="reveal section-headline">
@@ -505,7 +505,7 @@ export function Resume() {
   return (
     <section id="resume" className="flow">
       <div className="wrap">
-        <div className="section-label reveal"><span className="num">04</span> / resume &nbsp; <span className="mute">// git log --oneline --graph career</span></div>
+        <div className="section-label reveal"><span className="num">04</span> <span style={{ whiteSpace: 'nowrap' }}>/ resume &nbsp;</span> <span className="mute">// git log --oneline --graph career</span></div>
         <div className="about-grid" style={{ marginBottom: 40 }}>
           <div>
             <h2 className="reveal section-headline tight">
@@ -594,7 +594,7 @@ export function Writing({ onArticleOpen }) {
   return (
     <section id="writing" className="flow">
       <div className="wrap">
-        <div className="section-label reveal"><span className="num">05</span> / writing &nbsp; <span className="mute">// {POSTS.length} posts</span></div>
+        <div className="section-label reveal"><span className="num">05</span> <span style={{ whiteSpace: 'nowrap' }}>/ writing &nbsp;</span> <span className="mute">// {POSTS.length} posts</span></div>
         <div style={{ maxWidth: 720, marginBottom: 40 }}>
           <h2 className="reveal section-headline tight">
             Field notes from the <em>warehouse.</em>

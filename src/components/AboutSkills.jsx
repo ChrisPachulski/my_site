@@ -85,7 +85,7 @@ export function Skills() {
     <section id="skills">
       <div className="wrap">
         <div className="section-label reveal">
-          <span className="num">02</span> / skills &nbsp; <span className="mute">// SELECT * FROM tools ORDER BY depth DESC;</span>
+          <span className="num">02</span> <span style={{ whiteSpace: 'nowrap' }}>/ skills &nbsp;</span> <span className="mute">// SELECT * FROM tools ORDER BY depth DESC;</span>
         </div>
         <div ref={cardRef} className={`izzet-card izzet-red${cardInView ? ' in-view' : ''}`}>
           <svg className="izzet-seal" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
