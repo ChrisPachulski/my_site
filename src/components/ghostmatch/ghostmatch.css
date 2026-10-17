@@ -327,8 +327,7 @@
 }
 .gm-log-scroll { max-height: 150px; overflow: hidden; }
 .gm-log-line {
-  opacity: 0;
-  animation: gmLogLine 0.4s cubic-bezier(.2,.7,.2,1) forwards;
+  animation: gmLogLine 0.4s cubic-bezier(.2,.7,.2,1) both;
   padding: 2px 0;
 }
 @keyframes gmLogLine {
