@@ -64,7 +64,7 @@ composite = cosine_sim
           * importance
           * exp(-lambda * age_days)
           * (1 + 0.1 * min(access_count, 10))
-          * 0.95 ** max(stickiness_ratio - 3.0, 0)
+          * 0.95 ** min(max(stickiness_ratio - 3.0, 0), 30)
 ```
 
 Five multiplicative factors. Each one does a specific job, and each one has a default that I've tuned after about six months of real use.
