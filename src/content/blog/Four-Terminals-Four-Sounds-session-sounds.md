@@ -1,5 +1,4 @@
 ---
-title: 'Four Terminals, Four Sounds: A Tab-Naming and Notification System for Parallel Claude Code and Codex Sessions'
 date: 2026-03-17T04:00:00.000Z
 ---
 
@@ -55,19 +54,30 @@ import ctypes
 from ctypes import wintypes
 
 kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+kernel32.FindFirstChangeNotificationW.argtypes = [wintypes.LPCWSTR, wintypes.BOOL, wintypes.DWORD]
+kernel32.FindFirstChangeNotificationW.restype = wintypes.HANDLE
+kernel32.WaitForSingleObject.argtypes = [wintypes.HANDLE, wintypes.DWORD]
+kernel32.WaitForSingleObject.restype = wintypes.DWORD
+kernel32.FindNextChangeNotification.argtypes = [wintypes.HANDLE]
+kernel32.FindCloseChangeNotification.argtypes = [wintypes.HANDLE]
+
+INVALID_HANDLE_VALUE = wintypes.HANDLE(-1).value
+INFINITE = WAIT_FAILED = 0xFFFFFFFF
 
 def watch_dir(path: str, on_change):
     FILE_NOTIFY_CHANGE_LAST_WRITE = 0x00000010
     handle = kernel32.FindFirstChangeNotificationW(
         path, False, FILE_NOTIFY_CHANGE_LAST_WRITE,
     )
-    if handle == wintypes.HANDLE(-1).value:
+    if handle == INVALID_HANDLE_VALUE:
         raise ctypes.WinError(ctypes.get_last_error())
     try:
         while True:
-            kernel32.WaitForSingleObject(handle, -1)
+            if kernel32.WaitForSingleObject(handle, INFINITE) == WAIT_FAILED:
+                raise ctypes.WinError(ctypes.get_last_error())
             on_change()
-            kernel32.FindNextChangeNotification(handle)
+            if not kernel32.FindNextChangeNotification(handle):
+                raise ctypes.WinError(ctypes.get_last_error())
     finally:
         kernel32.FindCloseChangeNotification(handle)
 ```
@@ -80,7 +90,7 @@ This is the engineering-fun part of the tool. It's also why I won't claim sessio
 
 Assignments live as JSON files in `~/.claude/sounds/assignments/`. Each file maps a session ID to a sound pool entry. When a new session starts, the launcher scans the assignments directory, excludes sounds already in use, and picks one at random from what's left.
 
-The tricky part is releasing assignments when sessions end abruptly, force-killed, OS crash, tab closed without cleanup. For that, each launcher holds a companion `.lock_{id}` file open for the session's lifetime. When any other process needs to check if a session is still alive, it tries to delete that lock file. On Windows, open files can't be deleted; on Unix, the handle is still held. Either way, a successful delete means the owning process is dead and the assignment is reclaimable.
+The tricky part is releasing assignments when sessions end abruptly, force-killed, OS crash, tab closed without cleanup. For that, each launcher holds a companion `.lock_{id}` file open for the session's lifetime. When any other process needs to check if a session is still alive, it probes that lock file. On Windows, open files can't be deleted, so it tries to delete it, and a successful delete means the owning process is dead. On Unix, a live process's open file *can* be deleted, so there it tries a non-blocking `fcntl.flock` instead, and getting the lock means nobody is holding it. Either way, the assignment is reclaimable once the probe says the owner is gone.
 
 There's a pressure-based backstop on top of that: when fewer than five sounds remain available, the oldest assignments by mtime are evicted first. This keeps the pool from exhausting when a user opens and closes sessions faster than the normal cleanup can run.
 
@@ -102,6 +112,9 @@ subprocess.Popen(
         | subprocess.DETACHED_PROCESS
         | subprocess.CREATE_NO_WINDOW
     ),
+    stdin=subprocess.DEVNULL,
+    stdout=subprocess.DEVNULL,
+    stderr=subprocess.DEVNULL,
     close_fds=True,
 )
 
@@ -109,11 +122,14 @@ subprocess.Popen(
 subprocess.Popen(
     [python_exe, sound_script, sound_path],
     start_new_session=True,
+    stdin=subprocess.DEVNULL,
+    stdout=subprocess.DEVNULL,
+    stderr=subprocess.DEVNULL,
     close_fds=True,
 )
 ```
 
-The hook launches the sound subprocess and returns immediately. The sound plays in a fully detached background process with no parent-process coupling. Claude Code gets its hook-completion signal in milliseconds regardless of how long the sound is.
+The hook launches the sound subprocess and returns immediately. The `DEVNULL` redirects matter more than they look: without them the child inherits the hook's stdout and stderr pipes, and anything reading the hook's output waits until the sound finishes anyway. The sound plays in a fully detached background process with no parent-process coupling. Claude Code gets its hook-completion signal in milliseconds regardless of how long the sound is.
 
 This is the detail that turns session-sounds from a prototype into something you'd actually run on every response. Without it, every sound-playing hook would pause the agent by whatever fraction of a second the audio took. With it, hooks are free.
 
@@ -121,14 +137,14 @@ This is the detail that turns session-sounds from a prototype into something you
 
 The session-sounds repo ships with a `default` theme and an empty `personal` theme. I wanted custom sounds for my personal theme, specific song phrases, movie quote fragments, the opening notes of a theme tune. Extracting them turned into a small project of its own.
 
-The obvious approach is `ffmpeg -ss START -to END`, which gives you a hard-cut clip at exact timestamps. This sounds terrible, because audio rarely has energy at the sample where you picked the cut. You end up with clicks at the start and end, phrases that begin mid-syllable, and clips that cut off before the decay of the final note.
+The obvious approach is `ffmpeg -ss START -to END`, which gives you a hard-cut clip at exact timestamps. This sounds terrible, because the waveform is rarely anywhere near zero at the sample where you picked the cut. You end up with clicks at the start and end, phrases that begin mid-syllable, and clips that cut off before the decay of the final note.
 
 The less obvious approach, which `tools/extract_clip.py` implements: analyze the waveform's energy envelope, find local minima near your requested start and end points, and snap the cuts to those natural phrase boundaries. The whole thing is under 200 lines, stdlib only, `wave` + `struct` + `math`. No numpy, no librosa, no scipy.
 
 The algorithm in one paragraph: read the WAV as mono samples, compute a sliding-window RMS over windows of ~50ms, search a window of ±1-2 seconds around the requested start for the local minimum (a quiet point between phrases), do the same near the requested end, and cut the clip at those snapped boundaries. A `--candidates N` option runs the search N times with different snap preferences and emits N variants for auditioning. A `--boost N` option multiplies the sample values to normalize quiet source material.
 
 ```bash
-# 15-second source, request clip from ~10s to ~20s, produce 3 auditioning candidates
+# 30-second source, request clip from ~10s to ~20s, produce 3 auditioning candidates
 python tools/extract_clip.py source.wav 10 20 my_sound.wav --candidates 3 --boost 4
 ```
 
@@ -156,8 +172,10 @@ I've written a lot of Python that needs dependencies. This was a nice reminder t
 
 For completeness:
 
+*Update, Oct 2026: session-sounds has since been rebuilt as a Herdr plugin, and the default branch no longer has this installer. Everything in this post is the standalone version, frozen at the `v0.9.0-legacy` tag - hence the `--branch` below.*
+
 ```bash
-git clone https://github.com/ChrisPachulski/session-sounds.git
+git clone --branch v0.9.0-legacy https://github.com/ChrisPachulski/session-sounds.git
 cd session-sounds
 python install_claude_sounds.py
 ```

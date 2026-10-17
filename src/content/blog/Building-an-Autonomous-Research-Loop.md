@@ -1,6 +1,6 @@
 ---
 title: 'Building an Autonomous Research Loop: The Stack, The Rationale, and What I Borrowed From Karpathy and Feynman'
-date: 2026-02-24T05:00:00.000Z
+date: 2026-04-18T04:00:00.000Z
 ---
 
 # Building an Autonomous Research Loop
@@ -72,7 +72,7 @@ The research-loop skill depends on five other skills, each of which is independe
 
 **`diagnostics`.** The foundational gate. Reads the analysis script, detects the estimation method, and maps four tiers of required diagnostics: data understanding (Tier 0), method selection (Tier 1), specification validation (Tier 2), sensitivity (Tier 3). It then greps the script for evidence of each diagnostic, function calls, output statements, specific comments, and produces a compliance report listing PRESENT, ABSENT, and AMBIGUOUS diagnostics plus any sequencing violations.
 
-The single rule that diagnostics enforces above all others: when both a fixed-differenced specification and a TWFE specification are present and give materially different results, a Wooldridge AR(1) test on the **TWFE level residuals** is the test that decides between them. Not the test on FD residuals, differencing mechanically induces negative AR(1) in residuals, so that test is non-informative. If both specs are present and no AR(1) test has been run on the TWFE levels, the diagnostics skill flags it as a MAJOR sequencing violation. That one rule has saved me from shipping the wrong estimator more times than I am comfortable admitting.
+The single rule that diagnostics enforces above all others: when both a first-differenced specification and a TWFE specification are present, a Wooldridge AR(1) test on the **TWFE level residuals** has to be run before either one gets picked. The test on FD residuals works too, as long as it is read against the right null: differencing mechanically induces negative AR(1), so serially uncorrelated level errors show up there as -0.5, not zero, and reading it against zero is the mistake. Either way it is an efficiency call between the two estimators; if they give materially different results, that is a consistency problem no AR(1) test settles on its own. If both specs are present and no AR(1) test has been run on the TWFE levels, the diagnostics skill flags it as a MAJOR sequencing violation. That one rule has saved me from shipping the wrong estimator more times than I am comfortable admitting.
 
 **`referee-report`.** An eight-category audit that runs as a three-phase pipeline. Phase 1 dispatches a triage subagent to read the project context, score literature sources for relevance, and produce a methods brief. Phase 2 launches `literature-reader` agents in parallel, one per qualifying source, to extract findings with page citations, then synthesizes their reviews across six themes (effect-size benchmarks, methodological assessment, identification threats, theoretical framing, gaps, source table) and runs two `devils-advocate` passes over the synthesis. Phase 3 reads the full script in 2,000-line chunks if it's long, audits across all eight categories, and produces a severity-rated report.
 
@@ -116,9 +116,9 @@ The reason `cli-anything` matters for this post is that without it, the literatu
 
 The research loop produces a lot of output, iteration by iteration. Log entries, referee reports, diagnostic reports, literature syntheses. The question is how to make sure that output gets captured before the cognitive haze of iteration thirteen makes you forget what iteration ten concluded.
 
-The answer is hooks. Two of them, specifically, running at the session boundary.
+The answer is hooks. Two of them, specifically, running at the points where work gets handed off: the end of a response and the commit.
 
-**`timeline-gate.sh`** is a Stop hook. It fires when Claude attempts to exit the session. It checks whether any work was done today, any commits since midnight local, any uncommitted changes to tracked files, and then checks whether `TIMELINE.md` was modified today. If work was done and the timeline wasn't updated, the hook blocks the stop with a system message that reads, in part: "session has changes but no timeline entry today. You MUST add today's entry to TIMELINE.md before stopping."
+**`timeline-gate.sh`** is a Stop hook. It fires every time Claude finishes a response and tries to stop, not just at the end of the session. It checks whether any work was done today, any commits since midnight local, any uncommitted changes to tracked files, and then checks whether `TIMELINE.md` was modified today. If work was done and the timeline wasn't updated, the hook blocks the stop with a system message that reads, in part: "session has changes but no timeline entry today. You MUST add today's entry to TIMELINE.md before stopping."
 
 **`readme-check.sh`** is a PreToolUse hook on `git commit`. It scans the staged file list; for every staged directory matching `projects/*` or `libs/*`, it requires a README.md to either already exist or be staged alongside the changes. Commits without README coverage get blocked with a message naming the specific directory that needs documentation.
 
@@ -126,7 +126,7 @@ Together, these two hooks enforce an invariant that the research loop by itself 
 
 There's a subtler third hook, `timeline-reminder.sh`, a non-blocking UserPromptSubmit hook throttled once per hour, that surfaces a gentle nudge if the timeline hasn't been updated that session. It's a suggestion rather than a wall. The wall is the Stop hook. The suggestion exists so the wall doesn't have to do all the work.
 
-When I said at the top of this post that the hook and the research loop work in beautiful synchronicity, this is what I meant. The loop runs for hours. The loop produces knowledge. The hooks force the knowledge into a human-readable shape before the session can end. No iteration's findings get lost. No new project escapes without a README. The invariants are enforced at the hook layer so the loop doesn't have to enforce them itself.
+When I said at the top of this post that the hook and the research loop work in beautiful synchronicity, this is what I meant. The loop runs for hours. The loop produces knowledge. The hooks force the knowledge into a human-readable shape before Claude can finish a response or land a commit. No iteration's findings get lost. No new project escapes without a README. The invariants are enforced at the hook layer so the loop doesn't have to enforce them itself.
 
 ## Convergence: ten criteria and a skeptic
 
