@@ -20,13 +20,13 @@ DOWNLOADS_FOLDER="$HOME/Downloads"
 TODAY=$(date "+%Y-%m-%d")
 
 # Change directory to the Downloads folder
-cd "$DOWNLOADS_FOLDER"
+cd "$DOWNLOADS_FOLDER" || exit 1
 
-# Iterate over each file in the Downloads folder
-for file in *; do
+# Iterate over each file in the Downloads folder (./ keeps names like -invoice.pdf from reading as flags)
+for file in ./*; do
     # Check if the item is a file (skip directories)
     if [ -f "$file" ]; then
-        # Get the creation date of the file
+        # Get the creation date of the file (macOS/BSD stat flags - GNU stat on Linux spells this differently)
         date=$(stat -f "%SB" -t "%Y-%m-%d" "$file")
 
         # Skip the file if its creation date is today
@@ -37,8 +37,8 @@ for file in *; do
         # Create a directory with the creation date, if it doesn't already exist
         mkdir -p "$date"
         
-        # Move the file into the corresponding directory
-        mv "$file" "$date/"
+        # Move the file into the corresponding directory (-n never overwrites a file already archived there)
+        mv -n "$file" "$date/"
     fi
 done
 

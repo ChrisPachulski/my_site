@@ -4,7 +4,7 @@ date: 2024-02-06T05:00:00.000Z
 featureImage: /full_colored_light.png
 ---
 
-This past Black Friday (the most important time of the year in digital advertising) - I made the genius move to close my laptop down on a Starbucks chew stick. This catastrophic event had the spectacular effect of rendering my screen completely unusable. I therefor had to get my local Desktop set up for the tasks at hand - and in doing so vowed to avoid this struggle at all costs again in the future. The [shell script I created](\[https://github.com/ChrisPachulski/sync_and_setup/blob/main/sync_and_setup.sh]\(https://github.com/ChrisPachulski/sync_and_setup/blob/main/sync_and_setup.sh\)) was thus an attempt to ensure that I (or anyone else on my team) would not need to suffer this pain again. Put simply - the script performs the following functions:
+This past Black Friday (the most important time of the year in digital advertising) - I made the genius move to close my laptop down on a Starbucks chew stick. This catastrophic event had the spectacular effect of rendering my screen completely unusable. I therefore had to get my local Desktop set up for the tasks at hand - and in doing so vowed to avoid this struggle at all costs again in the future. The [shell script I created](https://github.com/ChrisPachulski/sync_and_setup/blob/main/sync_and_setup.sh) was thus an attempt to ensure that I (or anyone else on my team) would not need to suffer this pain again. Put simply - the script performs the following functions:
 
 ```shell
 main() {
@@ -40,13 +40,15 @@ Here's a high-level breakdown of the script's functionality and commands:
 ### 2. Package Installation Automation
 
 * Detects operating system (macOS or Linux) and conditionally installs required packages such as Docker, Git, PostgreSQL, Vim, and Rsync.
-* Automates Docker installation and configuration to handle internal registries.
+* Automates Docker installation and prints the Docker Engine configuration needed for internal registries (applying it is still on you).
 
 ### 3. Anaconda Environment Setup
 
 * Automates the installation of Miniconda if not already present.
 * Creates and configures a Conda environment named current\_staging\_environ based on Python dependencies extracted from a Docker image.
 * Dynamically handles environment variable setups and activations to mirror Airflow environments.
+
+(Fair warning - as written, this part of the linked script won't get a fresh machine there. It builds the installer name in lowercase - `darwin`/`linux` - while Anaconda publishes `MacOSX`/`Linux`, so the download 404s. It also installs Miniconda to `~/miniconda` but then sources `conda.sh` and writes the activation hooks under `~/anaconda3`. Fix both before you trust it on a new laptop.)
 
 ### 4. Git Repository Management
 
@@ -57,7 +59,6 @@ Here's a high-level breakdown of the script's functionality and commands:
 ### 5. File and Directory Synchronization
 
 * Utilizes rsync to synchronize crucial keys and staging files from remote servers, providing fallback scripts for manual setup if needed.
-*
 * Extracts all Python and R scripts nested inside Shell scripts for easy REPL testing and updating
 
 ### 6. Docker Management and Dependency Extraction

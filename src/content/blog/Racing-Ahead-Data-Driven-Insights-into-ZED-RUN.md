@@ -6,7 +6,7 @@ featureImage: /zed_run_resized.png
 
 As someone passionate about data analytics and good times, I created a series of R scripts designed to transform the way we analyze digital horse racing on the ZED RUN platform. ZED RUN isn't your traditional horse racing game. It's a blockchain-based digital horse racing universe where analytics can mean the difference between winning big or just being another stable.
 
-### What Do These Scripts Actually Do?
+## What Do These Scripts Actually Do?
 
 I built two main scripts (zed\_run\_basic.R and new\_zed.R) to handle everything from fetching the latest racing data to advanced statistical analyses.
 
@@ -29,7 +29,7 @@ Taking analytics a step further, this script:
 * Stable Management: Offers tailored insights and Excel exports, making data accessible and actionable for stable owners and enthusiasts.
 * Market Integration: Automatically checks market listings for potential horse purchases based on performance criteria, streamlining horse trading.
 
-### A Personal Touch
+## A Personal Touch
 
 Creating these scripts was not just about crunching numbers. It was a journey into understanding how data can reveal fascinating stories about virtual horse racing. Each line of code represents a step toward smarter racing decisions, whether you're optimizing your existing stable or scouting your next champion.
 
