@@ -48,7 +48,9 @@ Normalization facilitates effective joins and comparisons between datasets from 
 We integrate external advertising performance data by performing detailed join operations:
 
 ```r
-bing_wayfair_data <- read_csv('bing_wayfair_product_report.csv') %>% clean_names()
+bing_wayfair_data <- read_csv('bing_wayfair_product_report.csv',
+                              name_repair = make_clean_names,
+                              col_types = cols(merchant_product_id = col_character()))
 
 joined_wayfair_bing_data <- bing_wayfair_data %>%
   left_join(ch_wayfair_cleansed, by = c('merchant_product_id' = 'id', 'title' = 'title')) %>%
