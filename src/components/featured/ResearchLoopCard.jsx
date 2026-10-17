@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import usePrefersReducedMotion from './usePrefersReducedMotion.js';
+import cardLinkProps from './cardLink.js';
 import './featured.css';
 
 const NODES = [
@@ -39,11 +40,6 @@ export default function ResearchLoopCard({ a, onOpen }) {
     return () => clearInterval(tickRef.current);
   }, [hover, reduced]);
 
-  const open = () => onOpen(a.slug);
-  const onKey = (e) => {
-    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); }
-  };
-
   const dot = polar(NODES[activeNode].angle);
   const pathD = `M ${polar(0).x} ${polar(0).y} ` +
     NODES.slice(1).map(n => {
@@ -51,16 +47,12 @@ export default function ResearchLoopCard({ a, onOpen }) {
     }).join(' ') + ' Z';
 
   return (
-    <article
+    <a
       className={`featured-tile featured research-loop-card${hover ? ' is-hover' : ''}`}
-      role="button"
-      aria-haspopup="dialog"
       aria-label={`Read: ${a.title}`}
-      onClick={open}
-      onKeyDown={onKey}
+      {...cardLinkProps(a.slug, onOpen)}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
-      tabIndex={0}
     >
       <div className="flair-bg">
         <svg viewBox="0 0 200 200" preserveAspectRatio="xMidYMid meet" aria-hidden="true" className="loop-svg">
@@ -94,6 +86,6 @@ export default function ResearchLoopCard({ a, onOpen }) {
         <span>{a.read} read</span>
         <span style={{ marginLeft:'auto', color:'var(--accent)' }}>Read ›</span>
       </div>
-    </article>
+    </a>
   );
 }

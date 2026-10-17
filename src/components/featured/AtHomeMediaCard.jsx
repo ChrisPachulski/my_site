@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import usePrefersReducedMotion from './usePrefersReducedMotion.js';
+import cardLinkProps from './cardLink.js';
 import './featured.css';
 
 const NOW_PLAYING_ITEMS = [
@@ -37,22 +38,13 @@ export default function AtHomeMediaCard({ a, onOpen }) {
     return () => clearInterval(id);
   }, [hover, reduced]);
 
-  const open = () => onOpen(a.slug);
-  const onKey = (e) => {
-    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); }
-  };
-
   return (
-    <article
+    <a
       className={`featured-tile featured at-home-media-card${hover ? ' is-hover' : ''}`}
-      role="button"
-      aria-haspopup="dialog"
       aria-label={`Read: ${a.title}`}
-      onClick={open}
-      onKeyDown={onKey}
+      {...cardLinkProps(a.slug, onOpen)}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
-      tabIndex={0}
       data-accent-override="amber"
     >
       <div className="flair-bg">
@@ -87,6 +79,6 @@ export default function AtHomeMediaCard({ a, onOpen }) {
         <span>{a.read} read</span>
         <span style={{ marginLeft:'auto', color:'var(--accent)' }}>Play ►</span>
       </div>
-    </article>
+    </a>
   );
 }

@@ -1,11 +1,11 @@
 import { Fragment, useState, useEffect, useRef } from 'react';
 import { POSTS } from '../lib/blog.js';
-import { articlePath } from '../lib/router.js';
 import usePrefersReducedMotion from './featured/usePrefersReducedMotion.js';
 import ResearchLoopCard from './featured/ResearchLoopCard.jsx';
 import AtHomeMediaCard from './featured/AtHomeMediaCard.jsx';
 import EmeraldExchangeCard from './featured/EmeraldExchangeCard.jsx';
 import AutoloopCard from './featured/AutoloopCard.jsx';
+import cardLinkProps from './featured/cardLink.js';
 import MagicShowcaseCard from './MagicShowcaseCard.jsx';
 
 function useInView(threshold = 0.2) {
@@ -560,23 +560,12 @@ function ArticleCard({ a, onOpen }) {
     el.style.setProperty('--mx', `${((e.clientX - r.left) / r.width) * 100}%`);
     el.style.setProperty('--my', `${((e.clientY - r.top) / r.height) * 100}%`);
   };
-  const handle = (e) => {
-    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button > 0) return;
-    e.preventDefault();
-    onOpen(a.slug);
-  };
-  const onKey = (e) => {
-    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onOpen(a.slug); }
-  };
   return (
     <a
-      href={articlePath(a.slug)}
       className="article"
-      aria-haspopup="dialog"
       ref={ref}
       onMouseMove={onMove}
-      onClick={handle}
-      onKeyDown={onKey}
+      {...cardLinkProps(a.slug, onOpen)}
     >
       {a.stamp && <div className="card-stamp" aria-hidden="true">{a.stamp}</div>}
       <div className="cats">{a.cats}</div>

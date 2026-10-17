@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import usePrefersReducedMotion from './usePrefersReducedMotion.js';
+import cardLinkProps from './cardLink.js';
 import './featured.css';
 
 // A git-graph headline: autonomous `auto/*` feature branches sprout from the
@@ -30,27 +31,18 @@ export default function AutoloopCard({ a, onOpen }) {
     return () => io.disconnect();
   }, [reduced]);
 
-  const open = () => onOpen(a.slug);
-  const onKey = (e) => {
-    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); }
-  };
-
   return (
-    <article
+    <a
       ref={cardRef}
       className={
         'featured-tile featured autoloop-card'
         + (inView ? ' in-view' : '')
         + (hover ? ' is-hover' : '')
       }
-      role="button"
-      aria-haspopup="dialog"
       aria-label={`Read: ${a.title}`}
-      onClick={open}
-      onKeyDown={onKey}
+      {...cardLinkProps(a.slug, onOpen)}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
-      tabIndex={0}
     >
       <div className="flair-bg">
         <svg viewBox="0 0 240 200" preserveAspectRatio="xMidYMid slice" aria-hidden="true" className="autoloop-svg">
@@ -104,6 +96,6 @@ export default function AutoloopCard({ a, onOpen }) {
         <span>{a.read} read</span>
         <span style={{ marginLeft: 'auto', color: 'var(--accent)' }}>Open the loop ›</span>
       </div>
-    </article>
+    </a>
   );
 }

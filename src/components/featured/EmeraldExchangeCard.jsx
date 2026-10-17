@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { POSTS } from '../../lib/blog.js';
 import usePrefersReducedMotion from './usePrefersReducedMotion.js';
+import cardLinkProps from './cardLink.js';
 import './featured.css';
 
 const VB_W = 240;
@@ -48,27 +49,18 @@ export default function EmeraldExchangeCard({ a, onOpen }) {
     return () => io.disconnect();
   }, [reduced]);
 
-  const open = () => onOpen(a.slug);
-  const onKey = (e) => {
-    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); }
-  };
-
   return (
-    <article
+    <a
       ref={cardRef}
       className={
         'featured-tile featured emerald-exchange-card'
         + (inView ? ' in-view' : '')
         + (hover ? ' is-hover' : '')
       }
-      role="button"
-      aria-haspopup="dialog"
       aria-label={`Read: ${a.title}`}
-      onClick={open}
-      onKeyDown={onKey}
+      {...cardLinkProps(a.slug, onOpen)}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
-      tabIndex={0}
     >
       <div className="flair-bg">
         <svg
@@ -127,6 +119,6 @@ export default function EmeraldExchangeCard({ a, onOpen }) {
         <span>{a.read} read</span>
         <span style={{ marginLeft: 'auto', color: 'var(--accent)' }}>Tune in ›</span>
       </div>
-    </article>
+    </a>
   );
 }
