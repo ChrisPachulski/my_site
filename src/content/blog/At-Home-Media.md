@@ -59,7 +59,7 @@ featureImage: /plex.png
 **Quick start: SABnzbd**
 
 1. Folders: `incomplete` and `complete` on the WD drive
-2. Categories: `tv` → `complete/tv`, `movies` → `complete/movies`
+2. Categories: `tv` → `tv`, `movies` → `movies` (relative to `complete`)
 3. Post‑processing: Unpack, Delete after success
 
 **Quick start: Sonarr**
@@ -263,7 +263,7 @@ User intent
 **SABnzbd**
 
 * Server: Eweka host, SSL on, 12–20 connections
-* Categories: `tv` → `complete/tv`, `movies` → `complete/movies`
+* Categories: `tv` → `tv`, `movies` → `movies` (relative to `complete`)
 * Unpack, Repair, Delete after success: enabled
 
 **Sonarr**
@@ -478,9 +478,9 @@ resolve_channel_title(){
   echo "$t"
 }
 
-echo "📂 Source: $SRC_ROOT"
-echo "📦 Dest  : $DEST_ROOT"
-have yt-dlp || { echo "❌ yt-dlp not found"; exit 1; }
+echo "Source: $SRC_ROOT"
+echo "Dest  : $DEST_ROOT"
+have yt-dlp || { echo "FAILED: yt-dlp not found"; exit 1; }
 mkdir -p "$DEST_ROOT"
 
 season2="$(printf '%02d' "$SEASON")"
@@ -490,9 +490,9 @@ for channel_dir in "$SRC_ROOT"/*; do
   channel_id="$(basename "$channel_dir")"
 
   sample="$(ls "$channel_dir"/*.mp4 2>/dev/null | head -n 1)"
-  [ -n "$sample" ] || { echo "📺 $channel_id — ⚠️ No videos, skipping"; continue; }
+  [ -n "$sample" ] || { echo "$channel_id — WARNING: No videos, skipping"; continue; }
   sample_id="$(basename "$sample" .mp4)"
-  is_ytid "$sample_id" || { echo "📺 $channel_id — ⚠️ Not YT ID layout, skipping"; continue; }
+  is_ytid "$sample_id" || { echo "$channel_id — WARNING: Not YT ID layout, skipping"; continue; }
 
   chan_title_raw="$(resolve_channel_title "$channel_id" "$sample_id")"
   chan_title="$(echo "$chan_title_raw" | sed 's/ - .*//')"
@@ -520,19 +520,19 @@ for channel_dir in "$SRC_ROOT"/*; do
   done < <(find "$channel_dir" -maxdepth 1 -type f -name '*.mp4' -print0)
 
   # Nothing to do?
-  [ -s "$tmp" ] || { echo "📺 $show — nothing to move"; rm -f "$tmp"; continue; }
+  [ -s "$tmp" ] || { echo "$show — nothing to move"; rm -f "$tmp"; continue; }
 
   # Start at next available episode in destination
-  ep="$(next_ep "$dest_dir")"
-  echo "$ep" | grep -Eq '^[0-9]+$' || { echo "  Could not read episode numbers in $dest_dir, skipping"; rm -f "$tmp"; continue; }
-  echo "📺 $show  → Season $season2  next=E$(printf '%02d' "$ep")  (sorted by upload date)"
+  ep="$(next_ep "$dest_dir")" && \
+    echo "$ep" | grep -Eq '^[0-9]+$' || { echo "  Could not read episode numbers in $dest_dir, skipping"; rm -f "$tmp"; continue; }
+  echo "$show  → Season $season2  next=E$(printf '%02d' "$ep")  (sorted by upload date)"
 
   # Process in chronological order
   LC_ALL=C sort -t $'\t' -k1,1n "$tmp" | \
   while IFS=$'\t' read -r up f title secs vid; do
     # duration filter
     if [ -n "$secs" ] && [ "$secs" -gt 0 ] && [ "$secs" -lt "$MIN_SECS" ]; then
-      echo "  🗑️  <${MIN_SECS}s: $(basename "$f")"
+      echo "  Delete <${MIN_SECS}s: $(basename "$f")"
       rm -f -- "$f"
       continue
     fi
@@ -542,12 +542,12 @@ for channel_dir in "$SRC_ROOT"/*; do
     outfile="$dest_dir/$show - S${season2}E${ep2} - $pretty_title.mp4"
 
     if [ -e "$outfile" ]; then
-      echo "  ⏩ Exists: $(basename "$outfile")"
+      echo "  Exists: $(basename "$outfile")"
       rm -f -- "$f" 2>/dev/null || true
       continue
     fi
 
-    echo "  ➡️  Move: $(basename "$f")  →  $(basename "$outfile")"
+    echo "  Move: $(basename "$f")  →  $(basename "$outfile")"
     mv -- "$f" "$outfile"
 
     artbase="${outfile%.*}"
@@ -560,5 +560,5 @@ for channel_dir in "$SRC_ROOT"/*; do
   rm -f "$tmp"
 done
 
-echo "✅ Done."
+echo "Done."
 ```
