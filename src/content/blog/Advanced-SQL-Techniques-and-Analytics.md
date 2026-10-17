@@ -1,7 +1,7 @@
 ---
 title: Advanced SQL Techniques and Analytics
 date: 2025-03-01T05:00:00.000Z
-featureImage: /Screenshot 2025-03-29 at 10.36.56 PM.png
+featureImage: /Screenshot 2025-03-29 at 10.36.56 PM.png
 ---
 
 ## Unveiling Data Insights at Scale
@@ -24,7 +24,7 @@ SELECT a.Date,
 FROM (
     SELECT Date-1 AS Date, daily_basket_number, 
         ROUND(SUM(sell_price), 0) AS mtg_purchases,
-        ROUND(PERCENTILE_CONT(SUM(sell_price), 0.5) OVER (), 0) AS mtg_median
+        ROUND(PERCENTILE_CONT(SUM(sell_price), 0.5) OVER (PARTITION BY Date), 0) AS mtg_median
     FROM `gaeas-cradle.mtg_basket.*`
     WHERE _TABLE_SUFFIX BETWEEN
       FORMAT_DATE("%Y_%m_%d", DATE_SUB(CURRENT_DATE(), INTERVAL 365 DAY)) AND
@@ -67,10 +67,13 @@ SELECT
     qty,
     revenue,
     CASE
-        WHEN qty > LAG(qty) OVER (PARTITION BY tcg_id_str ORDER BY week_start_date) THEN 1
-        ELSE -1
+        WHEN LAG(week_start_date) OVER w IS NULL THEN NULL                             -- no earlier week to compare
+        WHEN LAG(week_start_date) OVER w = DATE_SUB(week_start_date, INTERVAL 1 WEEK)
+            THEN SIGN(qty - LAG(qty) OVER w)
+        ELSE SIGN(qty)                                                                 -- prior calendar week had no sales
     END AS qty_change
-FROM WeeklyData;
+FROM WeeklyData
+WINDOW w AS (PARTITION BY tcg_id_str, version_str ORDER BY week_start_date);
 ```
 
 This demonstrates the power of analytical window functions to dynamically assess business performance.
@@ -80,13 +83,24 @@ This demonstrates the power of analytical window functions to dynamically assess
 Leveraging sophisticated statistical approaches within SQL, I've implemented IQR-based outlier detection directly into database queries, identifying anomalies in purchase patterns:
 
 ```sql
-SELECT tcg_id, card_name, SUM(sold_quantity) AS sold_qty,
-    ROUND(AVG(sell_price), 2) AS value
-FROM `gaeas-cradle.fab_basket.*`
-WHERE _TABLE_SUFFIX BETWEEN
-  FORMAT_DATE("%Y_%m_%d", DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY)) AND
-  FORMAT_DATE("%Y_%m_%d", DATE_SUB(CURRENT_DATE(), INTERVAL 1 DAY))
-GROUP BY tcg_id, card_name
+WITH CardSales AS (
+    SELECT tcg_id, card_name, SUM(sold_quantity) AS sold_qty,
+        ROUND(AVG(sell_price), 2) AS value
+    FROM `gaeas-cradle.fab_basket.*`
+    WHERE _TABLE_SUFFIX BETWEEN
+      FORMAT_DATE("%Y_%m_%d", DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY)) AND
+      FORMAT_DATE("%Y_%m_%d", DATE_SUB(CURRENT_DATE(), INTERVAL 1 DAY))
+    GROUP BY tcg_id, card_name
+),
+Quartiles AS (
+    SELECT *,
+        PERCENTILE_CONT(sold_qty, 0.25) OVER () AS q1,
+        PERCENTILE_CONT(sold_qty, 0.75) OVER () AS q3
+    FROM CardSales
+)
+SELECT tcg_id, card_name, sold_qty, value,
+    sold_qty NOT BETWEEN q1 - 1.5 * (q3 - q1) AND q3 + 1.5 * (q3 - q1) AS is_outlier
+FROM Quartiles
 ORDER BY sold_qty DESC;
 ```
 
