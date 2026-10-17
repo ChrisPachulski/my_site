@@ -1921,7 +1921,8 @@ html[data-vibe="cyberpunk"] .section-label .num { color: var(--accent-2); text-s
    elsewhere on that property for the animation's full duration -- so an
    `opacity: 0.3`-style override on these pseudo-elements has never once
    applied, in this rule or any prior version of it. Don't reach for that
-   property here; it's dead on arrival as long as the breath is running. */
+   property here; it's dead on arrival as long as the breath is running.
+   The keyframes scale by --aura-gain instead, which is what hover raises. */
 html[data-theme="light"] .izzet-card {
   background:
     linear-gradient(135deg,
@@ -1960,7 +1961,7 @@ html[data-theme="light"] .izzet-card.izzet-red::after {
   z-index: -1;
   pointer-events: none;
   filter: blur(46px);
-  transition: opacity 0.6s ease;
+  transition: opacity 0.6s ease, --aura-gain 0.6s ease;
 }
 
 /* BLUE-DOMINANT (About) — sapphire halo fading through violet into the
@@ -2022,22 +2023,27 @@ html[data-theme="light"] .izzet-card.izzet-red::after {
   }
 }
 
+/* Hover multiplier for the aura keyframes below: a running animation owns
+   opacity, so hover scales the keyframes rather than setting opacity.
+   Registered so the change eases in with the 0.6s opacity transition. */
+@property --aura-gain { syntax: '<number>'; inherits: false; initial-value: 1; }
+
 /* Slow breathing — matches mtgAuraA cadence (7s) with a brief hiccup mid-cycle */
 @keyframes izzetBreath {
-  0%   { opacity: 0.70; transform: scale(1); }
-  30%  { opacity: 0.86; transform: scale(1); }
-  47%  { opacity: 0.96; transform: scale(1); }
-  49%  { opacity: 1;    transform: scale(1.012); }
-  52%  { opacity: 1;    transform: scale(1); }
-  70%  { opacity: 0.86; transform: scale(1); }
-  100% { opacity: 0.70; transform: scale(1); }
+  0%   { opacity: calc(0.70 * var(--aura-gain, 1)); transform: scale(1); }
+  30%  { opacity: calc(0.86 * var(--aura-gain, 1)); transform: scale(1); }
+  47%  { opacity: calc(0.96 * var(--aura-gain, 1)); transform: scale(1); }
+  49%  { opacity: 1;                                transform: scale(1.012); }
+  52%  { opacity: 1;                                transform: scale(1); }
+  70%  { opacity: calc(0.86 * var(--aura-gain, 1)); transform: scale(1); }
+  100% { opacity: calc(0.70 * var(--aura-gain, 1)); transform: scale(1); }
 }
 /* Opacity-only breath, matched to mtgAuraA's discipline. The izzet-card
    already pairs an inner breath (izzetBreath) with this outer bloom; both
    stay color-only so the two-aura promise in DESIGN.md §1 holds. */
 @keyframes izzetPulse {
-  0%   { opacity: 0.75; }
-  60%  { opacity: 0.30; }
+  0%   { opacity: calc(0.75 * var(--aura-gain, 1)); }
+  60%  { opacity: calc(0.30 * var(--aura-gain, 1)); }
   100% { opacity: 0; }
 }
 
@@ -2205,11 +2211,13 @@ html[data-vibe="cyberpunk"] .izzet-card .skill-bar-fill::after {
   transform: none;
 }
 
-/* Slightly intensify the card's own dominant-side aura when hovered — signals interactivity */
-.izzet-card.izzet-blue:hover::before { opacity: 0.72; }
-.izzet-card.izzet-blue:hover::after  { opacity: 0.65; }
-.izzet-card.izzet-red:hover::before  { opacity: 1; }
-.izzet-card.izzet-red:hover::after   { opacity: 0.6; }
+/* Slightly intensify the card's own dominant-side aura when hovered — signals interactivity.
+   opacity applies only when the breath is off (reduced motion); --aura-gain
+   applies the same rise (hover / rest opacity) to the running keyframes. */
+.izzet-card.izzet-blue:hover::before { opacity: 0.72; --aura-gain: 1.71; }
+.izzet-card.izzet-blue:hover::after  { opacity: 0.65; --aura-gain: 1.44; }
+.izzet-card.izzet-red:hover::before  { opacity: 1;    --aura-gain: 2.08; }
+.izzet-card.izzet-red:hover::after   { opacity: 0.6;  --aura-gain: 1.15; }
 
 /* Prose readability rescue — paragraphs inside either Izzet card need a bump
    because the surrounding aura still adds a color bias that eats warm-gray.
