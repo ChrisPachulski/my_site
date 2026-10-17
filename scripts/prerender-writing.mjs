@@ -205,15 +205,19 @@ function injectMeta(template, meta) {
     }
   };
 
-  replaceOrInsert(/<link\s+rel="canonical"[^>]*>/i, `<link rel="canonical" href="${escapeAttr(meta.url)}" />`);
+  // No url (the 404 page) drops canonical and og:url instead of pointing them
+  // at the template's homepage values.
+  const setOrDrop = (re, tag) => (meta.url ? replaceOrInsert(re, tag) : (html = html.replace(re, '')));
+
+  setOrDrop(/<link\s+rel="canonical"[^>]*>/i, `<link rel="canonical" href="${escapeAttr(meta.url)}" />`);
   if (meta.noindex) replaceOrInsert(/<meta\s+name="robots"[^>]*>/i, `<meta name="robots" content="noindex" />`);
   replaceOrInsert(/<meta\s+property="og:type"[^>]*>/i,        `<meta property="og:type" content="article" />`);
   replaceOrInsert(/<meta\s+property="og:title"[^>]*>/i,       `<meta property="og:title" content="${escapeAttr(meta.title)}" />`);
   replaceOrInsert(/<meta\s+property="og:description"[^>]*>/i, `<meta property="og:description" content="${escapeAttr(meta.description)}" />`);
-  replaceOrInsert(/<meta\s+property="og:url"[^>]*>/i,         `<meta property="og:url" content="${escapeAttr(meta.url)}" />`);
+  setOrDrop(/<meta\s+property="og:url"[^>]*>/i,               `<meta property="og:url" content="${escapeAttr(meta.url)}" />`);
   replaceOrInsert(/<meta\s+property="og:image"[^>]*>/i,       `<meta property="og:image" content="${escapeAttr(meta.image)}" />`);
-  replaceOrInsert(/<meta\s+property="og:image:width"[^>]*>/i, `<meta property="og:image:width" content="1200" />`);
-  replaceOrInsert(/<meta\s+property="og:image:height"[^>]*>/i,`<meta property="og:image:height" content="630" />`);
+  replaceOrInsert(/<meta\s+property="og:image:width"[^>]*>/i, `<meta property="og:image:width" content="${meta.imageWidth ?? 1200}" />`);
+  replaceOrInsert(/<meta\s+property="og:image:height"[^>]*>/i,`<meta property="og:image:height" content="${meta.imageHeight ?? 630}" />`);
   replaceOrInsert(/<meta\s+property="og:image:alt"[^>]*>/i,   `<meta property="og:image:alt" content="${escapeAttr(meta.title)}" />`);
 
   replaceOrInsert(/<meta\s+name="twitter:title"[^>]*>/i,       `<meta name="twitter:title" content="${escapeAttr(meta.title)}" />`);
@@ -354,8 +358,11 @@ export function writingPrerender() {
       const nfMeta = {
         title: 'No such field note — Chris Pachulski',
         description: 'That writing slug does not match any published field note.',
-        url: `${SITE_URL}/writing/_not-found/`,
+        url: null,
         image: `${SITE_URL}/hero-portrait.jpg`,
+        imageWidth: 336,
+        imageHeight: 508,
+        noindex: true,
         jsonLd: null,
       };
       const nfHtml = injectRoot(injectMeta(template, nfMeta), notFoundHtml(featured));
