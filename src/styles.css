@@ -1337,6 +1337,9 @@ html[data-theme="light"] .mtg-card { --mtg-accent: oklch(0.70 0.14 300); }
    its own box. The scrollers are focusable for keyboard scrolling. */
 .article-content .table-scroll { overflow-x: auto; margin: 1.4em 0; }
 .article-content .table-scroll > table { margin: 0; }
+/* The prerendered HTML, on screen until React mounts (or for good with
+   JavaScript off), has bare tables: those scroll as their own box. */
+.article-content > table { display: block; max-width: max-content; overflow-x: auto; }
 .article-content pre:focus-visible,
 .article-content .table-scroll:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .article-content blockquote {
@@ -2269,5 +2272,6 @@ html[data-vibe="cyberpunk"] .izzet-card.izzet-blue .fact-list .fact .accent {
   .article-shell ~ .contact { display: none; }
   /* Paper cannot scroll: wrap long code lines and show whole tables. */
   .article-content pre { white-space: pre-wrap; overflow-wrap: anywhere; overflow: visible; }
-  .article-content .table-scroll { overflow: visible; }
+  .article-content .table-scroll,
+  .article-content > table { overflow: visible; }
 }
