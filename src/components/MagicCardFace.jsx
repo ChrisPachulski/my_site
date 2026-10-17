@@ -10,7 +10,8 @@ import { forwardRef } from 'react';
  *
  * Returns the `.mtg-card` root + `.mtg-frame` content tree. ForwardRef
  * lets the Hero attach its cursor-tracking tilt to the same DOM element.
- * Other consumers (showcase card) can ignore the ref.
+ * Other consumers (showcase card) can ignore the ref. `loading` passes
+ * through to the art <img>, so below-the-fold copies can lazy-load it.
  *
  * role="img" makes the card's text presentational, so CARD_LABEL carries
  * that text for screen readers. Keep it in sync with the markup below.
@@ -22,7 +23,7 @@ const CARD_LABEL =
   + 'Whenever an opponent makes a claim, you may draw a card unless that player cites a source. '
   + 'Flavor text: “Don’t just have an idea—have all of them.” —Niv-Mizzet. Power/toughness 2/3.';
 
-const MagicCardFace = forwardRef(function MagicCardFace(_props, ref) {
+const MagicCardFace = forwardRef(function MagicCardFace({ loading }, ref) {
   return (
     <div
       ref={ref}
@@ -58,6 +59,7 @@ const MagicCardFace = forwardRef(function MagicCardFace(_props, ref) {
           <img
             src="/hero-art.webp"
             alt="Chris Pachulski, painted as an Izzet wizard"
+            loading={loading}
             draggable="false"
             onError={(e) => e.currentTarget.parentElement.classList.add('mtg-art-fallback')}
           />
