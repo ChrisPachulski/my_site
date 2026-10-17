@@ -109,7 +109,7 @@ Which is what you wanted in the first place.
 
 ## The column-ID indirection problem
 
-The `add_rows` function above does something subtle that's worth spelling out: it resolves a title → column-ID map *inside* each call, meaning every write pays the cost of one `get_sheet` round-trip. For a single 10-row insert that's fine. For an ETL that's inserting 10,000 rows in batches of 400, you do not want to re-fetch the sheet metadata twenty-five times.
+The `add_rows` function above does something subtle that's worth spelling out: it resolves a title → column-ID map *inside* each call, meaning every write pays the cost of one `get_sheet` round-trip. For a single 10-row insert that's fine. For an ETL that's inserting 10,000 rows in batches of 500, you do not want to re-fetch the sheet metadata twenty times.
 
 The optimization, which production code should use, is to resolve the column map once and thread it through:
 
@@ -231,9 +231,9 @@ That `__formula` suffix convention lets you pull formulas out when you need them
 
 ## Batching and rate limits
 
-The Smartsheet API is not especially fast, and it has a hard ceiling around 450 rows per write call. If you try to post 500 rows at once, the API rejects the request outright rather than doing what you meant. This is a frequent trip-up during the first ETL that scales past a few hundred rows.
+The Smartsheet API is not especially fast, and it caps add and update calls at 500 rows per request. Deletes are a different animal: the row IDs ride in the URL query string, not the body, so the ceiling there is URL length, not a row count, and an oversized batch comes back as a `414`. This is a frequent trip-up during the first ETL that scales past a few hundred rows.
 
-The wrapper batches deletes at 400 rows-per-call to stay safely under:
+The wrapper batches deletes at 400 IDs per call, which keeps the URL around 7,000 characters. If your proxy chokes on that, drop the batch size:
 
 ```python
 def delete_rows(sheet_id: int, row_ids: list[int], batch_size: int = 400) -> None:
@@ -243,7 +243,7 @@ def delete_rows(sheet_id: int, row_ids: list[int], batch_size: int = 400) -> Non
         client.Sheets.delete_rows(sheet_id, batch)
 ```
 
-`add_rows` batches the same way in production, and builds every batch before firing any API call, so a bad column name fails before anything is written. It is not a transaction though: if batch three of five gets rejected, batches one and two are already in the sheet, so a retry has to match on the business key instead of blindly re-inserting.
+`add_rows` batches the same way in production, at 500 rows a call, and builds every batch before firing any API call, so a bad column name fails before anything is written. It is not a transaction though: if batch three of five gets rejected, batches one and two are already in the sheet, so a retry has to match on the business key instead of blindly re-inserting.
 
 Rate-limit-wise, Smartsheet's quotas are per-user and per-minute, and the API returns `429` with a `Retry-After` header when you're over. The wrapper doesn't bake in a retry decorator because different callers want different retry semantics (ETLs want retries, interactive scripts want to fail fast). The SDK's internal retry logic is adequate for most use cases; the exception is bulk writes, where you want application-level backoff to avoid wasting the API budget on repeated requests that are all going to get throttled.
 
