@@ -102,12 +102,15 @@ By measuring median retention, we understand client engagement deeply, informing
 
 ## Testing Budget Utilization and Performance
 
-Assessing initial test budgets for clients helps identify average spend and typical test durations, critical for budget allocation and forecasting:
+Assessing initial test budgets for clients helps identify average spend and typical test durations, critical for budget allocation and forecasting. The test window is each client's first New Client stretch only - a client who comes back after three quiet months is a reactivation, not part of the original test:
 
 ```r
 average_test_period <- data_long %>%
-  filter(client_type == "New Client", revenue > 0) %>%
   group_by(entity) %>%
+  mutate(episode = cumsum(status == "Active" & lag(status, default = "Inactive") == "Inactive" &
+                            consecutive_inactive_months >= 3)) %>%
+  filter(client_type == "New Client", revenue > 0) %>%
+  filter(episode == first(episode)) %>%
   summarise(active_months = n(), test_revenue = sum(revenue)) %>%
   summarise(median_test_period = median(active_months), median_revenue = median(test_revenue))
 ```
