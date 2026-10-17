@@ -6,7 +6,7 @@ date: 2023-05-14T04:00:00.000Z
 featureImage: /801b7b74-image-removebg-preview-28_resized.png
 ---
 
-As a consultant working with [Journey's End Game Store](https://journeysendgames.com), the project required leveraging analytical insights to enhance inventory management and sales strategies. By employing R for data analysis, SQL for efficient data retrieval, and emphasizing clear, actionable spreadsheet outputs, we significantly optimized operational decisions. This blog post highlights the importance of clear communication, powerful data handling through SQL and R, and practical reporting via spreadsheets specifically tailored to the needs of Journey's End.
+As a consultant working with [Journey's End Game Store](https://journeysendgames.com), I leaned on analytical insights to enhance inventory management and sales strategies. By employing R for data analysis, SQL for efficient data retrieval, and emphasizing clear, actionable spreadsheet outputs, we significantly optimized operational decisions. This blog post highlights the importance of clear communication, powerful data handling through SQL and R, and practical reporting via spreadsheets specifically tailored to the needs of Journey's End.
 
 ### The Importance of Communication
 
@@ -38,9 +38,9 @@ Key R functionalities implemented:
 
 ```r
 final_data <- raw_data %>%
+    filter(!grepl('^(Snow-Covered )?(Plains|Mountain|Island|Swamp|Forest|Wastes)$', card_name)) %>%
     rename_all(~str_to_title(gsub('_', ' ', .x))) %>%
-    filter(!grepl('(Plains|Mountain|Island|Swamp|Forest|Wastes)', card_name)) %>%
-    mutate(rank = seq(nrow(.)))
+    mutate(rank = row_number())
 ```
 
 * **Efficient Joins and Merges**:
