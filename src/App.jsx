@@ -7,6 +7,7 @@ import NotFound from './components/NotFound.jsx';
 import ThemeSwitch from './components/ThemeSwitch.jsx';
 import { useRoute, articlePath } from './lib/router.js';
 import { getPost } from './lib/blog.js';
+import { UNLISTED } from './lib/catalog.js';
 
 const GhostMatch = lazy(() => import('./components/ghostmatch/GhostMatch.jsx'));
 
@@ -14,6 +15,8 @@ const ACCENT = 'violet';
 const HERO_VARIANT = 'sql';
 const MODE_STORAGE_KEY = 'display-mode';
 const TRANSITION_MS = 520;
+const SITE_URL = 'https://chrispachulski.com';
+const HOME_TITLE = 'Chris Pachulski — Senior Economic Analyst';
 
 function readStoredMode() {
   if (typeof window === 'undefined') return 'after-hours';
@@ -331,12 +334,32 @@ export default function App() {
     if (el) el.scrollIntoView({ behavior: 'instant', block: 'start' });
   }, [route.name]);
 
+  // Route-dependent head tags. Crawlers read each URL's own prerendered head;
+  // this keeps the live document in step after client-side navigation, and
+  // drops the unlisted pages' noindex once the visitor moves on.
   useEffect(() => {
-    if (route.name !== 'article') return;
-    const post = getPost(route.slug);
-    if (post) document.title = `${post.title} — Chris Pachulski`;
-    else document.title = 'Not Found — Chris Pachulski';
-    return () => { document.title = 'Chris Pachulski — Senior Economic Analyst'; };
+    const post = route.name === 'article' ? getPost(route.slug) : null;
+    let title = HOME_TITLE;
+    let path = '/';
+    if (route.name === 'article') {
+      title = post ? `${post.title} — Chris Pachulski` : 'Not Found — Chris Pachulski';
+      path = post ? articlePath(post.slug) : '/writing/_not-found/';
+    }
+    document.title = title;
+    const url = SITE_URL + path;
+    document.querySelector('link[rel="canonical"]')?.setAttribute('href', url);
+    document.querySelector('meta[property="og:url"]')?.setAttribute('content', url);
+    document.querySelector('meta[property="og:title"]')?.setAttribute('content', title);
+    document.querySelector('meta[name="twitter:title"]')?.setAttribute('content', title);
+    const noindex = !!post && UNLISTED.some((p) => p.slug === post.slug);
+    let robots = document.querySelector('meta[name="robots"]');
+    if (noindex && !robots) {
+      robots = document.createElement('meta');
+      robots.name = 'robots';
+      document.head.appendChild(robots);
+    }
+    if (noindex) robots.content = 'noindex';
+    else robots?.remove();
   }, [route.name, route.slug]);
 
   const handleArticleOpen = (slug) => {
