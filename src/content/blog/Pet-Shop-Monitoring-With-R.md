@@ -78,7 +78,7 @@ One of the most valuable features I implement is automated adoption detection. T
 detect_adoptions(con, table_header = "puppies")
 ```
 
-This system compares consecutive days' data to identify which puppies have been adopted, helping me understand how quickly these adorable pups find their forever homes - and ensuring I don't miss any opportunities to show my wife that perfect puppy from a responsible breeder.
+This system compares consecutive days' data to flag puppies that have likely been adopted - anything on yesterday's list that's gone from today's. Likely being the operative word: the match runs on the descriptive fields as well as the URL, so if the shop bumps a pup's activity level from low to medium, that pup reads as adopted while still very much listed. Until it matches on a stable ID like the URL alone, each flag is worth a quick look before I count it. It still helps me understand how quickly these adorable pups find their forever homes - and ensures I don't miss any opportunities to show my wife that perfect puppy from a responsible breeder.
 
 ## Interest Tracking System
 
@@ -88,7 +88,7 @@ I develop a sophisticated tracking system for puppies of interest. The tracking 
 alert_me_pups = track_and_upload_pups_of_interest(pups_of_interest, con)
 ```
 
-This system maintains a running count of how many consecutive days each puppy has been available, helping me identify new arrivals and long-term residents - perfect for those "they've been waiting for a home" conversations.
+This system is meant to keep a running count of how many consecutive days each puppy has been available, helping me identify new arrivals and long-term residents - perfect for those "they've been waiting for a home" conversations. Meant to. As written, the uploader saves today's table as `YYYY_MM_DD__pups_of_interest` (two underscores) while tomorrow's lookup asks for `YYYY_MM_DD_pups_of_interest` (one), so yesterday is never found, every puppy starts back at day one, and every puppy of interest lands in the alert email again every day.
 
 ## Automated Notifications
 
@@ -104,7 +104,7 @@ if (nrow(alert_me_pups) > 0) {
 }
 ```
 
-This system automatically sends detailed alerts when new puppies matching our criteria become available, giving me the perfect opportunity to casually mention, "Oh, look what just became available..." along with a GPT-written back story to seal the deal.
+This system automatically sends detailed alerts when new puppies matching our criteria become available (and, for now, the old ones too), giving me the perfect opportunity to casually mention, "Oh, look what just became available..." along with a GPT-written back story to seal the deal.
 
 ## Data Storage and Organization
 
