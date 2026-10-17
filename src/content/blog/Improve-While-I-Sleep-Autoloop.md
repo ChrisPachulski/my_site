@@ -20,7 +20,7 @@ Hold those two ideas — the guard and the spine — and the rest of this is com
 
 ## The mental model
 
-The unit of work is a **window**: one iteration, one `/loop` wake. The `/loop` skill re-fires the *same* prompt file every tick, and the prompt tells each window to behave like a fresh Claude session with no memory of the last one. (It's the same session underneath — `/loop` clears nothing — so the forgetting is a rule the driver enforces, not a reset.) That's not a limitation I worked around; it's the design. Statelessness is what makes the thing robust — there's no long-lived context to rot, no conversation to drift. The only continuity is what's written to disk.
+The unit of work is a **window**: one iteration, one `/loop` wake. The `/loop` skill re-fires the *same* prompt file every tick, and the prompt tells each window to behave like a fresh Claude session with no memory of the last one. (It's the same session underneath — `/loop` clears nothing — so the forgetting is a rule the driver enforces, not a reset.) That's not a limitation I worked around; it's the design. Treating every window as stateless is what makes the thing robust — the conversation still piles up underneath, but nothing is allowed to depend on it. The only continuity that counts is what's written to disk.
 
 From the driver prompt itself:
 
@@ -341,24 +341,21 @@ There's a smaller concurrency hazard that lives *inside* a single loop, not acro
 The fix is a single-flight lock in the global `~/.claude/autoloop/locks/` directory — global, because it has to be honored by both the in-session driver *and* the launchd rekick sweep, and under macOS TCC the rekicker can only read that global dir. The acquire is a create-exclusive dance:
 
 ```js
-const tryExclusive = () => {
-  try { writeFileSync(lockPath(name), payload, { flag: 'wx' }); return true; }
+const tryExclusive = (p) => {
+  try { writeFileSync(p, payload, { flag: 'wx' }); return true; }
   catch (e) { if (e.code === 'EEXIST') return false; throw e; }
 };
-if (tryExclusive()) return true;
-if (isRunning(name)) return false;                                  // live holder → busy
-try { writeFileSync(reclaimPath(name), payload, { flag: 'wx' }); }  // one reclaimer at a time
-catch (e) { if (e.code === 'EEXIST') return false; throw e; }       // someone else is reclaiming → busy
+if (!tryExclusive(reclaimPath(name))) return false;  // another waiter is mid-acquire → busy
 try {
-  if (isRunning(name)) return false;                                // re-check under the marker
-  try { unlinkSync(lockPath(name)); } catch { }                     // stale residue → reclaim
-  return tryExclusive();                                            // lost to a fresh waiter → busy (correct)
+  if (isRunning(name)) return false;                 // live holder → busy
+  try { unlinkSync(lockPath(name)); } catch { }      // stale residue (or nothing) → clear it
+  return tryExclusive(lockPath(name));               // only the marker holder ever creates the lock
 } finally {
   try { unlinkSync(reclaimPath(name)); } catch { }
 }
 ```
 
-The `'wx'` flag is the whole trick — write, but fail if it exists, atomically at the filesystem level. If the lock is already held by a *live* process, you're busy: end the window silently, run nothing, don't even schedule a wake, because the holder owns continuity. If the lock is stale residue from a dead process, reclaim it — but only one waiter reclaims at a time, behind a second `'wx'` marker, and it re-checks the lock before deleting anything. My first version skipped both, and a waiter that had already decided the lock was stale could delete the lock another waiter had just taken: two winners, the exact thing the lock exists to stop. Lose the reclaim to another waiter and you're busy, which is the correct outcome. (The real file also expires a marker left by a crashed reclaimer, so a dead one can't wedge the loop.) The driver prompt spells out the consequence bluntly: if the lock prints `busy`, *"end this wake silently: run NOTHING, do NOT ScheduleWakeup."* Two half-loops fighting over one branch is worse than one loop, so the loser doesn't sulk or retry — it just disappears and lets the winner drive.
+The `'wx'` flag is the whole trick — write, but fail if it exists, atomically at the filesystem level. If the lock is already held by a *live* process, you're busy: end the window silently, run nothing, don't even schedule a wake, because the holder owns continuity. If the lock is stale residue from a dead process, reclaim it — but every waiter has to take a second `'wx'` marker first, so only one of them is ever checking, deleting, or creating the lock. My first version had no marker, and a waiter that had already decided the lock was stale could delete the lock another waiter had just taken: two winners, the exact thing the lock exists to stop. My second version only made the *reclaimers* take the marker, and that still had two winners: the old holder releases, a fresh waiter walks straight in through the fast path, and the reclaimer deletes its lock anyway. (Correction, October 2026: the shipped file still has that second version. The snippet above is the fix it needs — a replay of every interleaving of two waiters and a releasing holder finds no double winner.) Lose the marker to another waiter and you're busy, which is the correct outcome. (The real file also expires a marker left by a crashed waiter, so a dead one can't wedge the loop.) The driver prompt spells out the consequence bluntly: if the lock prints `busy`, *"end this wake silently: run NOTHING, do NOT ScheduleWakeup."* Two half-loops fighting over one branch is worse than one loop, so the loser doesn't sulk or retry — it just disappears and lets the winner drive.
 
 ## Self-improvement mode: the loop that edits its own engine
 
