@@ -65,7 +65,7 @@ export default function EmeraldExchangeCard({ a, onOpen }) {
       <div className="flair-bg">
         <svg
           viewBox={`0 0 ${VB_W} ${VB_H}`}
-          preserveAspectRatio="xMidYMid slice"
+          preserveAspectRatio="xMidYMid meet"
           aria-hidden="true"
           className="kraken-svg"
         >
@@ -105,14 +105,13 @@ export default function EmeraldExchangeCard({ a, onOpen }) {
         </svg>
       </div>
 
+      <div className="badge">{POSTS[0]?.slug === a.slug && 'LATEST · '}{a.date.toUpperCase()}</div>
+      <div className="cats">{a.cats}</div>
+      <h4>{a.title}</h4>
       <div className="exchange-marker" aria-hidden="true">
         <span className="exchange-marker__bracket">[ 01 ]</span>
         <span className="exchange-marker__label">ONE BOOKMARK · FIVE OPERATOR UIs REPLACED</span>
       </div>
-
-      <div className="badge">{POSTS[0]?.slug === a.slug && 'LATEST · '}{a.date.toUpperCase()}</div>
-      <div className="cats">{a.cats}</div>
-      <h4>{a.title}</h4>
       <div className="meta">
         <span>{a.date}</span>
         <span>·</span>

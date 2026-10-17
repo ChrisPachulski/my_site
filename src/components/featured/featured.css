@@ -65,6 +65,22 @@
   overflow: hidden;
 }
 
+/* Wide tiles: the flair SVG takes the right-hand column, below the badge and
+   above the meta row, so it never runs under the category line, title or meta.
+   The mobile block below puts it back full-bleed and dimmed. */
+.research-loop-card .loop-svg,
+.autoloop-card .autoloop-svg,
+.emerald-exchange-card .kraken-svg {
+  position: absolute;
+  top: 44px;
+  right: 16px;
+  width: 42%;
+  height: calc(100% - 88px);
+}
+.research-loop-card h4,
+.autoloop-card h4,
+.emerald-exchange-card h4 { max-width: 56%; }
+
 .featured-tile .badge {
   position: absolute;
   top: 14px;
@@ -99,10 +115,6 @@
 /* ═══ Research Loop ═══ */
 
 .research-loop-card .loop-svg {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
   opacity: 0.55;
 }
 
@@ -205,10 +217,6 @@
 
 .autoloop-card { padding-top: 50px; }
 .autoloop-card .autoloop-svg {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
   opacity: 0.5;
 }
 .autoloop-card .al-main {
@@ -511,10 +519,6 @@ html[data-theme="light"] .emerald-exchange-card {
 }
 
 .emerald-exchange-card .kraken-svg {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
   transition: filter 0.3s;
 }
 .emerald-exchange-card.is-hover .kraken-svg {
@@ -605,21 +609,19 @@ html[data-theme="light"] .emerald-exchange-card {
   animation: kraken-draw 0.55s cubic-bezier(0.16, 1, 0.3, 1) var(--delay, 0.4s) forwards;
 }
 
-/* ASCII-bracketed counter + subcopy, bottom-right. The kraken is the
-   centerpiece, so this stays small. */
+/* ASCII-bracketed counter + subcopy, in the text column under the title.
+   The kraken is the centerpiece, so this stays small. */
 .emerald-exchange-card .exchange-marker {
-  position: absolute;
-  right: 28px;
-  bottom: 56px;
-  z-index: 1;
+  position: relative;
+  z-index: 2;
   pointer-events: none;
-  text-align: right;
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: flex-start;
   gap: 4px;
+  margin-top: 4px;
 }
-.emerald-exchange-card h4 { position: relative; z-index: 3; max-width: 64%; }
+.emerald-exchange-card h4 { position: relative; z-index: 3; }
 .emerald-exchange-card .exchange-marker__bracket {
   font-family: var(--mono);
   font-size: clamp(13px, 1.4vw, 17px);
@@ -632,7 +634,6 @@ html[data-theme="light"] .emerald-exchange-card {
   font-size: 9px;
   color: var(--ink-mute);
   letter-spacing: 0.12em;
-  max-width: 180px;
   text-transform: uppercase;
 }
 
@@ -666,7 +667,15 @@ html[data-theme="light"] .emerald-exchange-card {
     padding: 3px 7px;
   }
 
+  .research-loop-card .loop-svg,
+  .autoloop-card .autoloop-svg,
+  .emerald-exchange-card .kraken-svg { inset: 0; width: 100%; height: 100%; }
+  .research-loop-card h4,
+  .autoloop-card h4,
+  .emerald-exchange-card h4 { max-width: none; }
+
   .research-loop-card .loop-svg { opacity: 0.18; }
+  .autoloop-card .autoloop-svg { opacity: 0.18; }
   .research-loop-card .loop-node .loop-label { display: none; }
   /* Decorative iter-counter is redundant on mobile with the meta row already
      showing the read-time/date — hiding it removes the bottom-overlap. */
@@ -695,19 +704,9 @@ html[data-theme="light"] .emerald-exchange-card {
   .obsidian-wiki-card .count-sub { font-size: 9px; margin-top: 2px; max-width: none; }
 
   /* Mobile: the kraken's elaborate stroke work crashes into the title at the
-     compressed grid cell; pull it back to a quiet ambient mark and dock the
-     marker copy into the flow under the meta row. */
+     compressed grid cell; pull it back to a quiet ambient mark. */
   .emerald-exchange-card .kraken-svg { opacity: 0.32; }
-  .emerald-exchange-card .exchange-marker {
-    position: relative;
-    right: auto;
-    bottom: auto;
-    margin-top: 8px;
-    text-align: left;
-    align-items: flex-start;
-  }
   .emerald-exchange-card .exchange-marker__bracket { font-size: 14px; text-shadow: none; }
-  .emerald-exchange-card .exchange-marker__label { font-size: 9px; max-width: none; }
 }
 
 /* Parchment: the dark vignette and dark-mode neutrals on flair were tuned

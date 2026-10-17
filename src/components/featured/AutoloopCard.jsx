@@ -45,7 +45,7 @@ export default function AutoloopCard({ a, onOpen }) {
       onMouseLeave={() => setHover(false)}
     >
       <div className="flair-bg">
-        <svg viewBox="0 0 240 200" preserveAspectRatio="xMidYMid slice" aria-hidden="true" className="autoloop-svg">
+        <svg viewBox="0 0 240 200" preserveAspectRatio="xMidYMid meet" aria-hidden="true" className="autoloop-svg">
           {/* main — the human gate, quiet and straight */}
           <line x1="20" y1="150" x2="220" y2="150" className="al-main" />
           {/* integration lane — where verified auto work compounds */}
