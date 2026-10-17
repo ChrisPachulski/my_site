@@ -22,14 +22,17 @@ SELECT a.Date,
     fab_total_orders, fab_purchased, fab_avg_purchase, fab_median,
     dbz_total_orders, dbz_purchased, dbz_avg_purchase, dbz_median
 FROM (
-    SELECT Date-1 AS Date, daily_basket_number, 
-        ROUND(SUM(sell_price), 0) AS mtg_purchases,
-        ROUND(PERCENTILE_CONT(SUM(sell_price), 0.5) OVER (PARTITION BY Date), 0) AS mtg_median
-    FROM `gaeas-cradle.mtg_basket.*`
-    WHERE _TABLE_SUFFIX BETWEEN
-      FORMAT_DATE("%Y_%m_%d", DATE_SUB(CURRENT_DATE(), INTERVAL 365 DAY)) AND
-      FORMAT_DATE("%Y_%m_%d", DATE_SUB(CURRENT_DATE(), INTERVAL 1 DAY))
-    GROUP BY Date, daily_basket_number
+    SELECT Date, daily_basket_number,
+        ROUND(basket_total, 0) AS mtg_purchases,
+        ROUND(PERCENTILE_CONT(basket_total, 0.5) OVER (PARTITION BY Date), 0) AS mtg_median
+    FROM (
+        SELECT Date-1 AS Date, daily_basket_number, SUM(sell_price) AS basket_total
+        FROM `gaeas-cradle.mtg_basket.*`
+        WHERE _TABLE_SUFFIX BETWEEN
+          FORMAT_DATE("%Y_%m_%d", DATE_SUB(CURRENT_DATE(), INTERVAL 365 DAY)) AND
+          FORMAT_DATE("%Y_%m_%d", DATE_SUB(CURRENT_DATE(), INTERVAL 1 DAY))
+        GROUP BY Date, daily_basket_number
+    )
 ) a
 LEFT JOIN (...additional joins for Pokémon, FAB, DBZ...)
 GROUP BY Date, mtg_median, poke_total_orders, poke_purchased, poke_avg_purchase, poke_median,
