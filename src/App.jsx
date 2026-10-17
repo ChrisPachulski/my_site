@@ -148,18 +148,25 @@ function NotFoundPage({ navigate, mode, onModeChange }) {
 }
 
 function ArticleModal({ post, onClose, navigate }) {
+  const backdropRef = useRef(null);
   const dialogRef = useRef(null);
   const lastFocus = useRef(null);
 
   useEffect(() => {
     lastFocus.current = document.activeElement;
     document.body.style.overflow = 'hidden';
+    // aria-modal alone does not stop Tab: make the page behind the dialog
+    // (its siblings in #root: nav and main) inert while it is open.
+    const backdrop = backdropRef.current;
+    const behind = [...backdrop.parentElement.children].filter((el) => el !== backdrop);
+    behind.forEach((el) => { el.inert = true; });
     const onKey = (e) => { if (e.key === 'Escape') onClose(); };
     window.addEventListener('keydown', onKey);
     if (dialogRef.current) dialogRef.current.focus({ preventScroll: true });
     return () => {
       window.removeEventListener('keydown', onKey);
       document.body.style.overflow = '';
+      behind.forEach((el) => { el.inert = false; });
       if (lastFocus.current && typeof lastFocus.current.focus === 'function') {
         lastFocus.current.focus({ preventScroll: true });
       }
@@ -168,6 +175,7 @@ function ArticleModal({ post, onClose, navigate }) {
 
   return (
     <div
+      ref={backdropRef}
       className="article-modal-backdrop"
       onClick={onClose}
       role="presentation"
@@ -358,7 +366,10 @@ export default function App() {
     } else if (target.startsWith('/#')) {
       handleHomeNav(target.slice(1));
     } else {
+      // A new page (Older/Newer, a 404 suggestion, or leaving the modal for
+      // the full article) opens at its top, not at the old page's offset.
       navigate(target);
+      window.scrollTo({ top: 0, behavior: 'instant' });
     }
   };
 
