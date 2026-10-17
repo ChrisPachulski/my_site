@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useReducer, useRef, useState, useMemo, useCallback } from 'react';
-import Card from './Card.jsx';
+import Card, { describeCard } from './Card.jsx';
 import { CARDS } from './cards.js';
 import {
   INITIAL_STATE,
@@ -248,7 +248,7 @@ function MulliganStage({ cards, onKeep, onSkip }) {
               style={{ '--n': i }}
               onClick={() => flip(c.instId)}
               aria-pressed={isFlipped}
-              aria-label={isFlipped ? CARDS[c.cardId].name : `Card ${i + 1}, face down`}
+              aria-label={isFlipped ? describeCard(c.cardId) : `Card ${i + 1}, face down`}
             >
               <div className="gm-mulligan-flipper">
                 <div className="gm-mulligan-back">
