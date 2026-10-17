@@ -30,6 +30,10 @@
   padding: 14px 20px;
   gap: 10px;
 }
+/* The root takes programmatic focus as the modal container; on close, focus
+   moves to #about, which gets tabindex="-1" only for that hand-off. */
+.gm-root:focus,
+#about[tabindex="-1"]:focus { outline: none; }
 
 /* Backgrounds */
 .gm-bg {
