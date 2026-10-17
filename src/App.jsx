@@ -251,6 +251,27 @@ export default function App() {
     });
   }, []);
 
+  // Scroll reveals for every `.reveal` node on the current page. It lives here
+  // rather than in Hero because article and 404 pages render Contact without a
+  // Hero, and re-runs per route so freshly mounted nodes get observed too.
+  useEffect(() => {
+    const nodes = document.querySelectorAll('.reveal:not(.in-view)');
+    if (!('IntersectionObserver' in window)) {
+      nodes.forEach(n => n.classList.add('in-view'));
+      return;
+    }
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('in-view');
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0, rootMargin: '0px 0px -40px 0px' });
+    nodes.forEach(n => io.observe(n));
+    return () => io.disconnect();
+  }, [route.name, route.slug, flowMode]);
+
   const onHomePage = route.name === 'home' || (route.name === 'article' && flowMode === 'modal');
 
   useEffect(() => {
