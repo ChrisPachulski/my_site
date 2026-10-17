@@ -70,8 +70,11 @@
 
 html[data-theme="light"] {
   --bg: #f4efe4; --bg-deep: #d8ceb6; --bg-elev: #ebe5d6; --bg-card: oklch(0.99 0.005 280);
-  --ink: #1a1713; --ink-dim: #5b5347; --ink-mute: #8c8476;
+  --ink: #1a1713; --ink-dim: #5b5347; --ink-mute: #6a6357;
   --line: #ddd5c3; --line-bright: #c8bfa9; --line-quiet: #e6dfcc; --accent-ink: #f4efe4;
+  /* WCAG AA on cream: ink-mute 5.18:1 on --bg, 4.73:1 on --bg-elev;
+     danger 5.75:1 on --bg (the dark-register value is 2.73:1 here). */
+  --danger: oklch(0.50 0.18 25);
 }
 
 html[data-accent="rust"]   { --accent: oklch(0.64 0.15 35);  --accent-soft: oklch(0.64 0.15 35 / 0.14); }
@@ -174,6 +177,7 @@ code, kbd, pre, samp,
   font-variant-numeric: tabular-nums;
 }
 html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 body {
   background-image:
     radial-gradient(ellipse 1200px 600px at 20% -10%, var(--accent-soft), transparent 60%),
@@ -317,7 +321,9 @@ section.flow { padding: 120px 0 80px; }
 @media (max-width: 700px) { section { padding: 60px 0; } section.flow { padding: 100px 0 60px; } }
 
 .section-label {
-  display: flex; align-items: center; gap: 14px;
+  /* wrap moves the "// comment" item to its own line on phones instead of
+     wrapping the "/ name" text inside its flex item and orphaning the "/". */
+  display: flex; flex-wrap: wrap; align-items: center; gap: 4px 14px;
   color: var(--ink-mute); font-family: var(--mono);
   font-size: var(--text-label); letter-spacing: var(--tracking-label); margin-bottom: 28px;
 }
@@ -339,7 +345,12 @@ section.flow { padding: 120px 0 80px; }
 .section-headline em { color: var(--accent); font-style: italic; }
 
 /* ═══════ SCROLL REVEAL SYSTEM ═══════ */
-.reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.9s cubic-bezier(.2,.7,.2,1), transform 0.9s cubic-bezier(.2,.7,.2,1); }
+/* Hidden only when script can run to reveal it (App's IntersectionObserver):
+   with JavaScript off the prerendered sections stay readable. Print forces
+   them visible further down. */
+@media (scripting: enabled) {
+  .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.9s cubic-bezier(.2,.7,.2,1), transform 0.9s cubic-bezier(.2,.7,.2,1); }
+}
 .reveal.in-view { opacity: 1; transform: none; }
 .reveal[data-delay="1"] { transition-delay: 0.08s; }
 .reveal[data-delay="2"] { transition-delay: 0.16s; }
@@ -384,6 +395,9 @@ main:focus-visible { outline: none; }
   position: fixed; top: 0; left: 0; right: 0; z-index: 100;
   padding: 18px 32px;
   display: flex; align-items: center; justify-content: space-between;
+  /* gap keeps the brand off the first link; wrap is the last resort when
+     enlarged text outgrows one row (links collapse below 62.5em first). */
+  gap: 8px 24px; flex-wrap: wrap;
   background: color-mix(in oklab, var(--bg) 62%, transparent);
   backdrop-filter: blur(22px) saturate(160%); -webkit-backdrop-filter: blur(22px) saturate(160%);
   border-bottom: 1px solid transparent; transition: border-color 0.2s, box-shadow 0.3s, background 0.3s;
@@ -405,16 +419,22 @@ main:focus-visible { outline: none; }
 .nav-links a:not(.cta)::after { content: ""; position: absolute; left: 0; right: 0; bottom: -6px; height: 1px; background: var(--accent); transform: scaleX(0); transform-origin: left; transition: transform 0.3s cubic-bezier(.2,.7,.2,1); }
 .nav-links a:hover::after, .nav-links a.active::after, .nav-links a:focus-visible::after { transform: scaleX(1); }
 .nav-links a:hover, .nav-links a.active, .nav-links a:focus-visible { color: var(--ink); outline: none; }
-@media (max-width: 780px) { .nav-links a:not(.cta) { display: none; } }
+/* The full link row needs about 950px at default text size. An em breakpoint
+   also collapses it when the visitor raises the browser font size. */
+@media (max-width: 62.5em) { .nav-links a:not(.cta) { display: none; } }
+@media (max-width: 540px) {
+  .nav { padding: 14px 16px; column-gap: 16px; }
+  .nav-links { gap: 16px; }
+}
 .cta { padding: 8px 14px; border: 1px solid var(--line-bright); border-radius: 2px; color: var(--ink) !important; transition: all 0.2s; }
 .cta:hover { background: var(--accent); color: var(--accent-ink) !important; border-color: var(--accent); }
 .cta:focus-visible { outline: none; border-color: var(--accent); background: var(--accent-soft); box-shadow: 0 0 0 1px var(--accent), 0 0 16px var(--accent-soft); }
 
 /* ═══════ THEME SWITCH (after hours / office hours) ═══════ */
 /* The act of switching is the brand statement. Pill lives in the nav-links
-   flex group so it wraps with the existing 28px gap. On mobile (<780px)
-   regular nav links collapse via the existing rule; the toggle stays and
-   shrinks to short labels, then to icons-only at <540px. */
+   flex group so it wraps with the existing 28px gap. Below 62.5em the
+   regular nav links collapse via the rule above; the toggle stays and
+   shrinks to short labels at <780px, then to icons-only at <540px. */
 .theme-switch {
   position: relative;
   display: inline-flex;
@@ -459,6 +479,16 @@ main:focus-visible { outline: none; }
 }
 .theme-switch-seg.active:focus-visible {
   box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--accent), 0 6px 18px var(--accent-soft);
+}
+/* Until React hydrates, the server markup marks After hours active for every
+   visitor, while index.html's pre-paint script has already set data-theme.
+   These match only that mismatch, and draw the selection from data-theme. */
+html[data-theme="light"] .theme-switch-seg.active[data-mode="after-hours"] {
+  color: var(--ink-mute); background: transparent; box-shadow: none;
+}
+html[data-theme="light"] .theme-switch-seg:not(.active)[data-mode="office-hours"] {
+  color: var(--accent-ink); background: var(--accent);
+  box-shadow: 0 1px 0 color-mix(in oklab, var(--accent) 60%, transparent), 0 6px 18px var(--accent-soft);
 }
 .theme-switch-icon { display: inline-flex; width: 12px; height: 12px; flex: 0 0 auto; }
 .theme-switch-icon svg { width: 100%; height: 100%; }
@@ -506,6 +536,11 @@ html[data-vibe="cyberpunk"] .theme-switch-seg.active {
 html[data-vibe="cyberpunk"] .theme-switch-seg.active:hover {
   color: var(--accent-ink);
   text-shadow: 0 0 4px color-mix(in oklab, var(--accent-ink) 50%, transparent);
+}
+/* The themed active rule above outranks .theme-switch-seg.active:focus-visible,
+   so the focus ring is restated at this specificity. */
+html[data-vibe="cyberpunk"] .theme-switch-seg.active:focus-visible {
+  box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--ink), 0 0 20px var(--accent);
 }
 
 /* ═══════ MODE TRANSITION CHOREOGRAPHY ═══════ */
@@ -604,6 +639,7 @@ html.mode-transitioning .accent {
   --mtg-ink:        #f2ebdd;
   --mtg-ink-dim:    #c5beae;
   --mtg-ink-mute:   #8c8476;
+  --mtg-accent:     var(--accent);
 
   width: 100%; max-width: 420px; aspect-ratio: 2.5 / 3.5;
   background: var(--mtg-frame-deep) linear-gradient(135deg, var(--mtg-frame-soft), var(--mtg-frame-deep));
@@ -618,7 +654,18 @@ html.mode-transitioning .accent {
 .mtg-card:hover {
   box-shadow: 0 60px 100px -20px rgba(0,0,0,0.7), 0 0 0 1px var(--accent), 0 0 80px -10px var(--accent-soft);
 }
+/* Office hours darkens --accent for cream paper, but the card stays dark, so
+   its text accent keeps the dark-register violet (6.0:1 on the textbox). */
+html[data-theme="light"] .mtg-card { --mtg-accent: oklch(0.70 0.14 300); }
 .mtg-frame { display: grid; grid-template-rows: auto 1fr auto auto auto; gap: 8px; height: 100%; }
+/* The hero card keeps a floor for the portrait: when enlarged text or a narrow
+   phone leaves too little room, the card grows past 5:7 (aspect-ratio's
+   content-based minimum, which a height: 100% frame never reports) instead of
+   squeezing the art row to nothing. The frame's min-height fills the 5:7 box
+   from the card width (min(100cqw, 420px)) less padding and border, because
+   WebKit resolves a percentage here against the border box (30px too tall). */
+.hl-card { container-type: inline-size; }
+.hl-card .mtg-frame { height: auto; min-height: calc(min(100cqw, 420px) * 1.4 - 30px); grid-template-rows: auto minmax(120px, 1fr) auto auto auto; }
 .mtg-titlebar { display: flex; justify-content: space-between; align-items: center; background: linear-gradient(90deg, var(--mtg-frame-rim), var(--mtg-frame-soft)); padding: 8px 12px; border-radius: 4px; border: 1px solid var(--mtg-line); }
 .mtg-name { font-family: var(--serif); font-size: var(--text-lede); font-weight: 500; letter-spacing: var(--tracking-snug); color: var(--mtg-ink); }
 .mtg-mana { display: flex; gap: 4px; }
@@ -633,16 +680,16 @@ html.mode-transitioning .accent {
   background: linear-gradient(135deg, oklch(0.35 0.08 55), oklch(0.18 0.04 30));
   position: relative; min-height: 0;
 }
-.mtg-art img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.mtg-art img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }  /* out of flow: its intrinsic height inflated WebKit's art row */
 /* Image-load failure: hide the broken <img>, the parent's gradient stays
    as the visual fallback. Set by Hero's onError class swap. */
 .mtg-art-fallback img { display: none; }
 .mtg-typebar { display: flex; justify-content: space-between; align-items: center; background: linear-gradient(90deg, var(--mtg-frame-rim), var(--mtg-frame-soft)); padding: 6px 12px; border-radius: 3px; border: 1px solid var(--mtg-line); font-family: var(--mono); font-size: var(--text-label-sm); }
 .mtg-type { color: var(--mtg-ink-dim); }
-.mtg-setsymbol { color: var(--accent); font-size: var(--text-body-xs); }
+.mtg-setsymbol { color: var(--mtg-accent); font-size: var(--text-body-xs); }
 .mtg-textbox { background: linear-gradient(180deg, var(--mtg-frame-mid), #15120f); border: 1px solid var(--mtg-line); border-radius: 4px; padding: 10px 14px; font-size: var(--text-body-xs); line-height: var(--leading-comfort); min-height: 110px; color: var(--mtg-ink-dim); }
 .mtg-rule { margin: 0 0 6px; color: var(--mtg-ink-dim); }
-.mtg-rule:first-of-type { color: var(--accent); font-family: var(--mono); font-size: var(--text-label-sm); letter-spacing: var(--tracking-loose); text-transform: uppercase; }
+.mtg-rule:first-of-type { color: var(--mtg-accent); font-family: var(--mono); font-size: var(--text-label-sm); letter-spacing: var(--tracking-loose); text-transform: uppercase; }
 .mtg-flavor { margin: 8px 0 0; font-style: italic; color: var(--mtg-ink-mute); font-size: var(--text-label); border-top: 1px solid color-mix(in oklab, var(--mtg-line) 70%, transparent); padding-top: 8px; }
 .mtg-flavor em { font-style: normal; }
 .mtg-bottom { display: flex; justify-content: flex-end; padding: 0 8px; }
@@ -895,8 +942,10 @@ html.mode-transitioning .accent {
 /* ═══════ FEATURE (MTGBAN) ═══════ */
 .feature { margin-top: 0; border: 1px solid color-mix(in oklab, var(--line-bright) 45%, transparent); border-radius: 6px; background: color-mix(in oklab, var(--bg-card) 60%, transparent); backdrop-filter: blur(20px) saturate(140%); -webkit-backdrop-filter: blur(20px) saturate(140%); padding: 36px; position: relative; overflow: hidden; }
 .feature::before { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse 600px 300px at 100% 0%, var(--accent-soft), transparent 60%); pointer-events: none; }
-.feature-grid { display: grid; grid-template-columns: 1fr 1.4fr; gap: 56px; position: relative; align-items: center; }
-@media (max-width: 900px) { .feature-grid { grid-template-columns: 1fr; gap: 32px; align-items: stretch; } .feature { padding: 28px; } }
+/* minmax(0, …) tracks: the pipeline's unbroken node names must not widen the
+   grid past .feature's overflow: hidden edge on phones or with enlarged text. */
+.feature-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 56px; position: relative; align-items: center; }
+@media (max-width: 900px) { .feature-grid { grid-template-columns: minmax(0, 1fr); gap: 32px; align-items: stretch; } .feature { padding: 28px; } }
 .feature .tag { display: inline-flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: var(--text-label-sm); color: var(--accent); text-transform: uppercase; letter-spacing: var(--tracking-label); padding: 4px 10px; background: var(--accent-soft); border-radius: 2px; margin-bottom: 16px; }
 .feature h3 { font-family: var(--serif); font-size: var(--text-h2-sm); line-height: var(--leading-tight); letter-spacing: var(--tracking-tighter); margin: 0 0 16px; font-weight: 400; text-wrap: balance; }
 .feature h3 em { color: var(--accent); }
@@ -905,8 +954,8 @@ html.mode-transitioning .accent {
 .feature-evidence strong { color: var(--accent); font-weight: 500; }
 .feature-evidence span[aria-hidden] { color: var(--line-bright); margin: 0 6px; }
 
-.pipe { font-family: var(--mono); font-size: var(--text-label); background: var(--bg); border: 1px solid var(--line-bright); border-radius: 4px; padding: 24px; display: flex; flex-direction: column; gap: 10px; position: relative; box-shadow: 0 0 0 1px color-mix(in oklab, var(--accent-soft) 50%, transparent), 0 24px 60px -30px rgba(0,0,0,0.6); }
-.pipe-node { display: grid; grid-template-columns: 24px 1fr auto; gap: 12px; align-items: center; padding: 10px 14px; background: var(--bg-card); border: 1px solid var(--line); border-radius: 3px; transition: all 0.3s; position: relative; }
+.pipe { overflow-wrap: anywhere; font-family: var(--mono); font-size: var(--text-label); background: var(--bg); border: 1px solid var(--line-bright); border-radius: 4px; padding: 24px; display: flex; flex-direction: column; gap: 10px; position: relative; box-shadow: 0 0 0 1px color-mix(in oklab, var(--accent-soft) 50%, transparent), 0 24px 60px -30px rgba(0,0,0,0.6); }
+.pipe-node { display: grid; grid-template-columns: 24px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 10px 14px; background: var(--bg-card); border: 1px solid var(--line); border-radius: 3px; transition: all 0.3s; position: relative; }
 .pipe-node.active { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent-soft), 0 0 24px var(--accent-soft); transform: translateX(4px); }
 .pipe-node.active::after { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--accent); box-shadow: 0 0 8px var(--accent); }
 .pipe-node .glyph { color: var(--accent); font-size: var(--text-body-2xs); transition: text-shadow 0.3s; }
@@ -916,6 +965,14 @@ html.mode-transitioning .accent {
 .pipe-arrow { color: var(--ink-mute); padding-left: 30px; font-size: var(--text-body-2xs); height: 12px; line-height: 1; }
 .pipe-status { color: var(--ink-mute); font-size: var(--text-label-sm); font-variant-numeric: tabular-nums; transition: color 0.2s; }
 .pipe-status[data-active] { color: var(--accent); }
+/* Narrow phones (or large text): the status drops under the step name. An em
+   query also trips when the visitor raises the browser font size. */
+@media (max-width: 25em) {
+  .feature { padding: 20px; }
+  .pipe { padding: 16px; }
+  .pipe-node { grid-template-columns: 18px minmax(0, 1fr); column-gap: 10px; }
+  .pipe-status { grid-column: 2; }
+}
 
 /* ═══════ GITLOG (serpentine resume) ═══════ */
 /* Serpentine geometry: each commit is --commit-h tall, the SVG connector
@@ -992,7 +1049,12 @@ html.mode-transitioning .accent {
 .resume-toggle button:focus-visible { outline: 1px solid var(--accent); outline-offset: 2px; }
 
 /* ═══════ WRITING ═══════ */
-.writing-grid { display: grid; grid-template-columns: repeat(3, 1fr); grid-auto-flow: dense; gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 4px; overflow: hidden; }
+.writing-grid { display: grid; grid-template-columns: repeat(3, 1fr); grid-auto-flow: dense; gap: 1px; border: 1px solid var(--line); border-radius: 4px; overflow: hidden; --grid-line: var(--line); }
+/* The 1px rules between tiles are each tile's shadow filling the gap, not the
+   grid's background, so the empty cells a short last row leaves stay page
+   colored instead of reading as a solid block. --grid-line must be opaque:
+   two neighbours' shadows overlap in every gap. */
+.writing-grid > * { box-shadow: 0 0 0 1px var(--grid-line); }
 @media (max-width: 1040px) { .writing-grid { grid-template-columns: repeat(2, 1fr); } }
 .writing-grid .featured { grid-column: span 2; grid-row: span 2; }
 /* Mobile: switch to flex-column and float the three large flair cards to
@@ -1161,7 +1223,9 @@ html.mode-transitioning .accent {
 .article-addendum strong { color: var(--ink); font-weight: 600; }
 
 .article-back {
-  display: inline-flex; align-items: center; gap: 8px;
+  /* Its own row: inline beside .article-eyebrow the two labels read as one
+     word ("WRITINGFIELD NOTES") once React drops the whitespace between. */
+  display: flex; width: max-content; align-items: center; gap: 8px;
   font-family: var(--mono);
   font-size: var(--text-label-sm); color: var(--ink-mute);
   text-transform: uppercase; letter-spacing: var(--tracking-label);
@@ -1266,6 +1330,18 @@ html.mode-transitioning .accent {
   background: none; padding: 0; border: none;
   color: var(--ink-dim);
 }
+/* Long unbroken inline code (paths, dotted identifiers) wraps instead of being
+   clipped by the page's overflow-x: clip on phones. */
+.article-content :not(pre) > code { overflow-wrap: anywhere; }
+/* Article.jsx wraps every table in .table-scroll, so a wide table scrolls in
+   its own box. The scrollers are focusable for keyboard scrolling. */
+.article-content .table-scroll { overflow-x: auto; margin: 1.4em 0; }
+.article-content .table-scroll > table { margin: 0; }
+/* The prerendered HTML, on screen until React mounts (or for good with
+   JavaScript off), has bare tables: those scroll as their own box. */
+.article-content > table { display: block; max-width: max-content; overflow-x: auto; }
+.article-content pre:focus-visible,
+.article-content .table-scroll:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .article-content blockquote {
   margin: 1.4em 0;
   padding: 4px 0 4px 20px;
@@ -1478,7 +1554,9 @@ html[data-vibe="cyberpunk"] body {
 
 html[data-vibe="cyberpunk"] .nav,
 html[data-vibe="cyberpunk"] .tweaks { position: relative; z-index: 100; }
-html[data-vibe="cyberpunk"] section { position: relative; z-index: 3; }
+/* .gm-root is a <section> too, but it is the fixed full-screen GhostMatch
+   overlay: this stacking rule must not pull it back into the page flow. */
+html[data-vibe="cyberpunk"] section:not(.gm-root) { position: relative; z-index: 3; }
 html[data-vibe="cyberpunk"] .nav { position: fixed; z-index: 100; }
 
 html[data-vibe="cyberpunk"] .hero-headline .sub {
@@ -1513,6 +1591,10 @@ html[data-vibe="cyberpunk"] .btn { border-radius: 0; background: var(--bg-elev);
 html[data-vibe="cyberpunk"] .btn:hover { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent), 0 0 28px var(--accent-soft); color: var(--accent); }
 html[data-vibe="cyberpunk"] .btn-primary { background: var(--accent); color: var(--accent-ink); box-shadow: 0 0 0 1px var(--accent), 0 0 32px var(--accent-soft); }
 html[data-vibe="cyberpunk"] .btn-primary:hover { background: var(--bg); color: var(--accent); box-shadow: 0 0 0 1px var(--accent), 0 0 48px var(--accent); }
+/* Themed buttons outrank the generic :focus-visible rings and their clip-path
+   cuts anything drawn outside the box, so the focus ring is drawn inside. */
+html[data-vibe="cyberpunk"] .btn:not(.btn-primary):focus-visible { color: var(--accent); box-shadow: inset 0 0 0 2px var(--accent); }
+html[data-vibe="cyberpunk"] .btn-primary:focus-visible            { box-shadow: inset 0 0 0 2px var(--accent-ink), inset 0 0 0 4px var(--accent); }
 
 /* Idle: dual-color Izzet aura (red + blue). On hover: collapse to single accent glow. */
 /* Red + blue read as Izzet guild colours against the dark background — magenta
@@ -1772,7 +1854,7 @@ html[data-vibe="cyberpunk"] .commit ul li strong { color: var(--accent-2); }
 html[data-vibe="cyberpunk"] .resume-toggle { border-radius: 0; }
 html[data-vibe="cyberpunk"] .resume-toggle button.active { background: var(--accent); color: var(--accent-ink); box-shadow: 0 0 16px var(--accent-soft); }
 
-html[data-vibe="cyberpunk"] .writing-grid { border-color: oklch(0.82 0.21 195 / 0.25); background: oklch(0.82 0.21 195 / 0.14); border-radius: 0; }
+html[data-vibe="cyberpunk"] .writing-grid { border-color: oklch(0.82 0.21 195 / 0.25); --grid-line: color-mix(in oklab, oklch(0.82 0.21 195) 14%, var(--bg)); border-radius: 0; }
 html[data-vibe="cyberpunk"] .article:hover { background: color-mix(in oklab, var(--accent) 6%, var(--bg)); }
 html[data-vibe="cyberpunk"] .article .cats { color: var(--accent-3); }
 html[data-vibe="cyberpunk"] .article h4 { font-size: var(--text-body); letter-spacing: var(--tracking-normal); }
@@ -1839,7 +1921,8 @@ html[data-vibe="cyberpunk"] .section-label .num { color: var(--accent-2); text-s
    elsewhere on that property for the animation's full duration -- so an
    `opacity: 0.3`-style override on these pseudo-elements has never once
    applied, in this rule or any prior version of it. Don't reach for that
-   property here; it's dead on arrival as long as the breath is running. */
+   property here; it's dead on arrival as long as the breath is running.
+   The keyframes scale by --aura-gain instead, which is what hover raises. */
 html[data-theme="light"] .izzet-card {
   background:
     linear-gradient(135deg,
@@ -1862,15 +1945,11 @@ html[data-theme="light"] .izzet-card.izzet-red::after {
 @media (max-width: 700px) {
   .izzet-card { padding: 36px 22px; }
   /* Pull the bloom way in on mobile. Stacked About + Skills cards would
-     otherwise flood the whole column with violet from their desktop halos. */
+     otherwise flood the whole column with violet from their desktop halos.
+     The aura pseudo-elements get the same treatment after the variant rules
+     below, which would otherwise out-rank it. */
   .izzet-card {
     box-shadow: 0 0 60px 0 oklch(0.60 0.14 305 / 0.18);
-  }
-  .izzet-card::before,
-  .izzet-card::after {
-    inset: -18px;
-    border-radius: 12px;
-    filter: blur(22px);
   }
 }
 .izzet-card::before,
@@ -1882,7 +1961,7 @@ html[data-theme="light"] .izzet-card.izzet-red::after {
   z-index: -1;
   pointer-events: none;
   filter: blur(46px);
-  transition: opacity 0.6s ease;
+  transition: opacity 0.6s ease, --aura-gain 0.6s ease;
 }
 
 /* BLUE-DOMINANT (About) — sapphire halo fading through violet into the
@@ -1935,22 +2014,36 @@ html[data-theme="light"] .izzet-card.izzet-red::after {
   animation-delay: -4.5s;
 }
 
+@media (max-width: 700px) {
+  .izzet-card.izzet-blue::before, .izzet-card.izzet-blue::after,
+  .izzet-card.izzet-red::before,  .izzet-card.izzet-red::after {
+    inset: -18px;
+    border-radius: 12px;
+    filter: blur(22px);
+  }
+}
+
+/* Hover multiplier for the aura keyframes below: a running animation owns
+   opacity, so hover scales the keyframes rather than setting opacity.
+   Registered so the change eases in with the 0.6s opacity transition. */
+@property --aura-gain { syntax: '<number>'; inherits: false; initial-value: 1; }
+
 /* Slow breathing — matches mtgAuraA cadence (7s) with a brief hiccup mid-cycle */
 @keyframes izzetBreath {
-  0%   { opacity: 0.70; transform: scale(1); }
-  30%  { opacity: 0.86; transform: scale(1); }
-  47%  { opacity: 0.96; transform: scale(1); }
-  49%  { opacity: 1;    transform: scale(1.012); }
-  52%  { opacity: 1;    transform: scale(1); }
-  70%  { opacity: 0.86; transform: scale(1); }
-  100% { opacity: 0.70; transform: scale(1); }
+  0%   { opacity: calc(0.70 * var(--aura-gain, 1)); transform: scale(1); }
+  30%  { opacity: calc(0.86 * var(--aura-gain, 1)); transform: scale(1); }
+  47%  { opacity: calc(0.96 * var(--aura-gain, 1)); transform: scale(1); }
+  49%  { opacity: 1;                                transform: scale(1.012); }
+  52%  { opacity: 1;                                transform: scale(1); }
+  70%  { opacity: calc(0.86 * var(--aura-gain, 1)); transform: scale(1); }
+  100% { opacity: calc(0.70 * var(--aura-gain, 1)); transform: scale(1); }
 }
 /* Opacity-only breath, matched to mtgAuraA's discipline. The izzet-card
    already pairs an inner breath (izzetBreath) with this outer bloom; both
    stay color-only so the two-aura promise in DESIGN.md §1 holds. */
 @keyframes izzetPulse {
-  0%   { opacity: 0.75; }
-  60%  { opacity: 0.30; }
+  0%   { opacity: calc(0.75 * var(--aura-gain, 1)); }
+  60%  { opacity: calc(0.30 * var(--aura-gain, 1)); }
   100% { opacity: 0; }
 }
 
@@ -2118,11 +2211,13 @@ html[data-vibe="cyberpunk"] .izzet-card .skill-bar-fill::after {
   transform: none;
 }
 
-/* Slightly intensify the card's own dominant-side aura when hovered — signals interactivity */
-.izzet-card.izzet-blue:hover::before { opacity: 0.72; }
-.izzet-card.izzet-blue:hover::after  { opacity: 0.65; }
-.izzet-card.izzet-red:hover::before  { opacity: 1; }
-.izzet-card.izzet-red:hover::after   { opacity: 0.6; }
+/* Slightly intensify the card's own dominant-side aura when hovered — signals interactivity.
+   opacity applies only when the breath is off (reduced motion); --aura-gain
+   applies the same rise (hover / rest opacity) to the running keyframes. */
+.izzet-card.izzet-blue:hover::before { opacity: 0.72; --aura-gain: 1.71; }
+.izzet-card.izzet-blue:hover::after  { opacity: 0.65; --aura-gain: 1.44; }
+.izzet-card.izzet-red:hover::before  { opacity: 1;    --aura-gain: 2.08; }
+.izzet-card.izzet-red:hover::after   { opacity: 0.6;  --aura-gain: 1.15; }
 
 /* Prose readability rescue — paragraphs inside either Izzet card need a bump
    because the surrounding aura still adds a color bias that eats warm-gray.
@@ -2157,3 +2252,34 @@ html[data-vibe="cyberpunk"] .izzet-card.izzet-blue .fact-list .fact .accent {
    mount, so users never see this. The first-pass HTML crawler reads it for
    indexing; the second-pass render sees the React UI instead. */
 .prerender-home { display: none; }
+
+/* ═══════ FORCED COLORS (Windows High Contrast) ═══════ */
+/* Forced colors drops box-shadow and author colors, which is all most focus,
+   selection and depth-bar styles here use. Restore system-colored stand-ins. */
+@media (forced-colors: active) {
+  :focus-visible { outline: 2px solid Highlight !important; outline-offset: 2px !important; }
+  html[data-vibe="cyberpunk"] .btn:focus-visible { outline-offset: -4px !important; }  /* inside the clip-path */
+  .theme-switch-seg.active {
+    forced-color-adjust: none;
+    background: Highlight !important; color: HighlightText !important;
+    box-shadow: none !important; text-shadow: none !important;
+  }
+  .skill-bar { border: 1px solid CanvasText; }
+  .skill-bar-fill { forced-color-adjust: none; background: CanvasText !important; box-shadow: none !important; }
+}
+
+/* ═══════ PRINT ═══════ */
+@media print {
+  /* Printing never fires the reveal observer, so unscrolled sections would
+     print blank. */
+  .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
+  /* Screen-only chrome: the fixed nav (and the skip link inside it) would be
+     stamped over the text of every printed page. */
+  .nav, .article-modal-close { display: none !important; }
+  .article-shell { padding-top: 0; }
+  .article-shell ~ .contact { display: none; }
+  /* Paper cannot scroll: wrap long code lines and show whole tables. */
+  .article-content pre { white-space: pre-wrap; overflow-wrap: anywhere; overflow: visible; }
+  .article-content .table-scroll,
+  .article-content > table { overflow: visible; }
+}

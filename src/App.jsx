@@ -14,6 +14,9 @@ const ACCENT = 'violet';
 const HERO_VARIANT = 'sql';
 const MODE_STORAGE_KEY = 'display-mode';
 const TRANSITION_MS = 520;
+const HOME_TITLE = 'Chris Pachulski — Senior Economic Analyst';
+// Route-dependent head tags the build writes into each URL's own HTML file.
+const HEAD_TAGS = 'meta[name="description"], meta[name="robots"], link[rel="canonical"], meta[property^="og:"], meta[name^="twitter:"], script[type="application/ld+json"]';
 
 function readStoredMode() {
   if (typeof window === 'undefined') return 'after-hours';
@@ -148,18 +151,25 @@ function NotFoundPage({ navigate, mode, onModeChange }) {
 }
 
 function ArticleModal({ post, onClose, navigate }) {
+  const backdropRef = useRef(null);
   const dialogRef = useRef(null);
   const lastFocus = useRef(null);
 
   useEffect(() => {
     lastFocus.current = document.activeElement;
     document.body.style.overflow = 'hidden';
+    // aria-modal alone does not stop Tab: make the page behind the dialog
+    // (its siblings in #root: nav and main) inert while it is open.
+    const backdrop = backdropRef.current;
+    const behind = [...backdrop.parentElement.children].filter((el) => el !== backdrop);
+    behind.forEach((el) => { el.inert = true; });
     const onKey = (e) => { if (e.key === 'Escape') onClose(); };
     window.addEventListener('keydown', onKey);
     if (dialogRef.current) dialogRef.current.focus({ preventScroll: true });
     return () => {
       window.removeEventListener('keydown', onKey);
       document.body.style.overflow = '';
+      behind.forEach((el) => { el.inert = false; });
       if (lastFocus.current && typeof lastFocus.current.focus === 'function') {
         lastFocus.current.focus({ preventScroll: true });
       }
@@ -168,6 +178,7 @@ function ArticleModal({ post, onClose, navigate }) {
 
   return (
     <div
+      ref={backdropRef}
       className="article-modal-backdrop"
       onClick={onClose}
       role="presentation"
@@ -214,9 +225,10 @@ export default function App() {
     document.documentElement.setAttribute('data-accent', ACCENT);
     // Reconcile the real display-mode after hydration. The pre-paint inline
     // script in index.html already applied data-theme/data-vibe, so this only
-    // syncs React state (the active ThemeSwitch segment) — no visual flash —
-    // while keeping the server and client first render identical so hydration
-    // matches for office-hours visitors.
+    // syncs React state (the active ThemeSwitch segment) while keeping the
+    // server and client first render identical so hydration matches for
+    // office-hours visitors. Until then, CSS keyed on data-theme draws the
+    // switch's selection (see the theme-switch rules in styles.css).
     const stored = readStoredMode();
     if (stored !== 'after-hours') setMode(stored);
   }, []);
@@ -250,6 +262,27 @@ export default function App() {
       return next;
     });
   }, []);
+
+  // Scroll reveals for every `.reveal` node on the current page. It lives here
+  // rather than in Hero because article and 404 pages render Contact without a
+  // Hero, and re-runs per route so freshly mounted nodes get observed too.
+  useEffect(() => {
+    const nodes = document.querySelectorAll('.reveal:not(.in-view)');
+    if (!('IntersectionObserver' in window)) {
+      nodes.forEach(n => n.classList.add('in-view'));
+      return;
+    }
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('in-view');
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0, rootMargin: '0px 0px -40px 0px' });
+    nodes.forEach(n => io.observe(n));
+    return () => io.disconnect();
+  }, [route.name, route.slug, flowMode]);
 
   const onHomePage = route.name === 'home' || (route.name === 'article' && flowMode === 'modal');
 
@@ -301,12 +334,31 @@ export default function App() {
     if (el) el.scrollIntoView({ behavior: 'instant', block: 'start' });
   }, [route.name]);
 
+  // Route-dependent head. Crawlers read each URL's own prerendered head; after
+  // a client-side navigation the live document copies HEAD_TAGS (description,
+  // canonical, robots, Open Graph, Twitter, JSON-LD) from the new URL's file,
+  // so the build stays their one source. The title is set at once, so it never
+  // waits on the fetch (and dev, which serves index.html everywhere, keeps it).
+  const headUrl = useRef(null);
   useEffect(() => {
-    if (route.name !== 'article') return;
-    const post = getPost(route.slug);
-    if (post) document.title = `${post.title} — Chris Pachulski`;
-    else document.title = 'Not Found — Chris Pachulski';
-    return () => { document.title = 'Chris Pachulski — Senior Economic Analyst'; };
+    const post = route.name === 'article' ? getPost(route.slug) : null;
+    if (route.name !== 'article') document.title = HOME_TITLE;
+    else document.title = post ? `${post.title} — Chris Pachulski` : 'Not Found — Chris Pachulski';
+    // Trailing slash: the prerendered file is /writing/<slug>/index.html.
+    const url = route.name === 'article' ? `${articlePath(route.slug)}/` : '/';
+    if (headUrl.current === null) headUrl.current = url;  // first page: the served head already matches
+    if (url === headUrl.current) return;
+    const ctrl = new AbortController();
+    fetch(url, { signal: ctrl.signal })
+      .then((r) => (r.ok ? r.text() : Promise.reject(new Error(r.status))))
+      .then((html) => {
+        const next = new DOMParser().parseFromString(html, 'text/html').head;
+        document.head.querySelectorAll(HEAD_TAGS).forEach((el) => el.remove());
+        document.head.append(...next.querySelectorAll(HEAD_TAGS));
+        headUrl.current = url;
+      })
+      .catch(() => {});  // offline or superseded: keep the old tags
+    return () => ctrl.abort();
   }, [route.name, route.slug]);
 
   const handleArticleOpen = (slug) => {
@@ -327,16 +379,19 @@ export default function App() {
         navigate('/');
         requestAnimationFrame(() => {
           const el = document.querySelector(target);
-          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          if (el) el.scrollIntoView({ block: 'start' });  // smoothness comes from CSS scroll-behavior, which honours reduced motion
         });
       } else {
         const el = document.querySelector(target);
-        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        if (el) el.scrollIntoView({ block: 'start' });
       }
     } else if (target.startsWith('/#')) {
       handleHomeNav(target.slice(1));
     } else {
+      // A new page (Older/Newer, a 404 suggestion, or leaving the modal for
+      // the full article) opens at its top, not at the old page's offset.
       navigate(target);
+      window.scrollTo({ top: 0, behavior: 'instant' });
     }
   };
 

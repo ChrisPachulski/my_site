@@ -5,7 +5,7 @@ import MagicShowcaseCard from './MagicShowcaseCard.jsx';
 export default function NotFound({ onNavigate }) {
   const featured = POSTS.slice(0, 3);
   const handle = (e, path) => {
-    if (!onNavigate) return;
+    if (!onNavigate || e.metaKey || e.ctrlKey || e.shiftKey || e.button > 0) return;
     e.preventDefault();
     onNavigate(path);
   };

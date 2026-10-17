@@ -25,6 +25,11 @@ function stripFrontmatter(raw) {
   return m ? m[1] : raw;
 }
 
+// Synchronous read of a body loadPostBody already fetched; null if not yet.
+export function getCachedBody(post) {
+  return bodyCache.has(post.fileSlug) ? bodyCache.get(post.fileSlug) : null;
+}
+
 export async function loadPostBody(slugOrPost) {
   const post = typeof slugOrPost === 'string' ? getPost(slugOrPost) : slugOrPost;
   if (!post) return '';
