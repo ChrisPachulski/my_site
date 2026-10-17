@@ -50,7 +50,7 @@ export function About() {
                 Five industries before this: government contracting, adtech, browser telemetry, CPG retail panel, equity research. Now collectibles economics at Wizards. Stack rotates. Discipline doesn't.
               </p>
               <p className="reveal" data-delay="3">
-                Outside of it: my daughter, my son, three dachshunds, the perennial heartbreak of the Toronto Maple Leafs, and tinkering with Magic: the Gathering collections.
+                Outside of it: my daughter, my son, three dachshunds, the perennial heartbreak of the Toronto Maple Leafs, and tinkering with Magic: The Gathering collections.
               </p>
             </div>
             <div className="reveal" data-delay="2">
@@ -174,7 +174,7 @@ export function Feature() {
           <div className="feature-grid">
             <div>
               <span className="tag">featured</span>
-              <h3>MTGBAN. I co-founded a <em>$1.2M</em> arbitrage engine for Magic: the Gathering.</h3>
+              <h3>MTGBAN. I co-founded a <em>$1.2M</em> arbitrage engine for Magic: The Gathering.</h3>
               <p className="dim">
                 500+ paying customers used our aggregated pricing to buy, sell, and hedge across a fragmented collectibles market. I designed the BigQuery warehouse from scratch, and the entire pipeline ran on Digital Ocean droplets + the R tidyverse.
               </p>

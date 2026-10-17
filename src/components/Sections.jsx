@@ -397,7 +397,7 @@ const EXPERIENCE = [
   { hash:'a1f3e4c', role:'Co-Founder', company:'MTGBAN', time:'2017 to 2025', bullets:[
     {t:'Hobby-turned-business: built a Magic: The Gathering arbitrage engine while working day-jobs'},
     {t:'500+ paying customers using aggregated pricing', k:'500+'},
-    {t:'Drove over $1.2M annual revenue for Magic: the Gathering products', k:'$1.2M'},
+    {t:'Drove over $1.2M annual revenue for Magic: The Gathering products', k:'$1.2M'},
     {t:'Designed and implemented BigQuery warehouse from the ground up'},
   ]},
 ];
