@@ -188,20 +188,23 @@ function notFoundHtml(featured) {
 </main>`;
 }
 
+// Every content-bearing replacement below passes a function, not a string:
+// String.replace expands `$&`, `$'` etc. in a replacement string, and escaped
+// code like `$&#39;` would otherwise splice the matched tag into the page.
 function injectMeta(template, meta) {
   // Replace head meta + title; rewrite/insert canonical, og:url, og:title,
   // og:description, og:image, og:type, twitter:title, twitter:description,
   // twitter:image. Inject Article JSON-LD before </head>.
   let html = template;
 
-  html = html.replace(/<title>[\s\S]*?<\/title>/, `<title>${escapeHtml(meta.title)}</title>`);
-  html = html.replace(/<meta\s+name="description"[^>]*>/i, `<meta name="description" content="${escapeAttr(meta.description)}" />`);
+  html = html.replace(/<title>[\s\S]*?<\/title>/, () => `<title>${escapeHtml(meta.title)}</title>`);
+  html = html.replace(/<meta\s+name="description"[^>]*>/i, () => `<meta name="description" content="${escapeAttr(meta.description)}" />`);
 
   const replaceOrInsert = (re, replacement) => {
     if (re.test(html)) {
-      html = html.replace(re, replacement);
+      html = html.replace(re, () => replacement);
     } else {
-      html = html.replace('</head>', `    ${replacement}\n  </head>`);
+      html = html.replace('</head>', () => `    ${replacement}\n  </head>`);
     }
   };
 
@@ -228,15 +231,15 @@ function injectMeta(template, meta) {
     // Replace existing Person JSON-LD with article JSON-LD.
     const ldRe = /<script\s+type="application\/ld\+json">[\s\S]*?<\/script>/;
     const articleLd = `<script type="application/ld+json">\n${JSON.stringify(meta.jsonLd, null, 2)}\n</script>`;
-    if (ldRe.test(html)) html = html.replace(ldRe, articleLd);
-    else html = html.replace('</head>', `    ${articleLd}\n  </head>`);
+    if (ldRe.test(html)) html = html.replace(ldRe, () => articleLd);
+    else html = html.replace('</head>', () => `    ${articleLd}\n  </head>`);
   }
 
   return html;
 }
 
 function injectRoot(template, innerHtml) {
-  return template.replace(/<div\s+id="root"><\/div>/, `<div id="root">${innerHtml}</div>`);
+  return template.replace(/<div\s+id="root"><\/div>/, () => `<div id="root">${innerHtml}</div>`);
 }
 
 function buildSitemap(slugs) {
@@ -390,7 +393,7 @@ export function writingPrerender() {
       const rootTag = homeMode === 'hydrated'
         ? `<div id="root" data-hydrate="home">${homeInner}</div>`
         : `<div id="root">${homeInner}</div>`;
-      const homeHtml = template.replace(/<div\s+id="root"><\/div>/, rootTag);
+      const homeHtml = template.replace(/<div\s+id="root"><\/div>/, () => rootTag);
       await fs.writeFile(indexPath, homeHtml);
 
       console.log(`[prerender] wrote ${posts.length} article pages + ${unlisted.length} unlisted + 404 + sitemap + home (${homeMode})`);
