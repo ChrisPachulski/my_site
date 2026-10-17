@@ -586,10 +586,13 @@ export default function GhostMatch({ onComplete }) {
         setStage('counter');
         return;
       }
-      const ev = SETUP_EVENTS[setupIndexRef.current++];
+      // Advance the index only when the event dispatches, so an Instant flush
+      // that cancels this timer still replays the pending event.
+      const ev = SETUP_EVENTS[setupIndexRef.current];
       const userSpeed = typeof speedRef.current === 'number' ? speedRef.current : 1;
       const delay = Math.max(20, ((ev.d || 0) * baseFactor) / userSpeed);
       setupTimerRef.current = setTimeout(() => {
+        setupIndexRef.current++;
         dispatch(ev);
         runNext();
       }, delay);
