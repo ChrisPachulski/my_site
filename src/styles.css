@@ -1941,15 +1941,11 @@ html[data-theme="light"] .izzet-card.izzet-red::after {
 @media (max-width: 700px) {
   .izzet-card { padding: 36px 22px; }
   /* Pull the bloom way in on mobile. Stacked About + Skills cards would
-     otherwise flood the whole column with violet from their desktop halos. */
+     otherwise flood the whole column with violet from their desktop halos.
+     The aura pseudo-elements get the same treatment after the variant rules
+     below, which would otherwise out-rank it. */
   .izzet-card {
     box-shadow: 0 0 60px 0 oklch(0.60 0.14 305 / 0.18);
-  }
-  .izzet-card::before,
-  .izzet-card::after {
-    inset: -18px;
-    border-radius: 12px;
-    filter: blur(22px);
   }
 }
 .izzet-card::before,
@@ -2012,6 +2008,15 @@ html[data-theme="light"] .izzet-card.izzet-red::after {
   opacity: 0.52;
   animation: izzetPulse 9s ease-out infinite;
   animation-delay: -4.5s;
+}
+
+@media (max-width: 700px) {
+  .izzet-card.izzet-blue::before, .izzet-card.izzet-blue::after,
+  .izzet-card.izzet-red::before,  .izzet-card.izzet-red::after {
+    inset: -18px;
+    border-radius: 12px;
+    filter: blur(22px);
+  }
 }
 
 /* Slow breathing — matches mtgAuraA cadence (7s) with a brief hiccup mid-cycle */
