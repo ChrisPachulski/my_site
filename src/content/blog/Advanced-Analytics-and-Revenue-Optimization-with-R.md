@@ -49,8 +49,8 @@ Analyzing revenue and clicks involves calculating numerous performance metrics, 
 ```r
 optimized_data <- cleaned_data %>%
   mutate(
-    estimated_clicks_adjusted = estimated_clicks * if_else(cpa_goal == 0, 1, round(paid_clicks / adv_sid_said_paid_clicks, 0)),
-    roas_goal = dollars_worth / (actions_worth * cpa_goal)
+    estimated_clicks_adjusted = estimated_clicks * if_else(cpa_goal == 0, 1, paid_clicks / na_if(adv_sid_said_paid_clicks, 0)),
+    roas_goal = dollars_worth / na_if(actions_worth * cpa_goal, 0)
   )
 ```
 
@@ -73,10 +73,10 @@ These calculations allow clear identification of profitable opportunities, suppo
 Multiple calculation methods are utilized to assess sales per click (SPC) and payout per click (PPC), categorized by various dimensions:
 
 ```r
-calculated_metrics <- optimized_data %>%
+calculated_metrics <- profitability_data %>%
   mutate(
-    actual_spc = dollars_worth / paid_clicks,
-    actual_ppc = pub_payout / paid_clicks,
+    actual_spc = dollars_worth / na_if(paid_clicks, 0),
+    actual_ppc = pub_payout / na_if(paid_clicks, 0),
     estimated_sales_revenue = estimated_clicks_adjusted * actual_spc
   )
 ```
@@ -88,7 +88,7 @@ These varied methods enhance accuracy and provide versatile perspectives for ana
 The script seamlessly integrates external business systems like Salesforce, enriching the dataset:
 
 ```r
-salesforce_data <- optimized_data %>%
+salesforce_data <- calculated_metrics %>%
   left_join(sf_data, by = c("publisher_domain" = "domain")) %>%
   mutate(pub_partnership_status = if_else(!is.na(status), "Existing", "Potential"))
 ```
@@ -100,10 +100,10 @@ Leveraging external CRM data provides comprehensive client relationship insights
 Identifying opportunities for upselling and new client acquisition is embedded deeply within analytical operations:
 
 ```r
-upsell_opportunities <- optimized_data %>%
-  filter(adv_partnership_status == 'Existing') %>%
-  summarize(total_estimated_sales = sum(estimated_sales_revenue),
-            total_estimated_revenue = sum(estimated_revenue))
+upsell_opportunities <- salesforce_data %>%
+  filter(pub_partnership_status == 'Existing') %>%
+  summarize(total_estimated_sales = sum(estimated_sales_revenue, na.rm = TRUE),
+            total_net_revenue = sum(net_revenue))
 ```
 
 Pinpointing these opportunities enables targeted marketing and sales strategies, driving revenue growth.
@@ -113,7 +113,7 @@ Pinpointing these opportunities enables targeted marketing and sales strategies,
 Prepared datasets are exported seamlessly for reporting or further analysis:
 
 ```r
-write_csv(optimized_data, '/path/to/exported_file.csv')
+write_csv(salesforce_data, '/path/to/exported_file.csv')
 ```
 
 Facilitating easy access and interpretation of analytical results is crucial for stakeholders.
@@ -123,7 +123,7 @@ Facilitating easy access and interpretation of analytical results is crucial for
 The final step ensures robust storage and availability for future analytics through integration into ClickHouse:
 
 ```r
-DBI::dbWriteTable(conn, "opportunity_8", optimized_data, append = TRUE)
+DBI::dbWriteTable(conn, "opportunity_8", salesforce_data, append = TRUE)
 ```
 
 Reliable and secure data persistence ensures ongoing accessibility for iterative analyses and decision-making.
