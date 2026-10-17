@@ -186,7 +186,7 @@ export function Feature() {
             <div>
               <div
                 className="pipe"
-                role="list"
+                role="group"
                 aria-label="MTGBAN daily pipeline: tap, hover, or focus a step to advance"
                 ref={pipeRef}
               >
@@ -197,7 +197,7 @@ export function Feature() {
                   <Fragment key={i}>
                     <div
                       className={`pipe-node${active === i ? ' active' : ''}`}
-                      role="listitem"
+                      role="button"
                       tabIndex={0}
                       aria-current={active === i ? 'step' : undefined}
                       onMouseEnter={() => claim(i)}
@@ -205,7 +205,7 @@ export function Feature() {
                       onClick={() => claim(i)}
                       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); claim(i); } }}
                     >
-                      <span className="glyph">{n.glyph}</span>
+                      <span className="glyph" aria-hidden="true">{n.glyph}</span>
                       <div>
                         <div className="nm">{n.nm}</div>
                         <div className="ss">{n.ss}</div>
